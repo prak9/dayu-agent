@@ -1,12 +1,12 @@
-# 大愚 Agent — 用户手册
+# alpha Agent — 用户手册
 
-`大愚 Agent` 是每个投资者的助理分析师。  
-- `大愚 Agent` 是一个面向买方财报分析场景的 Agent 系统，但它不是简单的功能组合，`大愚 Agent` 让AI读财报的方式从丢给它整份财报“大海捞针”变成“按图索骥”，让数据有置信度，让投资结论、投资报告可审计、可追踪。  
-- `大愚 Agent` 还具备完整的“宿主强约束下的 LLM in the loop 的能力”，基础架构能力上已经对齐 OpenClaw ，后续会加上现在 OpenClaw 能做的事情。
+`alpha Agent` 是每个投资者的助理分析师。
+- `alpha Agent` 是一个面向买方财报分析场景的 Agent 系统，但它不是简单的功能组合，`alpha Agent` 让AI读财报的方式从丢给它整份财报“大海捞针”变成“按图索骥”，让数据有置信度，让投资结论、投资报告可审计、可追踪。
+- `alpha Agent` 还具备完整的“宿主强约束下的 LLM in the loop 的能力”，基础架构能力上已经对齐 OpenClaw ，后续会加上现在 OpenClaw 能做的事情。
 
 当前你可以用它完成四类工作：
 - 财报数据管线：美股 / A 股 / 港股财报下载，美股 / A 股 / 港股财报上传。
-- 投研问答：下载、上传财报后，执行 `prompt` 单次提问、`interactive` 多轮提问、或通过微信向`大愚 Agent` 提问。
+- 投研问答：下载、上传财报后，执行 `prompt` 单次提问、`interactive` 多轮提问、或通过微信向`alpha Agent` 提问。
 - 买方分析报告写作：下载、上传财报后，执行 `write` 写作。
 - 结果渲染：把 Markdown 报告渲染为 HTML / PDF / Word。
 
@@ -14,11 +14,11 @@
 - 最终使用者。
 
 如果你要参与开发，而不是只使用系统：
-- 总览开发手册：[dayu/README.md](dayu/README.md)
-- Host 手册：[dayu/host/README.md](dayu/host/README.md)
-- Engine 手册：[dayu/engine/README.md](dayu/engine/README.md)
-- Fins 手册：[dayu/fins/README.md](dayu/fins/README.md)
-- 配置手册：[dayu/config/README.md](dayu/config/README.md)
+- 总览开发手册：[alpha/README.md](alpha/README.md)
+- Host 手册：[alpha/host/README.md](alpha/host/README.md)
+- Engine 手册：[alpha/engine/README.md](alpha/engine/README.md)
+- Fins 手册：[alpha/fins/README.md](alpha/fins/README.md)
+- 配置手册：[alpha/config/README.md](alpha/config/README.md)
 - 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 0. 如果你想参与项目
@@ -43,77 +43,29 @@
 
 ### 1.1 安装
 
-安装使用 `大愚 Agent` 前需安装 Python 3.11。
+安装使用 `alpha Agent` 前需安装 Python 3.11。
 
-#### 1.1.1 在线安装
+#### 1.1.1 安装本地 alpha 源码
 
-如果你当前机器可以联网，可以直接通过 `pip` 安装稳定版 wheel。
-
-命令格式：
+在已取得本版本源码的仓库目录中安装：
 
 ```bash
-python -m pip install https://github.com/noho/dayu-agent/releases/download/<version>/dayu_agent-<version>-py3-none-any.whl
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[browser,web]" -c constraints/lock-linux-x64-py311.txt
 ```
 
-示例（替换为最新版本号）：
+macOS 或 Windows 使用下面对应平台的 constraints。旧产品的远端 Release 文件不会因本地改名自动变成 alpha 安装包；安装本次改造版本请使用这份源码或由它构建的 wheel。
+
+#### 1.1.2 安装本地构建的 wheel
 
 ```bash
-python -m pip install https://github.com/noho/dayu-agent/releases/download/v0.1.4/dayu_agent-0.1.4-py3-none-any.whl
+python -m pip wheel . --no-deps --wheel-dir dist
+python -m pip install ./dist/alpha_agent-0.1.4-py3-none-any.whl
 ```
 
-这种方式最轻，但安装耗时和成功率会受网络、平台和上游依赖发布状态影响。最新稳定版请以 [Releases](https://github.com/noho/dayu-agent/releases) 页面为准，复制对应版本的 wheel URL。
+离线 bundle 的构建和 smoke 入口见开发文档，安装器会随当前源码使用 alpha 命令。
 
-如需安装 `main` 分支开发版（nightly），可以直接从 Git 安装：
-
-```bash
-python -m pip install --upgrade --force-reinstall "git+https://github.com/noho/dayu-agent.git@main"
-```
-
-也可以使用 `uv tool` 安装，让 `uv` 独立管理工具环境和 Python 3.11。`uv` 的安装方法请参考 [uv 官方安装文档](https://docs.astral.sh/uv/getting-started/installation/)。
-
-```bash
-uv tool install --force --managed-python --python 3.11 \
-  "dayu-agent @ https://github.com/noho/dayu-agent/releases/download/<version>/dayu_agent-<version>-py3-none-any.whl"
-```
-
-安装 `main` 分支开发版（nightly）：
-
-```bash
-uv tool install --force --refresh --managed-python --python 3.11 \
-  "git+https://github.com/noho/dayu-agent.git@main"
-```
-
-`uv tool install --force` 会替换已有的同名 `dayu-agent` 工具环境，但不会覆盖已有工作区数据和配置。安装后可用以下命令查看安装来源：
-
-```bash
-uv tool list --show-version-specifiers --show-python
-```
-
-#### 1.1.2 离线安装
-
-从 [Releases](https://github.com/noho/dayu-agent/releases) 页面下载对应平台的离线安装包：
-
-- Mac ARM芯片：`dayu-agent-<version>-macos-arm64-offline.tar.gz`
-- Mac Intel芯片：`dayu-agent-<version>-macos-x64-offline.tar.gz`
-- Windows：`dayu-agent-<version>-windows-x64-offline.zip`
-
-Linux 用户请使用在线 wheel 安装或源码安装；当前不发布 Linux 离线安装包。
-
-macOS 示例：
-
-```bash
-tar -xzf dayu-agent-0.1.4-macos-arm64-offline.tar.gz
-cd dayu-agent-0.1.4-macos-arm64-offline
-./install.sh
-```
-
-Windows PowerShell 示例：
-
-```powershell
-Expand-Archive .\dayu-agent-0.1.4-windows-x64-offline.zip -DestinationPath .
-cd .\dayu-agent-0.1.4-windows-x64-offline
-.\install.cmd
-```
 #### 1.1.3 clone 源代码安装
 
 如果你要参与开发或本地调试源码，可以 clone 源代码后使用 editable 安装：
@@ -129,7 +81,7 @@ pip install -e ".[test,dev,browser,web]" -c constraints/lock-macos-arm64-py311.t
 - macOS Intel 开发环境改用 `constraints/lock-macos-x64-py311.txt`
 - Linux 开发环境改用 `constraints/lock-linux-x64-py311.txt`
 - Windows 开发环境改用 `constraints/lock-windows-x64-py311.txt`
-- `web` extras 启用 `dayu-web`（streamlit）入口；不需要 Web UI 时可从 extras 列表中省略
+- `web` extras 启用 `alpha-web`（streamlit）入口；不需要 Web UI 时可从 extras 列表中省略
 
 #### 1.1.4 安装额外依赖
 
@@ -139,7 +91,7 @@ pip install -e ".[test,dev,browser,web]" -c constraints/lock-macos-arm64-py311.t
 playwright install chromium
 ```
 
-如需使用 `dayu-render` 将 Markdown 导出为 **HTML、Word（.docx）或 PDF**，需要安装 `pandoc`，详见「§6 渲染输出」。可选安装方式：
+如需使用 `alpha-render` 将 Markdown 导出为 **HTML、Word（.docx）或 PDF**，需要安装 `pandoc`，详见「§6 渲染输出」。可选安装方式：
 
 - macOS：`brew install pandoc`
 - Ubuntu / Debian：`sudo apt-get install pandoc`
@@ -150,15 +102,15 @@ playwright install chromium
 安装完成后，先确认命令入口可用：
 
 ```bash
-dayu-cli --help
-dayu-wechat --help
-dayu-render --help
+alpha --help
+alpha-wechat --help
+alpha-render --help
 ```
 
-`dayu-web` 入口需要先安装 `[web]` extras（参考 1.1.3 节示例命令），再执行：
+`alpha-web` 入口需要先安装 `[web]` extras（参考 1.1.3 节示例命令），再执行：
 
 ```bash
-dayu-web --help
+alpha-web --help
 ```
 
 ### 1.3 初始化工作区与配置
@@ -166,8 +118,12 @@ dayu-web --help
 安装后运行一次 `init`，交互式完成配置复制、模型供应商选择和 API Key 设置：
 
 ```bash
-dayu-cli init
+alpha init
 ```
+
+从旧命名工作区升级前，先停止旧 CLI/Web/WeChat 进程，再对原工作区运行 `alpha init --base <工作区>`。命名迁移保留原件于 `.alpha_namespace_migration/original/`，将 `.dayu/host/dayu_host.db` 一致性备份为 `.alpha/host/alpha_host.db`，并更新已知配置和恢复路径。新旧目录并存、活跃旧执行或迁移期间配置冲突会明确拒绝；中断后重复执行同一命令可继续，成功后重复运行不再迁移。
+
+`alpha init` 同时初始化独立研究存储，并为已有 Host 库新增持久受理表，保留历史会话和运行记录。
 
 `init` 会依次执行：
 
@@ -185,9 +141,9 @@ dayu-cli init
 可选参数：
 
 ```bash
-dayu-cli init --base ./my_workspace    # 指定工作区目录（默认 ./workspace）
-dayu-cli init --reset                  # 删除 .dayu / config / assets 后重新初始化
-dayu-cli init --overwrite              # 覆盖已有配置
+alpha init --base ./my_workspace    # 指定工作区目录（默认 ./workspace）
+alpha init --reset                  # 删除 .alpha / config / assets 后重新初始化
+alpha init --overwrite              # 覆盖已有配置
 ```
 
 API Key 申请地址：
@@ -202,8 +158,8 @@ API Key 申请地址：
 - 海外用户选Mimo Token Plan SG。
 - 如需接入 OpenRouter 等聚合服务，可在 `init` 中选择”自定义 OpenAI 兼容 API”，填写 `CUSTOM_OPENAI_API_KEY`、Base URL、模型 ID 与最大上下文 tokens。
 - 本地 Ollama 模型和自定义 OpenAI 兼容 API 在 `init` 时会根据最大上下文 tokens 自动配置 `conversation_memory`（>= 100 万 tokens 扩大工作记忆上限，< 100 万收紧情景记忆预算）；Ollama 的 `write_chapter` 并发 lane 默认设为 2。
-- `--reset` 确认后会删除 `workspace/.dayu/`、`workspace/config/`、`workspace/assets/`，再按首次初始化流程重建；它比 `--overwrite` 更彻底，会一并清空运行时状态。
-- 升级 dayu 后若运行命令时看到 `HostStore 检测到旧版 SQLite schema 与当前实现不兼容` 报错，按提示处理：优先删除报错信息里 `db_path` 指向的数据库文件后重启（仅丢失 host 运行状态，保留 conversation 历史与 `run.json`）；如果不方便定位也可以直接跑 `dayu-cli init --reset` 完整重建工作区。
+- `--reset` 确认后会删除 `workspace/.alpha/`、`workspace/config/`、`workspace/assets/`，再按首次初始化流程重建；它比 `--overwrite` 更彻底，会一并清空运行时状态。
+- 升级 alpha 后若运行命令时看到 `HostStore 检测到旧版 SQLite schema 与当前实现不兼容` 报错，按提示处理：优先删除报错信息里 `db_path` 指向的数据库文件后重启（仅丢失 host 运行状态，保留 conversation 历史与 `run.json`）；如果不方便定位也可以直接跑 `alpha init --reset` 完整重建工作区。
 - 联网搜索默认可走 `auto`，若配置了 Tavily / Serper，会优先使用对应 provider。
 - 若运行环境需要访问 `localhost`、私网 IP 或内网域名，可在 `workspace/config/run.json` 的 `web_tools_config.allow_private_network_url` 中显式打开内网访问开关。
 - 修改默认模型请参考 [8. 模型配置](#model-config)。
@@ -214,26 +170,26 @@ API Key 申请地址：
 workspace/
 ├── config/           # 运行时配置（覆盖包内默认配置）
 ├── assets/           # 定性分析模板（覆盖包内默认模板）
-├── .dayu/            # 系统隐藏工作目录（batch 暂存、备份恢复等）
+├── .alpha/            # 系统隐藏工作目录（batch 暂存、备份恢复等）
 ├── portfolio/        # 每个 ticker 的财报与材料
 ├── draft/            # write 输出目录
 └── output/           # tool trace 等辅助输出
 ```
 
-说明：`workspace/.dayu/` 由系统自动维护，当前会承载财报仓储的 batch 暂存与 crash recovery 备份；不需要手动创建或清理。如果运行有异常全部删除也没有影响。  
+说明：`workspace/.alpha/` 由系统维护，保存 Host、研究、Telegram 状态及财报批处理恢复数据；请保留并随工作区备份，删除会丢失研究和恢复记录。
 
 ### 1.4 跑通第一条命令
 
 推荐先下载一份财报：
 
 ```bash
-dayu-cli download --ticker AAPL
+alpha download --ticker AAPL
 ```
 
 下载完成后，再跑一条单次 prompt：
 
 ```bash
-dayu-cli prompt "总结最新财报的主要风险" --ticker AAPL
+alpha prompt "总结最新财报的主要风险" --ticker AAPL
 ```
 
 如果你已经通过 `download`、`upload_filing` 或 `upload_filings_from` 导入过 AAPL 的财报，也可以直接提问；命令会自动检测本地财报并挂载财报工具后返回结果。
@@ -241,7 +197,7 @@ dayu-cli prompt "总结最新财报的主要风险" --ticker AAPL
 如果你希望先不指定 `ticker`，也可以这样写：
 
 ```bash
-dayu-cli prompt "总结苹果最新财报的主要风险"
+alpha prompt "总结苹果最新财报的主要风险"
 ```
 
 > 也可在微信对话或`interactive`里发送"下载苹果财报"进行下载。
@@ -254,10 +210,10 @@ dayu-cli prompt "总结苹果最新财报的主要风险"
 统一入口：
 
 ```bash
-dayu-cli <subcommand> [参数]
+alpha <subcommand> [参数]
 ```
 
-直接执行 `dayu-cli` 会打印总帮助和全部子命令简介；需要查看某个子命令的完整参数时，继续使用 `dayu-cli <subcommand> --help`。
+直接执行 `alpha` 会打印总帮助和全部子命令简介；需要查看某个子命令的完整参数时，继续使用 `alpha <subcommand> --help`。
 
 当前支持的主命令：
 
@@ -303,8 +259,8 @@ dayu-cli <subcommand> [参数]
 
 说明：
 - `--log-level`、`--debug`、`--verbose`、`--info`、`--quiet` 是同一组日志参数，使用其一即可。
-- `prompt`、`interactive`、`write` 还支持更多 Agent 运行参数，例如 `--tool-timeout-seconds`、`--max-iterations`、`--doc-limits-json`、`--fins-limits-json`；需要时可用 `dayu-cli <subcommand> --help` 查看完整列表。
-- 宿主管理命令同样支持 `--base` / `--config` / 日志参数；例如 `dayu-cli host --base ./workspace status`、`dayu-cli sessions --base ./workspace --source cli --scene interactive`、`dayu-cli conv --base ./workspace list`。
+- `prompt`、`interactive`、`write` 还支持更多 Agent 运行参数，例如 `--tool-timeout-seconds`、`--max-iterations`、`--doc-limits-json`、`--fins-limits-json`；需要时可用 `alpha <subcommand> --help` 查看完整列表。
+- 宿主管理命令同样支持 `--base` / `--config` / 日志参数；例如 `alpha host --base ./workspace status`、`alpha sessions --base ./workspace --source cli --scene interactive`、`alpha conv --base ./workspace list`。
 - `interactive` 默认会续接本地绑定的同一个多轮会话；如果上一次回答还没完整回显到终端，重启 CLI 会先把那次回答补完，再进入新的输入循环。
 
 ### 2.2 Web 入口（Streamlit）
@@ -312,30 +268,30 @@ dayu-cli <subcommand> [参数]
 基于 Streamlit 的 Web UI，可在浏览器中管理自选股、下载财报并进行按 ticker 绑定历史的交互式分析：
 
 ```bash
-dayu-web
+alpha-web
 ```
 
 也可以用模块入口启动（等价）：
 
 ```bash
-python -m dayu.web
+python -m alpha.web
 ```
 
 默认使用 `./workspace` 作为工作区
 
 启动后，默认打开 Local URL: http://localhost:8501 （如果 8501 端口被占用将按尝试其他端口）
 
-功能说明：详见[dayu/web/README.md](dayu/web/README.md)
+功能说明：详见[alpha/web/README.md](alpha/web/README.md)
 
 ### 2.3 WeChat 入口
 
 统一入口：
 
 ```bash
-dayu-wechat <command> [参数]
+alpha-wechat <command> [参数]
 ```
 
-直接执行 `dayu-wechat` 会打印总帮助和全部命令简介；需要查看某个命令的完整参数时，继续使用 `dayu-wechat <command> --help`。
+直接执行 `alpha-wechat` 会打印总帮助和全部命令简介；需要查看某个命令的完整参数时，继续使用 `alpha-wechat <command> --help`。
 
 当前支持的命令：
 
@@ -357,7 +313,7 @@ dayu-wechat <command> [参数]
 |------|------|------|
 | `--base` | 全部命令 | 工作区根目录，默认 `./workspace` |
 | `--config` | `login` `run` `service install` | 配置目录，默认 `workspace/config` |
-| `--label` | 全部命令 | WeChat 实例标签，默认 `default`；状态目录映射到 `<base>/.dayu/wechat-<label>` |
+| `--label` | 全部命令 | WeChat 实例标签，默认 `default`；状态目录映射到 `<base>/.alpha/wechat-<label>` |
 | `--relogin` | `login` | 忽略已有登录态，强制重新扫码 |
 | `--qrcode-timeout-sec` | `login` | 扫码登录超时秒数 |
 | `--model-name` | `run` `service install` | 指定模型配置名称 |
@@ -413,19 +369,19 @@ A 股使用巨潮主源，港股使用披露易主源。
 命令示例：
 
 ```bash
-dayu-cli download --ticker AAPL
+alpha download --ticker AAPL
 ```
 
 常见命令示例：
 
 ```bash
-dayu-cli download --ticker AAPL --forms 10K 10Q --start 2024 --end 2025
-dayu-cli download --ticker AAPL --forms 10K
-dayu-cli download --ticker AAPL --rebuild
-dayu-cli download --ticker 600519 --forms FY H1 Q1 Q2 Q3 Q4 --start 2024 --end 2026
-dayu-cli download --ticker 0700 --forms FY H1 Q1 Q2 Q3 Q4 --start 2024 --end 2026
-dayu-cli download --ticker 0700 --rebuild
-dayu-cli download --ticker BABA,9988,9988.HK --infer
+alpha download --ticker AAPL --forms 10K 10Q --start 2024 --end 2025
+alpha download --ticker AAPL --forms 10K
+alpha download --ticker AAPL --rebuild
+alpha download --ticker 600519 --forms FY H1 Q1 Q2 Q3 Q4 --start 2024 --end 2026
+alpha download --ticker 0700 --forms FY H1 Q1 Q2 Q3 Q4 --start 2024 --end 2026
+alpha download --ticker 0700 --rebuild
+alpha download --ticker BABA,9988,9988.HK --infer
 ```
 
 命令说明：
@@ -459,7 +415,7 @@ dayu-cli download --ticker BABA,9988,9988.HK --infer
 命令示例：
 
 ```bash
-dayu-cli upload_filing \
+alpha upload_filing \
   --ticker 0300 \
   --files ./tmp/美的2025Q1.pdf \
   --fiscal-year 2025 \
@@ -470,18 +426,18 @@ dayu-cli upload_filing \
 常见命令示例：
 
 ```bash
-dayu-cli upload_filings_from \
+alpha upload_filings_from \
   --ticker 0300 \
   --from ./workspace/source
 
-dayu-cli upload_filing \
+alpha upload_filing \
   --ticker BABA,9988 \
   --files ./tmp/alibaba_2025_q1.pdf \
   --fiscal-year 2025 \
   --fiscal-period Q1 \
   --infer
 
-dayu-cli upload_material \
+alpha upload_material \
   --ticker AAPL \
   --forms EARNINGS_CALL \
   --material-name deck \
@@ -496,7 +452,7 @@ dayu-cli upload_material \
 - `upload_filings_from` 未传 `--output` 时，默认把脚本写到 `--base` 指向的 workspace 根目录，文件名为 `upload_filings_{ticker}.sh` / `.cmd`。
 - `upload_filings_from --infer` 只会在脚本生成阶段调用一次 FMP，并把“显式 CSV alias + infer alias”的合并结果，以及最终公司名直接 bake 到脚本正文；脚本头部的重生成命令仍会保留原始 `--ticker` 输入和 `--infer`。
 - 使用 `--infer` 功能需要申请FMP_API_KEY。
-- 生成脚本头部会附带一条注释形式的 `python -m dayu.cli upload_filings_from ...` 重跑命令；脚本正文里的批量上传命令也统一使用 `python -m dayu.cli`，这样在源码工作区里执行时不会依赖外部 `dayu-cli` entrypoint。
+- 生成脚本头部会附带一条注释形式的 `python -m alpha.cli upload_filings_from ...` 重跑命令；脚本正文里的批量上传命令也统一使用 `python -m alpha.cli`，这样在源码工作区里执行时不会依赖外部 `alpha` entrypoint。
 - `upload_filings_from` 默认不会在脚本正文里写死 `--action`，这样每条命令都会在执行时按当前工作区状态自动判定 `create/update/skip`；只有你显式传了 `--action`，生成脚本才会固定动作。
 - 生成脚本中的每条上传命令都会透传脚本调用时的额外参数；macOS / Linux 使用 `"$@"`，Windows 使用 `%*`，因此可直接执行 `./upload_filings_xxx.sh --overwrite` 之类的批量覆盖调用。
 - `upload_filing --overwrite` 和 `upload_material --overwrite` 会先重置当前 `document_id` 的源文档存储，再完整重建该文档；不会像 SEC download 的 ticker 级 overwrite 那样清空同 ticker 下的其他文档。
@@ -522,17 +478,17 @@ dayu-cli upload_material \
 命令示例：
 
 ```bash
-dayu-cli prompt "总结苹果最新财报中的主要风险"
+alpha prompt "总结苹果最新财报中的主要风险"
 ```
 
 常见命令示例：
 
 ```bash
-dayu-cli prompt "总结最新财报中的主要风险" --ticker AAPL
-dayu-cli prompt "总结苹果最新财报中的主要风险" --thinking
-dayu-cli prompt --label apple "先总结苹果最新财报中的主要风险"
-dayu-cli prompt "总结苹果最新财报中的主要风险" --model-name mimo-v2.5-pro
-dayu-cli prompt "总结苹果最新财报中的主要风险" --debug
+alpha prompt "总结最新财报中的主要风险" --ticker AAPL
+alpha prompt "总结苹果最新财报中的主要风险" --thinking
+alpha prompt --label apple "先总结苹果最新财报中的主要风险"
+alpha prompt "总结苹果最新财报中的主要风险" --model-name mimo-v2.5-pro
+alpha prompt "总结苹果最新财报中的主要风险" --debug
 ```
 
 命令说明：
@@ -561,33 +517,33 @@ dayu-cli prompt "总结苹果最新财报中的主要风险" --debug
 命令示例：
 
 ```bash
-dayu-cli interactive
+alpha interactive
 ```
 
 常见命令示例：
 
 ```bash
-dayu-cli interactive --model-name mimo-v2.5-pro
-dayu-cli interactive --temperature 0.2
-dayu-cli interactive --thinking
-dayu-cli interactive --label apple
-dayu-cli interactive --new-session
-dayu-cli sessions --source cli --scene interactive
-dayu-cli conv status --label apple
-dayu-cli interactive --verbose
+alpha interactive --model-name mimo-v2.5-pro
+alpha interactive --temperature 0.2
+alpha interactive --thinking
+alpha interactive --label apple
+alpha interactive --new-session
+alpha sessions --source cli --scene interactive
+alpha conv status --label apple
+alpha interactive --verbose
 ```
 
 命令说明：
 - 使用之前请先下载/上传财报。
 - `interactive` 默认每次进入都会续接同一个多轮会话，适合连续追问。
-- `interactive` 会把当前会话绑定保存在 `<workspace>/.dayu/interactive/state.json`，重新启动时默认续接上一次会话历史。
+- `interactive` 会把当前会话绑定保存在 `<workspace>/.alpha/interactive/state.json`，重新启动时默认续接上一次会话历史。
 - 如果你想从头开始一轮新的对话，显式传 `--new-session`；它会丢弃本地保存的旧会话绑定，改为新开一个会话。
 - 如果你想显式复用某条长期对话，使用 `--label`。同一个 label 可在 `prompt --label` 与 `interactive --label` 之间互通；第一次通过 `prompt --label` 创建的会话底层 scene 为 `prompt_mt`，第一次通过 `interactive --label` 创建的会话底层 scene 为 `interactive`，之后恢复时沿用首次创建时的 scene。
 - 带 `--label` 的 CLI 启动时，会明确提示当前是“新创建标签”还是“恢复标签”；`prompt --label` 在回答末尾还会再次打印标签提示框，方便你后续继续复用同一个 label。
 - 同一个 label 在任意时刻只能被一个 CLI 进程占用：`interactive --label` 会在整个 REPL 生命周期内持有该 label，直到双 `Ctrl+D` 完整退出；`prompt --label` 会在本轮返回最终回答前持有该 label。若命中占用中的 label，CLI 会提示你等待当前对话结束后重试，或改用新的 `--label`。
 - 如果你在 workspace 本地覆写了 `prompt_mt` 或其他带 label 会命中的 scene manifest，必须保留 `conversation.enabled=true`；否则 CLI 会直接拒绝执行该 labeled conversation。
-- 如果某个 label 对应的底层 session 已经被 `dayu-cli sessions close` 关闭，下次再用同名 `--label` 时，CLI 会先提示“旧对话已关闭”，再按全新对话重新创建该 label；如果你是通过 `conv remove --label` 主动释放 label，则下次直接按普通新建处理，不额外提示。
-- 如果你想查看底层 Host session，可用 `dayu-cli sessions --source cli --scene interactive` 或 `dayu-cli sessions --source cli --scene prompt_mt`；如果你想查看或释放 label 到会话的映射，使用 `dayu-cli conv list`、`dayu-cli conv list --all`、`dayu-cli conv status --label <label>` 与 `dayu-cli conv remove --label <label>`。其中 `conv list` 默认只展示 active 的 labeled conversation，`conv list --all` 额外包含已关闭对话；若某个 label 的 registry record 已漂移到不存在的 Host session，CLI 会先自动清理再继续执行，不再展示 `missing`。`conv remove --label` 会先关闭底层 session（若仍存在），再释放该 label；之后同名 `--label` 会从全新对话开始。若你通过 `sessions close` 关闭了某个带 label 的底层 session，下次同名 `--label` 会在提示后创建新的会话，而不是恢复旧 transcript。若你需要诊断底层 `session_id`，请用 `conv status --label <label>` 或直接查看 `sessions`。
+- 如果某个 label 对应的底层 session 已经被 `alpha sessions close` 关闭，下次再用同名 `--label` 时，CLI 会先提示“旧对话已关闭”，再按全新对话重新创建该 label；如果你是通过 `conv remove --label` 主动释放 label，则下次直接按普通新建处理，不额外提示。
+- 如果你想查看底层 Host session，可用 `alpha sessions --source cli --scene interactive` 或 `alpha sessions --source cli --scene prompt_mt`；如果你想查看或释放 label 到会话的映射，使用 `alpha conv list`、`alpha conv list --all`、`alpha conv status --label <label>` 与 `alpha conv remove --label <label>`。其中 `conv list` 默认只展示 active 的 labeled conversation，`conv list --all` 额外包含已关闭对话；若某个 label 的 registry record 已漂移到不存在的 Host session，CLI 会先自动清理再继续执行，不再展示 `missing`。`conv remove --label` 会先关闭底层 session（若仍存在），再释放该 label；之后同名 `--label` 会从全新对话开始。若你通过 `sessions close` 关闭了某个带 label 的底层 session，下次同名 `--label` 会在提示后创建新的会话，而不是恢复旧 transcript。若你需要诊断底层 `session_id`，请用 `conv status --label <label>` 或直接查看 `sessions`。
 - 默认不回显模型思考过程；如需在终端查看，显式传 `--thinking`。
 
 ### 3.5 微信对话 daemon：
@@ -615,59 +571,59 @@ dayu-cli interactive --verbose
 - `run` 直接在命令行窗口前台运行。
 - `service` 适合长期后台运行。
 - `service` 相关命令目前支持 macOS 和 Linux；Windows 暂未支持。
-- 用不同的 `--label`，并分别由不同扫码主体执行 `login`，可以多开。默认实例标签是 `default`，对应状态目录 `workspace/.dayu/wechat-default`。一个完整例子如下：
+- 用不同的 `--label`，并分别由不同扫码主体执行 `login`，可以多开。默认实例标签是 `default`，对应状态目录 `workspace/.alpha/wechat-default`。一个完整例子如下：
 
 ```bash
 # 实例 A：扫码主体 A 登录，安装并启动 service
-dayu-wechat login --label a
-dayu-wechat service install --label a --model-name mimo-v2.5-pro-thinking
-dayu-wechat service start --label a
+alpha-wechat login --label a
+alpha-wechat service install --label a --model-name mimo-v2.5-pro-thinking
+alpha-wechat service start --label a
 
 # 实例 B：扫码主体 B 登录，安装并启动 service
-dayu-wechat login --label b
-dayu-wechat service install --label b --model-name deepseek-v4-flash-thinking
-dayu-wechat service start --label b
+alpha-wechat login --label b
+alpha-wechat service install --label b --model-name deepseek-v4-flash-thinking
+alpha-wechat service start --label b
 
 # 列出当前 workspace 下已安装的实例
-dayu-wechat service list
+alpha-wechat service list
 ```
 
-- 多开后，`start` / `restart` / `stop` / `status` / `uninstall` 都要继续带对应实例的同一个 `--label`，这样命中的才是同一个后台 service；忘记有哪些实例时可直接执行 `dayu-wechat service list`。
+- 多开后，`start` / `restart` / `stop` / `status` / `uninstall` 都要继续带对应实例的同一个 `--label`，这样命中的才是同一个后台 service；忘记有哪些实例时可直接执行 `alpha-wechat service list`。
 
 命令示例：
 
 ```bash
-dayu-wechat login
-dayu-wechat run
+alpha-wechat login
+alpha-wechat run
 ```
 
 常见命令示例：
 
 ```bash
-dayu-wechat login --relogin
-dayu-wechat run --model-name mimo-v2.5-pro-thinking --temperature 0.4
-dayu-wechat run --enable-tool-trace
-dayu-wechat service install
-dayu-wechat service start
-dayu-wechat service restart
-dayu-wechat service stop
-dayu-wechat service status
-dayu-wechat service list
-dayu-wechat service uninstall
+alpha-wechat login --relogin
+alpha-wechat run --model-name mimo-v2.5-pro-thinking --temperature 0.4
+alpha-wechat run --enable-tool-trace
+alpha-wechat service install
+alpha-wechat service start
+alpha-wechat service restart
+alpha-wechat service stop
+alpha-wechat service status
+alpha-wechat service list
+alpha-wechat service uninstall
 ```
 
 命令说明：
 - 同一微信会话里的连续追问会自动延续上下文，适合做多轮分析。
 - 当前版本主要支持文本问答；更适合问财报、公司、行业和研究相关问题。
-- 首次使用时先执行 `dayu-wechat login`；命令会打印并尝试打开登录二维码链接，用手机微信扫码确认即可。若你在管理多实例，统一用 `--label` 指定实例标签。
-- `dayu-wechat run` 依赖本地已有登录态；若登录态失效，重新执行同一个 `--label` 的 `login` 即可。
+- 首次使用时先执行 `alpha-wechat login`；命令会打印并尝试打开登录二维码链接，用手机微信扫码确认即可。若你在管理多实例，统一用 `--label` 指定实例标签。
+- `alpha-wechat run` 依赖本地已有登录态；若登录态失效，重新执行同一个 `--label` 的 `login` 即可。
 - 同一个 `--label` 的前台 `run` 和后台 service 不能并发运行；新的 daemon 若发现该 `state_dir` 已被占用，会直接拒绝启动。
-- macOS / Linux：如果你希望它长期后台运行，先执行 `dayu-wechat service install`，再执行 `dayu-wechat service start`。后续可用 `service restart`、`service stop`、`service status`、`service list`、`service uninstall` 管理。
-- `service install` 会把当前 shell 里已设置的关键环境变量快照进后台 service 定义，包括配置文件里 `{{ENV_VAR}}` 占位符引用到的变量，以及少量代码直读变量（如 `SEC_USER_AGENT`、联网检索/FMP API key）。如果你后来改了 API key，需要重新执行一次 `dayu-wechat service install`；若后台 service 已在运行，再执行 `dayu-wechat service restart` 让新配置生效。
-- `dayu-wechat service status --label <name>` 会直接打印日志定位信息：macOS 打印 stdout/stderr 文件路径；Linux 打印 `journalctl --user -u <label>.service -f` 查看命令。
-- `dayu-wechat service list` 只列出当前 workspace 下已安装的实例，并回显实例标签、状态目录、系统 service label、运行状态和是否已有登录态。
+- macOS / Linux：如果你希望它长期后台运行，先执行 `alpha-wechat service install`，再执行 `alpha-wechat service start`。后续可用 `service restart`、`service stop`、`service status`、`service list`、`service uninstall` 管理。
+- `service install` 会把当前 shell 里已设置的关键环境变量快照进后台 service 定义，包括配置文件里 `{{ENV_VAR}}` 占位符引用到的变量，以及少量代码直读变量（如 `SEC_USER_AGENT`、联网检索/FMP API key）。如果你后来改了 API key，需要重新执行一次 `alpha-wechat service install`；若后台 service 已在运行，再执行 `alpha-wechat service restart` 让新配置生效。
+- `alpha-wechat service status --label <name>` 会直接打印日志定位信息：macOS 打印 stdout/stderr 文件路径；Linux 打印 `journalctl --user -u <label>.service -f` 查看命令。
+- `alpha-wechat service list` 只列出当前 workspace 下已安装的实例，并回显实例标签、状态目录、系统 service label、运行状态和是否已有登录态。
 - macOS 下默认日志分流语义是：stdout 文件保留全量运行日志，stderr 文件额外记录真正错误与异常堆栈；因此 ERROR 会同时出现在两边。
-- Windows：目前没有后台托管命令，使用方式是先执行 `dayu-wechat login`，再执行 `dayu-wechat run`，需要持续运行时请保持终端窗口开启。
+- Windows：目前没有后台托管命令，使用方式是先执行 `alpha-wechat login`，再执行 `alpha-wechat run`，需要持续运行时请保持终端窗口开启。
 - 若需要重新扫码登录，可重启命令并加上 `--relogin`。
 
 ### 3.6 自动写作：`write`
@@ -686,7 +642,7 @@ dayu-wechat service uninstall
 | `--infer` | 可选，只执行公司级 facet 归因并写回 manifest |
 | `--summary` | 可选，只打印上次写作结果摘要，不进入写作 |
 | `--resume` / `--no-resume` | 可选，控制是否断点恢复 |
-| `--template` | 可选，写作模板路径，默认 `workspace/assets/定性分析模板.md`，回退 `dayu/assets/定性分析模板.md` |
+| `--template` | 可选，写作模板路径，默认 `workspace/assets/定性分析模板.md`，回退 `alpha/assets/定性分析模板.md` |
 | `--output` | 可选，输出目录，默认 `workspace/draft/{ticker}` |
 | `--model-name` | 可选，主写作模型配置 |
 | `--audit-model-name` | 可选，审计模型配置 |
@@ -695,17 +651,17 @@ dayu-wechat service uninstall
 命令示例：
 
 ```bash
-dayu-cli write --ticker AAPL
+alpha write --ticker AAPL
 ```
 
 常见命令示例：
 
 ```bash
-dayu-cli write --ticker AAPL --chapter "公司做的是什么生意"
-dayu-cli write --ticker AAPL --chapter "经营表现与核心驱动" --fast
-dayu-cli write --ticker AAPL --infer
-dayu-cli write --ticker AAPL --summary
-dayu-cli write --ticker AAPL \
+alpha write --ticker AAPL --chapter "公司做的是什么生意"
+alpha write --ticker AAPL --chapter "经营表现与核心驱动" --fast
+alpha write --ticker AAPL --infer
+alpha write --ticker AAPL --summary
+alpha write --ticker AAPL \
   --template ./workspace/assets/定性分析模板.md \
   --output ./workspace/draft/AAPL \
   --enable-tool-trace
@@ -716,7 +672,7 @@ dayu-cli write --ticker AAPL \
 - 默认会复用 manifest 中已有的“公司级 facets”，不会每次重跑。
 - 显式传 `--infer` 时，只会强制重跑一次“公司级 facets”并写回 manifest，随后立即退出，不进入章节写作。
 - 按场景使用参数：
-  - 第一次完整写报告：直接运行 `dayu-cli write --ticker AAPL`。
+  - 第一次完整写报告：直接运行 `alpha write --ticker AAPL`。
   - 上次写到一半中断，想从已有结果继续：直接重新运行同一条命令即可；默认就是 `--resume`。
   - 只想快速出初稿，不想等待审查和修复：加 `--fast`。
   - 上一次是用 `--fast` 跑的，想继续沿用这套“只写正文”的方式：继续加 `--fast` 再运行。
@@ -724,8 +680,8 @@ dayu-cli write --ticker AAPL \
   - 前面章节还没完全通过检查，但你仍然想先生成第 0 章或第 10 章看结果：加 `--force`。
   - 只想刷新公司级归因，不进入正式写作：用 `--infer`。
 - 章节不满意时，推荐这样处理：
-  - 正常模式 `write` 写完后，发现第 8 章不满意：先运行 `dayu-cli write --ticker AAPL --chapter "第8章的章节名"` 重写这一章；再运行 `dayu-cli write --ticker AAPL`，把新章节应用到整份报告。
-  - `write --fast` 写完后，发现第 8 章不满意，且你还想继续保持“快速草稿”模式：先运行 `dayu-cli write --ticker AAPL --chapter "第8章的章节名" --fast` 重写这一章；再运行 `dayu-cli write --ticker AAPL --fast`，把新章节应用到整份草稿报告。
+  - 正常模式 `write` 写完后，发现第 8 章不满意：先运行 `alpha write --ticker AAPL --chapter "第8章的章节名"` 重写这一章；再运行 `alpha write --ticker AAPL`，把新章节应用到整份报告。
+  - `write --fast` 写完后，发现第 8 章不满意，且你还想继续保持“快速草稿”模式：先运行 `alpha write --ticker AAPL --chapter "第8章的章节名" --fast` 重写这一章；再运行 `alpha write --ticker AAPL --fast`，把新章节应用到整份草稿报告。
   - 单独重写某一章时，不会自动重建第 0 章和第 10 章。
   - 重写某一章后，再跑一次全文 `write` 时，系统会重新生成整份报告文件；但默认 `--resume` 会跳过当前模式下已经完成的章节，所以第 0 章和第 10 章如果已完成，通常不会自动重写。
   - 如果你改动了中间章节后，希望第 0 章和第 10 章也反映新的内容，建议依次重跑该中间章节、第 10 章、第 0 章，最后再运行一次全文 `write`。
@@ -749,15 +705,15 @@ dayu-cli write --ticker AAPL \
 命令示例：
 
 ```bash
-dayu-cli process --ticker AAPL --overwrite
+alpha process --ticker AAPL --overwrite
 ```
 
 常见命令示例：
 
 ```bash
-dayu-cli process --ticker AAPL
-dayu-cli process --ticker AAPL --ci
-dayu-cli process --ticker AAPL --ci --document-id fil_001 --document-id fil_002
+alpha process --ticker AAPL
+alpha process --ticker AAPL --ci
+alpha process --ticker AAPL --ci --document-id fil_001 --document-id fil_002
 ```
 
 命令说明：
@@ -961,7 +917,7 @@ dayu-cli process --ticker AAPL --ci --document-id fil_001 --document-id fil_002
 如果你只关心结果，优先看：
 
 - 每章最终的 `.md`
-- `dayu-cli write --summary --ticker AAPL` 的摘要输出
+- `alpha write --summary --ticker AAPL` 的摘要输出
 - 需要排查问题时，再看对应的 `*_audit.json`
 
 ## 5. tool trace 分析
@@ -969,7 +925,7 @@ dayu-cli process --ticker AAPL --ci --document-id fil_001 --document-id fil_002
 如果你在 `prompt` / `interactive` / `write` 时开启了 trace：
 
 ```bash
-dayu-cli prompt \
+alpha prompt \
   "总结最新财报风险" \
   --ticker AAPL \
   --enable-tool-trace
@@ -1086,7 +1042,7 @@ python -m utils.diagnose_web_access \
 
 只有显式传入 `--pause-before-snapshot` 时，脚本才会在等待结束后继续要求你按回车确认。
 
-默认每条 URL 都会在独立子进程里执行，并在执行前删除 `workspace/.dayu/session`，避免进程内 Session、warmup host 和 Playwright 单例污染下一条 URL。这样 CI 侧只需要稳定地产出 `web_diagnostics`，后续分析和优化可以基于这些原始结果继续进行。
+默认每条 URL 都会在独立子进程里执行，并在执行前删除 `workspace/.alpha/session`，避免进程内 Session、warmup host 和 Playwright 单例污染下一条 URL。这样 CI 侧只需要稳定地产出 `web_diagnostics`，后续分析和优化可以基于这些原始结果继续进行。
 
 URL 文件支持两种格式：
 
@@ -1126,15 +1082,15 @@ https://www.reuters.com/markets/companies/AAPL.OQ/
 Markdown 报告渲染入口：
 
 ```bash
-dayu-render <输入文件.md> [输出文件]
+alpha-render <输入文件.md> [输出文件]
 ```
 
 常见示例：
 
 ```bash
-dayu-render workspace/draft/AAPL/AAPL_qual_report.md
-dayu-render workspace/draft/AAPL/AAPL_qual_report.md report.pdf
-dayu-render workspace/draft/AAPL/AAPL_qual_report.md report.html
+alpha-render workspace/draft/AAPL/AAPL_qual_report.md
+alpha-render workspace/draft/AAPL/AAPL_qual_report.md report.pdf
+alpha-render workspace/draft/AAPL/AAPL_qual_report.md report.html
 ```
 
 支持格式：
@@ -1164,7 +1120,7 @@ dayu-render workspace/draft/AAPL/AAPL_qual_report.md report.html
 - 想改系统提示词和任务提示词：改 `prompts/`
 
 配置说明请看：
-- [dayu/config/README.md](dayu/config/README.md)
+- [alpha/config/README.md](alpha/config/README.md)
 
 <a id="model-config"></a>
 
@@ -1310,10 +1266,10 @@ dayu-render workspace/draft/AAPL/AAPL_qual_report.md report.html
 ## 9. 文档导航
 
 - 用户手册（当前文档）：[README.md](README.md)
-- 开发手册总览：[dayu/README.md](dayu/README.md)
-- Engine 包开发手册：[dayu/engine/README.md](dayu/engine/README.md)
-- Fins 包开发手册：[dayu/fins/README.md](dayu/fins/README.md)
-- 配置说明手册：[dayu/config/README.md](dayu/config/README.md)
+- 开发手册总览：[alpha/README.md](alpha/README.md)
+- Engine 包开发手册：[alpha/engine/README.md](alpha/engine/README.md)
+- Fins 包开发手册：[alpha/fins/README.md](alpha/fins/README.md)
+- 配置说明手册：[alpha/config/README.md](alpha/config/README.md)
 - 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 10. 开源与许可证
@@ -1327,3 +1283,88 @@ dayu-render workspace/draft/AAPL/AAPL_qual_report.md report.html
 - 不要把仓库名称、作者名称或项目商标暗示成对你分发版本的背书
 
 如果你准备贡献代码、文档或测试，请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+### 问题驱动研究
+
+同一公司可以建立多项独立研究；每项研究复用自己的会话，报告按版本保留。本地 Codex 已登录时，先运行 `alpha init --base ./workspace --codex`，直接复用 Codex 的模型与推理配置，无需模型 API Key；然后执行：
+
+```bash
+alpha research --owner local new "苹果的现金流质量是否改善？" --subjects AAPL --key apple-cashflow
+alpha research --owner local list
+alpha research --owner local ask <research_id> "开始研究，说明证据和缺口" --key first-input --run
+alpha research --owner local status <research_id>
+alpha research --owner local report <revision_id>
+alpha research --owner local stop <research_id> --key stop-1
+alpha research --owner local resume <turn_id> --key resume-1 --run
+alpha research --owner local archive <research_id>
+alpha research --owner local open <research_id>
+```
+
+`--base`、`--owner`、`--model-name` 放在 `research` 后、操作名前。`ask` 不加 `--run` 只持久接受输入；之后用 `run <research_id>` 执行。创建、输入、停止和恢复的 `--key` 是各自稳定请求键，相同键重试不会重复受理。历史研究可在 `new` 时传含时区的 `--as-of`；每轮固定方法与执行规格。恢复适用于失败、孤立或超时输入，主动停止不会自动恢复。正式版本需模型提交报告工具且 Host 成功；纯文本回答不会冒充报告。
+
+`--subjects` 表示证券代码：证券研究默认要求实际读取利润表、资产负债表和现金流表，纯 PDF 文本阅读不满足覆盖。需要指定文档或跨期范围时，将要求保存为 JSON 文件并传给 `ask --financial-requirements ./requirements.json`，例如：
+
+```json
+[{"ticker":"BABA","document_ids":["fil_0001193125-26-231755"],"minimum_periods":2}]
+```
+
+省略 `statement_types` 时使用三张核心报表。研究会保存实际读取结果及原件、解析产物哈希；缺少必需数据、币种或单位时不能完成报告。先保存候选稿，再查看字段错误、局部修订并按候选 ID/hash 提交，正式版本保留原稿与校验证据。
+
+### 用当前 coding agent 直接研究
+
+安装后可运行 `alpha-mcp --base /绝对路径/workspace --owner local`。它使用官方 MCP Python SDK 的 stdio 传输，将工具执行交给同一个 Host；分析使用当前 coding agent，无需再次调用本地 Codex 模型。按 [Codex MCP 配置说明](https://learn.chatgpt.com/docs/extend/mcp?surface=cli) 接入，例如：
+
+```bash
+codex mcp add alpha -- /绝对路径/.venv/bin/alpha-mcp --base /绝对路径/workspace --owner local
+```
+
+财报解析可能超过客户端默认工具时限，可在 Codex 的 `[mcp_servers.alpha]` 中设置 `tool_timeout_sec = 300`。本仓库提供 `$alpha-research` skill；也可直接按以下工具工作：
+
+| 工具 | 用途 |
+|---|---|
+| `alpha_sessions` | 分页查看多个主题、执行状态、输入 ID 和最近版本 |
+| `alpha_create` / `alpha_begin` | 创建主题并开始本轮；返回执行句柄及业务工具目录 |
+| `alpha_call` | 调用财报读取、方法、计算、笔记、检查点和候选稿工具 |
+| `alpha_finish` | 按候选 ID/hash 原子提交并结束本轮 |
+| `alpha_abort` / `alpha_resume` | 停止或显式恢复失败、孤立、超时输入 |
+| `alpha_publish` / `alpha_publications` | 发布固定版本，查看状态与链接 |
+
+财报工具按 `research_download_filings → research_prepare_source → research_read_financial` 使用；已下载的源文档可直接准备。用 `research_checkpoints` 查看原笔记、计算和候选稿索引，再用 `research_read_checkpoint` 读取完整内容。跨研究隔离；同一 session 同时只允许一个写执行。断开连接会请求 Host 取消本连接的未完成执行并保留检查点；外部 IDE 的思考过程仍由 IDE 管理。
+
+### Telegram 多研究入口
+
+先在 BotFather 启用 Bot 私聊话题模式。默认复用 `$CODEX_HOME/config.toml`（未设置时为 `~/.codex/config.toml`）中 `mcp_servers.telegram.env.TELEGRAM_BOT_TOKEN`，支持已有 `BOT_TOKEN`/`TELEGRAM_TOKEN`；`ALPHA_TELEGRAM_BOT_TOKEN` 可显式覆盖。没有 Telegram MCP 连接时，可在 Codex 用户目录下的 `alpha/credentials.toml` 配置 `[telegram]` 表的 `bot_token` 字符串，文件权限设为 `0600`；这是 alpha 专用本地凭据，不需注册 MCP 服务。在 `workspace/config/telegram.json` 的 `allowed_user_ids` 数组中填写允许的 Telegram user ID，也可用 `--user` 显式覆盖。
+
+```bash
+alpha-telegram --base ./workspace --check --user 123456789
+alpha-telegram --base ./workspace --user 123456789
+```
+
+`--check` 只预检 Bot 和长轮询条件，不创建研究。正式启动后，在私聊中发送 `/new 研究问题` 新建原生话题，发送 `/researches` 查看分页研究列表；在话题内直接输入可续研究。`/status` 查看进度，`/stop` 请求协作停止。报告卡提供摘要和 Markdown 文件；归档/重新打开保留原研究和会话。
+
+话题创建结果未知时，在已经创建的话题内用 `/bind <research_id>` 明确绑定。失败或中断输入可用 `/resume <turn_id>` 显式恢复。未知发送结果不会自动重复发送；请先核对 Telegram 中的实际消息。在研究话题内可发送 PDF、TXT、Markdown 或 HTML（20 MiB 上限，文本须 UTF-8）。财报附件说明用 `/filing AAPL 10-K 核对收入`，由 Fins 仓储保存；普通附件进入当前研究材料库。接收只表示原件保存，后续模型用材料工具逐页提取和核验。PDF 文本读取需系统安装 Poppler `pdftotext`，扫描件需另外 OCR；本轮截止后导入的材料只进入后续研究，旧报告不回填。
+
+### 将指定报告版本推送到 Notion Invest
+
+默认复用 Codex 配置中 `mcp_servers.notion.env.NOTION_TOKEN`（也支持 `NOTION_API_KEY`），无需再填一份 token；`ALPHA_NOTION_TOKEN` 可显式覆盖。该 connection 需有 Invest 页面读取、插入及必要更新权限。`workspace/config/notion.json` 的 `parent_page_id` 默认指向已确认的 [🌾 Invest](https://www.notion.so/8b6f0c8fc1264555b531281fbb0b96bc)。目标使用固定 ID，不按页面同名搜索。
+
+```bash
+alpha research --owner local publish <revision_id> --key publish-1 --run
+alpha research --owner local publication <publication_id>
+```
+
+`publish` 返回前保存明确授权的版本和正文；`--run` 处理队列中最早的一项已授权发布。Telegram 常驻进程配置 token 后会独立消费发布队列，报告卡的“推送到 Invest”绑定原版本；后续研究生成 v2 不会改变旧 v1 按钮的目标。`/publication <publication_id>` 可查询状态，完成后链接发回原研究话题。
+
+目录结构为 `Invest → 研究主题页 → 不可变版本页`。主题按稳定 `research_id` 绑定，显示标题变化不会另建主题。异步任务必须完成且回读通过，才显示已推送。重复已完成请求返回原页面，后台不覆盖人工编辑后的已发布页。主题或版本创建结果未知时先核对原标记，未找到也不会自动重建。权限失败修复后可点“重试推送”，或使用新的 `--key` 明确重试；重放旧失败键只返回原状态。
+
+默认手动发布。用户明确要求本轮完成后归档时，可使用 `ask --publish-on-complete --run`，或在 `alpha_begin` 中设置 `publish_on_complete=true`。策略和目标在本轮接受时固定，只有正式版本才进入发布队列；报告正文不能授权发布。MCP/Telegram 常驻入口会独立消费队列；CLI 也会在执行完成后处理到期意图。归档失败可单独重试，不重新跑研究。
+
+已有工作区先执行 `alpha init --codex`，它会补齐新配置并按明确选择将各 scene 切到本地 Codex；不带该选项的迁移仅补齐缺失定义，保留已有默认选择。研究停止与独立发布是不同操作；应用退出时会请求 Host 取消当前发布尝试并等待 HTTP 线程收尾。
+
+本地材料可用 `alpha research --owner local material <research_id> ./note.pdf --key material-1 --caption "核对原文" --run` 导入；财报将 caption 换成 `/filing AAPL 10-K 核对收入`。PDF 单次读取连续 1–5 页，正文保留原页码，原件 hash 与来源引用可追溯。结构化财报先用 `research_prepare_filing` 按需生成 Docling 结构，再用已有 Fins 工具读取；转换期间协作取消会等待当前转换收尾。
+
+Notion 大报告按固定正文预先分段，代码块和表格保持完整；单段超过 128 KiB 会明确拒绝。续写使用一次性分段标记替换，回读通过后记录进度；未知追加先回读，不重复追加。人工改动、截断和标记冲突保留待核对，已发布页不覆盖写。
+
+本次实现范围、离线验证和部署后的真实账号烟测清单见 [alpha 验收记录](docs/alpha/acceptance.md)。
+
+本地 Codex 使用官方 app-server 动态工具协议（当前验证版本 0.162.1）；研究只暴露 alpha 已接受的工具，每批执行后回到 Host 的迭代、停止和重复调用治理。Codex 登录文件和密钥不复制到工作区，Notion/Telegram 已保存 token 仅在相应入口装配时读取。仅有 Codex 的 ChatGPT 登录并不等于保存了 Telegram Bot token；未找到渠道凭据时会明确报错。

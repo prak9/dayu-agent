@@ -8,7 +8,7 @@ from typing import cast
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedInfrastructureSpec,
     AcceptedModelSpec,
@@ -16,34 +16,34 @@ from dayu.contracts.agent_execution import (
     AcceptedToolConfigSpec,
     ExecutionContract,
 )
-from dayu.contracts.model_config import OpenAICompatibleModelConfig
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
-from dayu.contracts.events import AppEventType
-from dayu.contracts.session import SessionSource
-from dayu.contracts.runtime_config_snapshot import AgentRunningConfigSnapshot
-from dayu.execution.runtime_config import (
+from alpha.contracts.model_config import OpenAICompatibleModelConfig
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
+from alpha.contracts.events import AppEventType
+from alpha.contracts.session import SessionSource
+from alpha.contracts.runtime_config_snapshot import AgentRunningConfigSnapshot
+from alpha.execution.runtime_config import (
     AgentRuntimeConfig,
     OpenAIRunnerRuntimeConfig,
 )
-from dayu.execution.options import ConversationMemorySettings, ExecutionOptions, ResolvedExecutionOptions
-from dayu.execution.options import (
+from alpha.execution.options import ConversationMemorySettings, ExecutionOptions, ResolvedExecutionOptions
+from alpha.execution.options import (
     DocToolLimits,
     FinsToolLimits,
     TraceSettings,
     WebToolsConfig,
 )
-from dayu.host.host import Host
-from dayu.host.host_execution import HostExecutorProtocol
-from dayu.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
-from dayu.prompting.scene_definition import (
+from alpha.host.host import Host
+from alpha.host.host_execution import HostExecutorProtocol
+from alpha.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
+from alpha.prompting.scene_definition import (
     SceneConversationDefinition,
     SceneDefinition,
     SceneModelDefinition,
 )
-from dayu.services.contracts import PromptRequest
-from dayu.services.prompt_service import PromptService
-from dayu.services.protocols import PromptServiceProtocol
-from dayu.services.scene_execution_acceptance import AcceptedSceneExecution, SceneExecutionAcceptancePreparer
+from alpha.services.contracts import PromptRequest
+from alpha.services.prompt_service import PromptService
+from alpha.services.protocols import PromptServiceProtocol
+from alpha.services.scene_execution_acceptance import AcceptedSceneExecution, SceneExecutionAcceptancePreparer
 from tests.application.conftest import StubHostExecutor, StubRunRegistry, StubSessionRegistry
 
 
@@ -238,7 +238,7 @@ def test_stream_prompt_outputs_execution_contract(monkeypatch: pytest.MonkeyPatc
     """验证 PromptService 会直接生成 ExecutionContract。"""
 
     monkeypatch.setattr(
-        "dayu.services.prompt_service.build_base_user_contribution",
+        "alpha.services.prompt_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
 
@@ -281,7 +281,7 @@ def test_stream_prompt_reuses_explicit_session_id(monkeypatch: pytest.MonkeyPatc
     """显式 session_id 时应复用既有 Host Session。"""
 
     monkeypatch.setattr(
-        "dayu.services.prompt_service.build_base_user_contribution",
+        "alpha.services.prompt_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
 

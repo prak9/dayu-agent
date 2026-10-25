@@ -10,8 +10,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.host.host_store import HostStore, write_transaction
-from dayu.log import Log
+from alpha.host.host_store import HostStore, write_transaction
+from alpha.log import Log
 
 
 class TestSchemaInitialization:

@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from dayu.fins.domain.document_models import CompanyMeta
-from dayu.fins.pipelines.sec_company_meta import (
+from alpha.fins.domain.document_models import CompanyMeta
+from alpha.fins.pipelines.sec_company_meta import (
     extract_sec_ticker_aliases,
     merge_ticker_aliases,
     normalize_sec_ticker_aliases,
     upsert_company_meta,
 )
-from dayu.fins.storage import CompanyMetaRepositoryProtocol
+from alpha.fins.storage import CompanyMetaRepositoryProtocol
 
 
 @dataclass

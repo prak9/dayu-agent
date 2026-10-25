@@ -9,7 +9,7 @@ from typing import Any, Optional, Protocol
 
 import pytest
 
-from dayu.engine.processors.base import (
+from alpha.engine.processors.base import (
     SearchHit,
     SectionContent,
     SectionSummary,
@@ -21,12 +21,12 @@ from dayu.engine.processors.base import (
     build_table_content,
     build_table_summary,
 )
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.engine.processors.source import Source
-from dayu.fins.domain.document_models import MaterialCreateRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines.sec_pipeline import SecPipeline
-from dayu.fins.storage.local_file_store import LocalFileStore
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.engine.processors.source import Source
+from alpha.fins.domain.document_models import MaterialCreateRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines.sec_pipeline import SecPipeline
+from alpha.fins.storage.local_file_store import LocalFileStore
 from tests.fins.storage_testkit import build_storage_core
 
 

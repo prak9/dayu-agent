@@ -11,9 +11,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dayu.fins.storage.local_file_source import LocalFileSource
-from dayu.engine.processors import bs_processor
-from dayu.engine.processors.bs_processor import BSProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
+from alpha.engine.processors import bs_processor
+from alpha.engine.processors.bs_processor import BSProcessor
 
 
 def _write_html(tmp_path: Path, name: str, html: str) -> Path:
@@ -778,7 +778,7 @@ def test_classify_section_heading_table_as_layout() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.fins_bs_processor import FinsBSProcessor
+    from alpha.fins.processors.fins_bs_processor import FinsBSProcessor
 
     result = bs_processor._classify_table_type(
         row_count=5,
@@ -801,7 +801,7 @@ def test_classify_section_heading_table_with_dash() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.fins_bs_processor import FinsBSProcessor
+    from alpha.fins.processors.fins_bs_processor import FinsBSProcessor
 
     result = bs_processor._classify_table_type(
         row_count=3,
@@ -827,7 +827,7 @@ def test_classify_sec_cover_page_table_as_layout() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.fins_bs_processor import FinsBSProcessor
+    from alpha.fins.processors.fins_bs_processor import FinsBSProcessor
 
     cover_text = (
         "ANNUAL REPORT PURSUANT to Section 13 or 15(d) of the "
@@ -856,7 +856,7 @@ def test_classify_sec_cover_page_only_under_5_rows() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.fins_bs_processor import FinsBSProcessor
+    from alpha.fins.processors.fins_bs_processor import FinsBSProcessor
 
     cover_text = (
         "ANNUAL REPORT PURSUANT to Section 13 or 15(d) of the "

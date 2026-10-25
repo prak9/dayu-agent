@@ -1,15 +1,15 @@
 # 贡献指南
 
-本文档面向准备给 `dayu Agent` 提交 issue、文档修订或代码贡献的开发者。
+本文档面向准备给 `alpha Agent` 提交 issue、文档修订或代码贡献的开发者。
 
 ## 先看什么
 
 提交改动前，先阅读这些文档：
 
 - 用户入口：[README.md](README.md)
-- 开发总览：[dayu/README.md](dayu/README.md)
-- Engine 边界：[dayu/engine/README.md](dayu/engine/README.md)
-- Fins 边界：[dayu/fins/README.md](dayu/fins/README.md)
+- 开发总览：[alpha/README.md](alpha/README.md)
+- Engine 边界：[alpha/engine/README.md](alpha/engine/README.md)
+- Fins 边界：[alpha/fins/README.md](alpha/fins/README.md)
 - 测试约定：[tests/README.md](tests/README.md)
 - 仓库协作约束：[AGENTS.md](AGENTS.md)
 
@@ -17,12 +17,12 @@
 
 - 先从第一性原理说明问题和目标，不要直接沿用历史实现假设。
 - root cause 必须与逻辑或数据同源，禁止用间接证据拼结论。
-- Dayu 的架构定位是：宿主强约束下的 `LLM in the loop`，不是 `LLM on the loop`。
+- Alpha 的架构定位是：宿主强约束下的 `LLM in the loop`，不是 `LLM on the loop`。
 - Host 对 Agent / AsyncAgent / AsyncOpenAIRunner 的生命周期、取消、治理是强约束真源。
 - 严格遵守分层架构：`UI -> Service -> Host -> Agent`。
 - 禁止反向依赖。
 - 设计下层组件接口时，必须假设上层组件不存在，只考虑上层调用需求，不向上泄漏实现细节。
-- 财报文档存取必须且只能通过 `dayu.fins.storage` 下的仓储协议与仓储实现完成。
+- 财报文档存取必须且只能通过 `alpha.fins.storage` 下的仓储协议与仓储实现完成。
 - 写作链路优化目标是写出更好的买方分析报告，而不是为了更容易通过 audit。
 
 ## 开发流程
@@ -43,7 +43,7 @@
 ```bash
 pytest
 ruff check .
-mypy dayu
+mypy alpha
 ```
 
 如果你修改了财报处理链路，请尽量补充最小可复现样本或夹具，避免只靠人工描述说明行为变化。
@@ -51,8 +51,8 @@ mypy dayu
 ## 文档与接口
 
 - 新增或修改 CLI、配置入口、trace/render 工作流时，更新根目录 [README.md](README.md)。
-- 修改 Engine 边界、事件流、trace 契约时，更新 [dayu/engine/README.md](dayu/engine/README.md)。
-- 修改 Fins capability 定位、对外接口或内部机制时，更新 [dayu/fins/README.md](dayu/fins/README.md)。
+- 修改 Engine 边界、事件流、trace 契约时，更新 [alpha/engine/README.md](alpha/engine/README.md)。
+- 修改 Fins capability 定位、对外接口或内部机制时，更新 [alpha/fins/README.md](alpha/fins/README.md)。
 - 修改测试分层或新增测试约定时，更新 [tests/README.md](tests/README.md)。
 
 ## 许可证

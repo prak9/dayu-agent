@@ -8,7 +8,7 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.contracts.toolset_config import (
+from alpha.contracts.toolset_config import (
     ToolsetConfigSnapshot,
     build_toolset_config_snapshot,
     coerce_toolset_config_float,

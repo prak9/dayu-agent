@@ -9,8 +9,8 @@ from typing import cast
 
 import pytest
 
-from dayu.engine.processors.base import SearchHit
-from dayu.engine.processors.search_utils import (
+from alpha.engine.processors.base import SearchHit
+from alpha.engine.processors.search_utils import (
     build_snippet_from_sentence_window,
     cap_per_section,
     dedup_snippets,
@@ -18,7 +18,7 @@ from dayu.engine.processors.search_utils import (
     extract_query_anchored_snippets,
     split_sentences,
 )
-from dayu.engine.processors import search_utils
+from alpha.engine.processors import search_utils
 
 
 def _search_hits(items: list[dict[str, object]]) -> list[SearchHit]:
@@ -285,7 +285,7 @@ def test_cap_per_section_empty_list() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.engine.processors.search_utils import cap_per_section
+    from alpha.engine.processors.search_utils import cap_per_section
     
     assert cap_per_section([], 2) == []
 
@@ -303,7 +303,7 @@ def test_cap_per_section_below_cap() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.engine.processors.search_utils import cap_per_section
+    from alpha.engine.processors.search_utils import cap_per_section
     
     items = ["a", "b"]
     assert cap_per_section(items, 5) == ["a", "b"]
@@ -322,7 +322,7 @@ def test_cap_per_section_exceeds_cap() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.engine.processors.search_utils import cap_per_section
+    from alpha.engine.processors.search_utils import cap_per_section
     
     items = ["a", "b", "c", "d", "e"]
     result = cap_per_section(items, 3)

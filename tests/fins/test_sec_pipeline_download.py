@@ -9,24 +9,24 @@ from typing import Any, Optional, cast
 
 import pytest
 
-from dayu.fins.downloaders.sec_downloader import (
+from alpha.fins.downloaders.sec_downloader import (
     BrowseEdgarFiling,
     RemoteFileDescriptor,
     Sc13PartyRoles,
     SecDownloader,
     build_source_fingerprint,
 )
-from dayu.fins.pipelines import sec_download_filing_workflow as _sec_download_filing_workflow
-from dayu.fins.pipelines import sec_6k_primary_document_repair as _sec_6k_primary_repair
-from dayu.fins.pipelines import sec_pipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.pipelines.sec_form_utils import normalize_form as _normalize_form
-from dayu.fins.pipelines.sec_pipeline import (
+from alpha.fins.pipelines import sec_download_filing_workflow as _sec_download_filing_workflow
+from alpha.fins.pipelines import sec_6k_primary_document_repair as _sec_6k_primary_repair
+from alpha.fins.pipelines import sec_pipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.pipelines.sec_form_utils import normalize_form as _normalize_form
+from alpha.fins.pipelines.sec_pipeline import (
     SEC_PIPELINE_DOWNLOAD_VERSION,
     SecPipeline as _SecPipeline,
 )
-from dayu.fins.pipelines.sec_sc13_filtering import SC13_FORMS as _SC13_FORMS, SC13_RETRY_MAX as _SC13_RETRY_MAX
-from dayu.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.pipelines.sec_sc13_filtering import SC13_FORMS as _SC13_FORMS, SC13_RETRY_MAX as _SC13_RETRY_MAX
+from alpha.engine.processors.processor_registry import ProcessorRegistry
 
 
 class StubDownloader:
@@ -710,7 +710,7 @@ def test_sec_pipeline_download_prefers_dei_fiscal_when_available(
             }
         ],
     )
-    from dayu.fins.pipelines import sec_fiscal_fields as _sec_fiscal_fields_mod
+    from alpha.fins.pipelines import sec_fiscal_fields as _sec_fiscal_fields_mod
 
     monkeypatch.setattr(
         _sec_fiscal_fields_mod,

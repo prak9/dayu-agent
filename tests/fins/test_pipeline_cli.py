@@ -9,19 +9,19 @@ from typing import Any, AsyncIterator, Callable, Optional, cast
 
 import pytest
 
-from dayu.fins import cli_support as cli
-from dayu.log import Log, LogLevel
-from dayu.fins.domain.document_models import CompanyMeta
-from dayu.fins.downloaders.sec_downloader import RemoteFileDescriptor, SecDownloader
-from dayu.fins.ingestion.process_events import ProcessEvent, ProcessEventType
-from dayu.fins.pipelines import CnPipeline, SecPipeline, get_pipeline_from_normalized_ticker
-from dayu.fins.pipelines.base import PipelineProtocol
-from dayu.fins.pipelines.download_events import DownloadEvent, DownloadEventType
-from dayu.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
-from dayu.fins.pipelines.upload_material_events import UploadMaterialEvent, UploadMaterialEventType
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.resolver.fmp_company_alias_resolver import FmpAliasInferenceResult
-from dayu.fins.ticker_normalization import NormalizedTicker
+from alpha.fins import cli_support as cli
+from alpha.log import Log, LogLevel
+from alpha.fins.domain.document_models import CompanyMeta
+from alpha.fins.downloaders.sec_downloader import RemoteFileDescriptor, SecDownloader
+from alpha.fins.ingestion.process_events import ProcessEvent, ProcessEventType
+from alpha.fins.pipelines import CnPipeline, SecPipeline, get_pipeline_from_normalized_ticker
+from alpha.fins.pipelines.base import PipelineProtocol
+from alpha.fins.pipelines.download_events import DownloadEvent, DownloadEventType
+from alpha.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
+from alpha.fins.pipelines.upload_material_events import UploadMaterialEvent, UploadMaterialEventType
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.resolver.fmp_company_alias_resolver import FmpAliasInferenceResult
+from alpha.fins.ticker_normalization import NormalizedTicker
 
 
 class FakePipeline(PipelineProtocol):
@@ -1722,7 +1722,7 @@ def test_dispatch_upload_filings_from_generates_script(
     assert result["skipped_count"] == 1
     assert output_script.exists()
     script_text = output_script.read_text(encoding="utf-8")
-    command_lines = [line for line in script_text.splitlines() if line.startswith("python -m dayu.cli upload_")]
+    command_lines = [line for line in script_text.splitlines() if line.startswith("python -m alpha.cli upload_")]
     assert "--fiscal-year 2025 --fiscal-period Q1" in script_text
     assert "--fiscal-year 2023 --fiscal-period FY" in script_text
     assert "--fiscal-year 2025 --fiscal-period H1" in script_text
@@ -1730,7 +1730,7 @@ def test_dispatch_upload_filings_from_generates_script(
     assert "--company-id" not in "\n".join(command_lines)
     assert "\n".join(command_lines).count("--company-name") == 1
     assert all(line.endswith('"$@"') for line in command_lines)
-    assert "# python -m dayu.cli upload_filings_from" in script_text
+    assert "# python -m alpha.cli upload_filings_from" in script_text
 
 
 def test_dispatch_upload_filings_from_output_directory_writes_default_script_name(
@@ -1779,7 +1779,7 @@ def test_dispatch_upload_filings_from_output_directory_writes_default_script_nam
     assert result["script_path"] == str(expected_script.resolve())
     assert expected_script.exists()
     script_text = expected_script.read_text(encoding="utf-8")
-    command_lines = [line for line in script_text.splitlines() if line.startswith("python -m dayu.cli upload_")]
+    command_lines = [line for line in script_text.splitlines() if line.startswith("python -m alpha.cli upload_")]
     assert "--ticker 0300" in script_text
     assert "--company-id" not in "\n".join(command_lines)
     assert "\n".join(command_lines).count("--company-name") == 1
@@ -1857,7 +1857,7 @@ def test_dispatch_upload_filings_from_windows_output_directory_writes_cmd_script
     assert expected_script.exists()
     script_text = expected_script.read_text(encoding="utf-8")
     assert script_text.startswith("@echo off")
-    assert "REM python -m dayu.cli upload_filings_from" in script_text
+    assert "REM python -m alpha.cli upload_filings_from" in script_text
 
 
 def test_dispatch_upload_filings_from_requires_company_meta(tmp_path: Path) -> None:
@@ -1939,7 +1939,7 @@ def test_dispatch_upload_filings_from_infer_bakes_result_into_generated_commands
     assert infer_calls == ["BABA"]
     assert result["generated_ticker_csv"] == "BABA,9988,89988"
     script_text = output_script.read_text(encoding="utf-8")
-    assert "# python -m dayu.cli upload_filings_from --ticker BABA,9988" in script_text
+    assert "# python -m alpha.cli upload_filings_from --ticker BABA,9988" in script_text
     assert "--infer" in script_text
     assert "upload_filing" in script_text
     assert "--ticker BABA,9988,89988" in script_text

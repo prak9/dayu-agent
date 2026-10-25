@@ -8,12 +8,12 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any, BinaryIO, Optional
 
-from dayu.fins.domain.document_models import FileObjectMeta
-from dayu.fins.downloaders.sec_downloader import DownloaderEvent, RemoteFileDescriptor, SecDownloader
-from dayu.fins.pipelines.download_events import DownloadEvent
-from dayu.fins.pipelines.sec_pipeline import SEC_PIPELINE_DOWNLOAD_VERSION, SecPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.storage.fs_source_document_repository import FsSourceDocumentRepository
+from alpha.fins.domain.document_models import FileObjectMeta
+from alpha.fins.downloaders.sec_downloader import DownloaderEvent, RemoteFileDescriptor, SecDownloader
+from alpha.fins.pipelines.download_events import DownloadEvent
+from alpha.fins.pipelines.sec_pipeline import SEC_PIPELINE_DOWNLOAD_VERSION, SecPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.storage.fs_source_document_repository import FsSourceDocumentRepository
 
 
 class StreamStubDownloader(SecDownloader):

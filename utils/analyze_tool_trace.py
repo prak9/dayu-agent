@@ -35,7 +35,7 @@ TRACE_TYPE_TOOL_CALL = "tool_call"
 TRACE_TYPE_ITERATION_USAGE = "iteration_usage"
 TRACE_TYPE_ITERATION_CONTEXT = "iteration_context_snapshot"
 TRACE_TYPE_FINAL_RESPONSE = "final_response"
-# 注意：该字面量必须与 `dayu.engine.tool_trace.TRACE_TYPE_SSE_PROTOCOL_ERROR` 保持一致。
+# 注意：该字面量必须与 `alpha.engine.tool_trace.TRACE_TYPE_SSE_PROTOCOL_ERROR` 保持一致。
 TRACE_TYPE_SSE_PROTOCOL_ERROR = "sse_protocol_error"
 
 TOP_RECORD_LIMIT = 12

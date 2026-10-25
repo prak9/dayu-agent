@@ -8,8 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from dayu.cli.workspace_migrations import apply_all_workspace_migrations
-from dayu.workspace_paths import build_host_store_default_path
+from alpha.cli.workspace_migrations import apply_all_workspace_migrations
+from alpha.cli.workspace_migrations.research_store_init import migrate_research_store_init
+from alpha.cli.workspace_migrations.telegram_store_init import migrate_telegram_store_init
+from alpha.cli.workspace_migrations.research_runtime_config import migrate_research_runtime_config
+from alpha.workspace_paths import build_host_store_default_path
 
 
 @pytest.mark.unit
@@ -84,7 +87,7 @@ def test_apply_all_migrates_both_artifacts(tmp_path: Path, capsys: pytest.Captur
 def test_apply_all_is_silent_when_nothing_to_do(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """无旧结构时 runner 不应打印迁移消息。"""
+    """当前工作区重复初始化保持静默。参数：目录、输出捕获。返回：无。异常：断言失败。"""
 
     base_dir = tmp_path
     config_dir = base_dir / "config"
@@ -105,6 +108,9 @@ def test_apply_all_is_silent_when_nothing_to_do(
         encoding="utf-8",
     )
 
+    migrate_research_store_init(base_dir)
+    migrate_telegram_store_init(base_dir)
+    migrate_research_runtime_config(config_dir)
     apply_all_workspace_migrations(base_dir=base_dir, config_dir=config_dir)
     out = capsys.readouterr().out
     assert "工作区迁移" not in out

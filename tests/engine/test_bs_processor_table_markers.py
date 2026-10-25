@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.storage.local_file_source import LocalFileSource
-from dayu.engine.processors.bs_processor import BSProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
+from alpha.engine.processors.bs_processor import BSProcessor
 
 
 # ---------------------------------------------------------------------------

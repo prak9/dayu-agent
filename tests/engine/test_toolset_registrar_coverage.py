@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.contracts import tool_configs
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot
+from alpha.contracts import tool_configs
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot
 
 
 @pytest.mark.unit

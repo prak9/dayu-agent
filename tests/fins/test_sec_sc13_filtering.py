@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import datetime as dt
 
-from dayu.fins.downloaders.sec_downloader import Sc13PartyRoles
-from dayu.fins.pipelines.sec_filing_collection import FilingRecord
-from dayu.fins.pipelines.sec_sc13_filtering import (
+from alpha.fins.downloaders.sec_downloader import Sc13PartyRoles
+from alpha.fins.pipelines.sec_filing_collection import FilingRecord
+from alpha.fins.pipelines.sec_sc13_filtering import (
     evaluate_sc13_direction,
     keep_latest_sc13_per_filer,
     should_warn_missing_sc13,

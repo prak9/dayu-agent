@@ -8,16 +8,16 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.reply_outbox import (
+from alpha.contracts.reply_outbox import (
     ReplyOutboxDeliveryKeyConflictError,
     ReplyOutboxRecord,
     ReplyOutboxState,
     ReplyOutboxSubmitRequest,
 )
-from dayu.host.host_store import HostStore
-from dayu.host.lease import LeaseExpiredError
-from dayu.host.protocols import ReplyOutboxStoreProtocol
-from dayu.host.reply_outbox_store import (
+from alpha.host.host_store import HostStore
+from alpha.host.lease import LeaseExpiredError
+from alpha.host.protocols import ReplyOutboxStoreProtocol
+from alpha.host.reply_outbox_store import (
     InMemoryReplyOutboxStore,
     MIN_STALE_AGE,
     SQLiteReplyOutboxStore,
@@ -69,7 +69,7 @@ def test_in_memory_reply_outbox_submit_is_idempotent() -> None:
 def test_sqlite_reply_outbox_rejects_conflicting_payload_for_same_delivery_key(tmp_path: Path) -> None:
     """相同 delivery_key 但不同负载时应拒绝覆盖真源。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     existing_record = store.submit_reply(_build_submit_request())
@@ -129,7 +129,7 @@ def test_in_memory_reply_outbox_rejects_conflicting_payload_for_same_delivery_ke
 def test_sqlite_reply_outbox_concurrent_submit_same_key_is_idempotent(tmp_path: Path) -> None:
     """SQLite 同一 delivery_key 并发提交时应幂等返回同一记录。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
 
@@ -176,7 +176,7 @@ def test_sqlite_reply_outbox_concurrent_submit_same_key_is_idempotent(tmp_path: 
 def test_sqlite_reply_outbox_concurrent_submit_conflicting_payload_returns_value_error(tmp_path: Path) -> None:
     """SQLite 同一 delivery_key 并发提交不同负载时应转化为业务冲突。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     barrier = threading.Barrier(2)
@@ -236,7 +236,7 @@ def test_sqlite_reply_outbox_concurrent_submit_conflicting_payload_returns_value
 def test_sqlite_reply_outbox_submit_after_state_change_returns_existing_record(tmp_path: Path) -> None:
     """记录状态变更后重复 submit 相同 payload 仍应幂等返回既有记录。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
 
@@ -253,7 +253,7 @@ def test_sqlite_reply_outbox_submit_after_state_change_returns_existing_record(t
 def test_sqlite_reply_outbox_claim_fail_and_deliver_state_machine(tmp_path: Path) -> None:
     """reply outbox 应支持 pending -> in_progress -> failed_retryable -> in_progress -> delivered。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
 
@@ -296,7 +296,7 @@ def test_in_memory_reply_outbox_rejects_ack_before_claim() -> None:
 def test_sqlite_reply_outbox_rejects_ack_before_claim(tmp_path: Path) -> None:
     """SQLite 版 ack 不得绕过 claim 直接完成交付。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     created = store.submit_reply(_build_submit_request())
@@ -309,7 +309,7 @@ def test_sqlite_reply_outbox_rejects_ack_before_claim(tmp_path: Path) -> None:
 def test_sqlite_reply_outbox_rejects_ack_from_failed_retryable_without_reclaim(tmp_path: Path) -> None:
     """failed_retryable 记录未经重新 claim 时不得直接 ack。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     created = store.submit_reply(_build_submit_request())
@@ -330,7 +330,7 @@ def test_sqlite_reply_outbox_rejects_ack_from_failed_retryable_without_reclaim(t
 def test_sqlite_reply_outbox_ack_is_idempotent_after_delivered(tmp_path: Path) -> None:
     """已 delivered 的记录重复 ack 应保持幂等。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     created = store.submit_reply(_build_submit_request())
@@ -353,7 +353,7 @@ def test_sqlite_reply_outbox_ack_accepts_stale_in_progress_snapshot_when_already
 ) -> None:
     """SQLite ack 在并发场景命中已 delivered 记录时应保持幂等。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     created = store.submit_reply(_build_submit_request())
@@ -388,7 +388,7 @@ def test_sqlite_reply_outbox_claim_rejects_stale_pending_snapshot(
 ) -> None:
     """SQLite claim 必须在数据库层原子校验旧状态，不能接受陈旧快照。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     created = store.submit_reply(_build_submit_request())
@@ -421,7 +421,7 @@ def test_sqlite_reply_outbox_claim_rejects_stale_pending_snapshot(
 def test_reply_outbox_schema_includes_indexes(tmp_path: Path) -> None:
     """reply outbox schema 应包含幂等键约束和 source_run_id 索引。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     conn = host_store.get_connection()
 
@@ -447,7 +447,7 @@ def test_reply_outbox_schema_includes_indexes(tmp_path: Path) -> None:
 def test_reply_outbox_store_implements_runtime_protocol(tmp_path: Path) -> None:
     """内存版与 SQLite 版 reply outbox store 都应满足 runtime protocol。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
 
     assert isinstance(InMemoryReplyOutboxStore(), ReplyOutboxStoreProtocol)
@@ -486,7 +486,7 @@ def test_inmemory_mark_failed_is_idempotent_on_failed_terminal() -> None:
 def test_sqlite_mark_failed_is_idempotent_on_failed_terminal(tmp_path: Path) -> None:
     """SQLite 实现同样对 FAILED_TERMINAL 幂等。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -550,7 +550,7 @@ def test_inmemory_cleanup_stale_in_progress_reverts_old_records() -> None:
 def test_sqlite_cleanup_stale_in_progress_reverts_old_records(tmp_path: Path) -> None:
     """SQLite 实现同样按 max_age 回退 stale in_progress。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -558,7 +558,7 @@ def test_sqlite_cleanup_stale_in_progress_reverts_old_records(tmp_path: Path) ->
 
     # 把 updated_at 手工调到 1 小时前
     conn = host_store.get_connection()
-    from dayu.host._datetime_utils import serialize_dt
+    from alpha.host._datetime_utils import serialize_dt
     conn.execute(
         "UPDATE reply_outbox SET updated_at = ? WHERE delivery_id = ?",
         (serialize_dt(claimed.updated_at - timedelta(hours=1)), claimed.delivery_id),
@@ -580,7 +580,7 @@ def test_sqlite_cleanup_stale_in_progress_reverts_old_records(tmp_path: Path) ->
 def test_cleanup_stale_in_progress_skips_fresh_records(tmp_path: Path) -> None:
     """未超 max_age 的 IN_PROGRESS 不会被回退。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -613,7 +613,7 @@ def test_inmemory_cleanup_rejects_max_age_below_min() -> None:
 def test_sqlite_cleanup_rejects_max_age_below_min(tmp_path: Path) -> None:
     """SQLite 实现拒绝小于 ``MIN_STALE_AGE`` 的 max_age，避免误回退。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -635,7 +635,7 @@ def test_sqlite_cleanup_at_min_stale_age_does_not_revert_fresh_record(tmp_path: 
     试断言下界恰好为 ``MIN_STALE_AGE`` 时该 record 仍处于 IN_PROGRESS。
     """
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -652,7 +652,7 @@ def test_sqlite_cleanup_at_min_stale_age_does_not_revert_fresh_record(tmp_path: 
 def test_sqlite_mark_failed_sql_guard_prevents_overwriting_delivered(tmp_path: Path) -> None:
     """mark_failed 在 Python 检查后到 UPDATE 之间若并发被推进到 DELIVERED，应被 SQL 守卫拦截。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -749,7 +749,7 @@ def test_inmemory_cleanup_invalidates_old_lease_for_ack_and_nack() -> None:
 def test_sqlite_cleanup_invalidates_old_lease_under_threading(tmp_path: Path) -> None:
     """SQLite 跨连接 cleanup 改写 lease 后，旧 holder ack/nack 必失败；新 holder 成功。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -757,7 +757,7 @@ def test_sqlite_cleanup_invalidates_old_lease_under_threading(tmp_path: Path) ->
     assert claimed.lease_id is not None
 
     # 直接通过 SQL 把 updated_at 调到很久以前。
-    from dayu.host._datetime_utils import serialize_dt
+    from alpha.host._datetime_utils import serialize_dt
     conn = host_store.get_connection()
     conn.execute(
         "UPDATE reply_outbox SET updated_at = ? WHERE delivery_id = ?",
@@ -869,7 +869,7 @@ def test_sqlite_mark_failed_rejects_stale_lease_when_record_already_failed_termi
 ) -> None:
     """SQLite 路径同样要拒绝旧 lease 撞上他人 FAILED_TERMINAL 收口。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -877,7 +877,7 @@ def test_sqlite_mark_failed_rejects_stale_lease_when_record_already_failed_termi
     assert claimed.lease_id is not None
     old_lease_id: str = claimed.lease_id
 
-    from dayu.host._datetime_utils import serialize_dt
+    from alpha.host._datetime_utils import serialize_dt
     conn = host_store.get_connection()
     conn.execute(
         "UPDATE reply_outbox SET updated_at = ? WHERE delivery_id = ?",
@@ -957,7 +957,7 @@ def test_sqlite_mark_delivered_rejects_stale_lease_when_record_already_delivered
 ) -> None:
     """SQLite 路径同样要拒绝旧 lease 撞上他人 DELIVERED 吸收态。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())
@@ -965,7 +965,7 @@ def test_sqlite_mark_delivered_rejects_stale_lease_when_record_already_delivered
     assert claimed.lease_id is not None
     old_lease_id: str = claimed.lease_id
 
-    from dayu.host._datetime_utils import serialize_dt
+    from alpha.host._datetime_utils import serialize_dt
     conn = host_store.get_connection()
     conn.execute(
         "UPDATE reply_outbox SET updated_at = ? WHERE delivery_id = ?",
@@ -1029,7 +1029,7 @@ def test_sqlite_mark_failed_retryable_releases_lease_so_old_holder_cannot_remark
 ) -> None:
     """SQLite: FAILED_RETRYABLE 后必须释放 lease，旧 holder 不得继续改写记录。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLiteReplyOutboxStore(host_store)
     submitted = store.submit_reply(_build_submit_request())

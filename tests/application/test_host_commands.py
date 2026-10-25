@@ -10,16 +10,16 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.cli.arg_parsing import DayuCliArgumentParser, _register_host_subcommands
-from dayu.cli.commands import host as host_commands_module
-from dayu.cli.commands.host import _build_host_runtime
-from dayu.host.executor import DefaultHostExecutor
-from dayu.host.host import Host
-from dayu.host.host_store import HostStore
-from dayu.host.session_registry import SQLiteSessionRegistry
-from dayu.services.contracts import RunAdminView, SessionAdminView
-from dayu.services.host_admin_service import HostAdminService
-from dayu.services.protocols import HostAdminServiceProtocol
+from alpha.cli.arg_parsing import AlphaCliArgumentParser, _register_host_subcommands
+from alpha.cli.commands import host as host_commands_module
+from alpha.cli.commands.host import _build_host_runtime
+from alpha.host.executor import DefaultHostExecutor
+from alpha.host.host import Host
+from alpha.host.host_store import HostStore
+from alpha.host.session_registry import SQLiteSessionRegistry
+from alpha.services.contracts import RunAdminView, SessionAdminView
+from alpha.services.host_admin_service import HostAdminService
+from alpha.services.protocols import HostAdminServiceProtocol
 
 
 def _host_admin_service(runtime: Any) -> HostAdminService:
@@ -78,7 +78,7 @@ def _write_minimal_startup_config(config_root: Path, *, run_config_text: str) ->
 def test_register_host_subcommands_can_attach_global_args() -> None:
     """宿主管理子命令应保留全局参数字段。"""
 
-    parser = DayuCliArgumentParser()
+    parser = AlphaCliArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     _register_host_subcommands(subparsers)
@@ -104,7 +104,7 @@ def test_build_host_runtime_returns_startup_dependencies(tmp_path: Path) -> None
     _write_minimal_startup_config(
         config_root,
         run_config_text=(
-            '{"host_config":{"store":{"path":".dayu/host/dayu_host.db"},'
+            '{"host_config":{"store":{"path":".alpha/host/alpha_host.db"},'
             '"lane":{"llm_api":2,"sec_download":3}}}'
         ),
     )
@@ -127,7 +127,7 @@ def test_build_host_runtime_returns_startup_dependencies(tmp_path: Path) -> None
     assert executor.scene_preparation is None
     assert host._concurrency_governor.get_lane_status("llm_api").max_concurrent == 2
     assert host._concurrency_governor.get_lane_status("sec_download").max_concurrent == 3
-    assert _host_store(session_registry).db_path == (workspace_root / ".dayu" / "host" / "dayu_host.db").resolve()
+    assert _host_store(session_registry).db_path == (workspace_root / ".alpha" / "host" / "alpha_host.db").resolve()
 
 
 @pytest.mark.unit
@@ -139,7 +139,7 @@ def test_host_default_assembly_builds_internal_sqlite_components(tmp_path: Path)
     _write_minimal_startup_config(
         config_root,
         run_config_text=(
-            '{"host_config":{"store":{"path":".dayu/host/dayu_host.db"},'
+            '{"host_config":{"store":{"path":".alpha/host/alpha_host.db"},'
             '"lane":{"llm_api":2,"sec_download":3}}}'
         ),
     )
@@ -177,7 +177,7 @@ def test_build_host_runtime_uses_default_host_store_path_when_missing_config(tmp
     runtime = _build_host_runtime(args)
     host = _host(_host_admin_service(runtime))
 
-    assert _host_store(_session_registry(host)).db_path == (workspace_root / ".dayu" / "host" / "dayu_host.db").resolve()
+    assert _host_store(_session_registry(host)).db_path == (workspace_root / ".alpha" / "host" / "alpha_host.db").resolve()
 
 
 @pytest.mark.unit
@@ -597,7 +597,7 @@ def test_run_host_command_requires_action(
 
     captured = capsys.readouterr()
     assert exit_code == 1
-    assert "dayu host {cleanup|status}" in captured.err
+    assert "alpha host {cleanup|status}" in captured.err
 
 
 @pytest.mark.unit
@@ -692,16 +692,16 @@ def test_default_host_assembly_shares_archive_store_with_scene_preparer(tmp_path
     指向同一目录的两个独立实例，未来引入 transcript 内存缓存会触发 stale read。
     """
 
-    from dayu.execution.options import ResolvedExecutionOptions, TraceSettings
-    from dayu.execution.runtime_config import (
+    from alpha.execution.options import ResolvedExecutionOptions, TraceSettings
+    from alpha.execution.runtime_config import (
         AgentRuntimeConfig,
         FallbackMode,
         OpenAIRunnerRuntimeConfig,
     )
-    from dayu.host.host import _build_default_host_components
-    from dayu.host.conversation_store import FileConversationSessionArchiveStore
-    from dayu.host.scene_preparer import DefaultScenePreparer
-    from dayu.workspace_paths import build_conversation_store_dir
+    from alpha.host.host import _build_default_host_components
+    from alpha.host.conversation_store import FileConversationSessionArchiveStore
+    from alpha.host.scene_preparer import DefaultScenePreparer
+    from alpha.workspace_paths import build_conversation_store_dir
 
     workspace_root = (tmp_path / "workspace").resolve()
     workspace = cast(

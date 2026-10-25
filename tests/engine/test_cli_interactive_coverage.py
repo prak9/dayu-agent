@@ -1,4 +1,4 @@
-"""`dayu.cli` 覆盖率补充测试。"""
+"""`alpha.cli` 覆盖率补充测试。"""
 
 from __future__ import annotations
 
@@ -12,28 +12,28 @@ from typing import Any, AsyncIterator, cast
 
 import pytest
 
-from dayu import cli as app_cli
-from dayu.cli.interactive_state import (
+from alpha import cli as app_cli
+from alpha.cli.interactive_state import (
     FileInteractiveStateStore,
     InteractiveSessionState,
     build_interactive_session_id,
     resolve_interactive_session_id,
 )
-from dayu.cli.conversation_label_locks import ConversationLabelLease
-from dayu.cli.conversation_labels import FileConversationLabelRegistry
-from dayu.cli import main as app_cli_main
-from dayu.cli import interactive_ui as app_interactive
-from dayu.cli.commands import interactive as interactive_command_module
-from dayu.cli.arg_parsing import _create_parser
-from dayu.cli.dependency_setup import setup_loglevel, setup_paths
-from dayu.startup.config_file_resolver import ConfigFileResolver
-from dayu.startup.prompt_assets import FilePromptAssetStore
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.execution.options import ExecutionOptions
-from dayu.engine.events import EventType, StreamEvent
-from dayu.host.protocols import ConversationSessionTurnExcerpt
-from dayu.log import Log, LogLevel
-from dayu.services.contracts import (
+from alpha.cli.conversation_label_locks import ConversationLabelLease
+from alpha.cli.conversation_labels import FileConversationLabelRegistry
+from alpha.cli import main as app_cli_main
+from alpha.cli import interactive_ui as app_interactive
+from alpha.cli.commands import interactive as interactive_command_module
+from alpha.cli.arg_parsing import _create_parser
+from alpha.cli.dependency_setup import setup_loglevel, setup_paths
+from alpha.startup.config_file_resolver import ConfigFileResolver
+from alpha.startup.prompt_assets import FilePromptAssetStore
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.execution.options import ExecutionOptions
+from alpha.engine.events import EventType, StreamEvent
+from alpha.host.protocols import ConversationSessionTurnExcerpt
+from alpha.log import Log, LogLevel
+from alpha.services.contracts import (
     ChatPendingTurnView,
     ChatResumeRequest,
     ChatTurnRequest,
@@ -64,8 +64,8 @@ def _patch_status_line_controller(monkeypatch: pytest.MonkeyPatch) -> None:
     """全局 patch _StatusLineController，防止动画线程向 stdout 写入干扰测试断言。"""
     monkeypatch.setattr(app_interactive, "_StatusLineController", lambda: _NoopStatusLine())
     # 每个 case 重置进程级协调器单例，避免上一 case 残留影响 run_lifecycle_observer。
-    from dayu.cli.dependency_setup import _reset_cli_shutdown_coordinator_for_testing
-    from dayu.process_lifecycle.sync_signals import _reset_registration_for_testing
+    from alpha.cli.dependency_setup import _reset_cli_shutdown_coordinator_for_testing
+    from alpha.process_lifecycle.sync_signals import _reset_registration_for_testing
 
     _reset_cli_shutdown_coordinator_for_testing()
     _reset_registration_for_testing()
@@ -183,7 +183,7 @@ def test_main_non_interactive_happy_path(monkeypatch: pytest.MonkeyPatch, tmp_pa
     monkeypatch.setattr(Log, "info", lambda *args, **kwargs: None)
     monkeypatch.setattr(Log, "error", lambda *args, **kwargs: None)
     # 阻止进入真实的交互式循环。
-    monkeypatch.setattr("dayu.cli.commands.interactive.interactive", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("alpha.cli.commands.interactive.interactive", lambda *_args, **_kwargs: None)
 
     result = app_cli.run_main()
 
@@ -238,7 +238,7 @@ def test_interactive_rejects_explicit_session_id(tmp_path: Path) -> None:
 def test_interactive_state_store_round_trip_and_clear(tmp_path: Path) -> None:
     """验证 interactive 状态仓储支持读写与清理。"""
 
-    store = FileInteractiveStateStore(tmp_path / ".dayu" / "interactive")
+    store = FileInteractiveStateStore(tmp_path / ".alpha" / "interactive")
     assert store.load() is None
 
     state = InteractiveSessionState(interactive_key="interactive_key_1")
@@ -256,7 +256,7 @@ def test_interactive_state_store_round_trip_and_clear(tmp_path: Path) -> None:
 def test_interactive_state_store_supports_explicit_session_binding(tmp_path: Path) -> None:
     """验证 interactive 状态可以绑定指定 Host session。"""
 
-    store = FileInteractiveStateStore(tmp_path / ".dayu" / "interactive")
+    store = FileInteractiveStateStore(tmp_path / ".alpha" / "interactive")
     state = InteractiveSessionState(
         interactive_key="interactive_key_1",
         session_id="interactive_existing",
@@ -930,11 +930,11 @@ def test_interactive_command_releases_label_lease_after_exit(
 
 @pytest.mark.unit
 def test_root_parser_uses_python_module_prog() -> None:
-    """验证顶层 CLI usage 使用 `python -m dayu.cli`，不暴露 `__main__.py`。"""
+    """验证顶层 CLI usage 使用 `python -m alpha.cli`，不暴露 `__main__.py`。"""
 
     parser = _create_parser()
 
-    assert parser.prog == "python -m dayu.cli"
+    assert parser.prog == "python -m alpha.cli"
     assert "__main__.py" not in parser.format_usage()
 
 
@@ -950,7 +950,7 @@ def test_root_parser_missing_command_prints_help_summary(capsys: pytest.CaptureF
     captured = capsys.readouterr()
 
     assert exc_info.value.code == 2
-    assert "python -m dayu.cli" in captured.err
+    assert "python -m alpha.cli" in captured.err
     assert "__main__.py" not in captured.err
     assert "interactive" in captured.err
     assert "prompt" in captured.err
@@ -2338,7 +2338,7 @@ def test_prompt_prints_single_response(monkeypatch: pytest.MonkeyPatch, tmp_path
 def test_prompt_registers_run_id_with_observer_for_cooperative_cancel(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """one-shot ``dayu prompt`` 应在事件流首帧带 ``meta["run_id"]`` 时登记到协调器。
+    """one-shot ``alpha prompt`` 应在事件流首帧带 ``meta["run_id"]`` 时登记到协调器。
 
     回归覆盖：之前 ``prompt`` / ``_consume_prompt_stream`` 不接受
     ``run_lifecycle_observer``，普通 prompt 路径绕过协调器，Ctrl-C 不能触发协作式取消。

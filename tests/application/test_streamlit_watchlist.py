@@ -16,7 +16,7 @@ import pytest
 # 跳过本模块全部用例，避免在收集阶段就因 ``ImportError`` 阻断其他测试。
 pytest.importorskip("streamlit")
 
-from dayu.web.streamlit.components.watchlist import (  # noqa: E402
+from alpha.web.streamlit.components.watchlist import (  # noqa: E402
     WatchlistItem,
     _apply_table_to_storage,
     _build_final_dataframe,
@@ -62,7 +62,7 @@ def test_save_and_load_round_trip(tmp_path: Path) -> None:
 def test_load_raises_on_corrupted_json(tmp_path: Path) -> None:
     """验证 JSON 格式损坏时抛出 json.JSONDecodeError，而非静默返回空列表。"""
 
-    storage_path = tmp_path / ".dayu" / "streamlit" / "watchlist.json"
+    storage_path = tmp_path / ".alpha" / "streamlit" / "watchlist.json"
     storage_path.parent.mkdir(parents=True, exist_ok=True)
     storage_path.write_text("{not-json}", encoding="utf-8")
 
@@ -85,7 +85,7 @@ def test_save_creates_parent_directories(tmp_path: Path) -> None:
 
     save_watchlist_items(tmp_path, items)
 
-    storage_path = tmp_path / ".dayu" / "streamlit" / "watchlist.json"
+    storage_path = tmp_path / ".alpha" / "streamlit" / "watchlist.json"
     assert storage_path.exists()
 
 

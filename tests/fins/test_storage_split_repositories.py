@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.domain.document_models import (
+from alpha.fins.domain.document_models import (
     CompanyMeta,
     DocumentQuery,
     ProcessedCreateRequest,
@@ -18,13 +18,13 @@ from dayu.fins.domain.document_models import (
     SourceDocumentUpsertRequest,
     now_iso8601,
 )
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.storage._fs_repository_factory import build_fs_repository_set
-from dayu.fins.storage.fs_company_meta_repository import FsCompanyMetaRepository
-from dayu.fins.storage.fs_document_blob_repository import FsDocumentBlobRepository
-from dayu.fins.storage.fs_filing_maintenance_repository import FsFilingMaintenanceRepository
-from dayu.fins.storage.fs_processed_document_repository import FsProcessedDocumentRepository
-from dayu.fins.storage.fs_source_document_repository import FsSourceDocumentRepository
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.storage._fs_repository_factory import build_fs_repository_set
+from alpha.fins.storage.fs_company_meta_repository import FsCompanyMetaRepository
+from alpha.fins.storage.fs_document_blob_repository import FsDocumentBlobRepository
+from alpha.fins.storage.fs_filing_maintenance_repository import FsFilingMaintenanceRepository
+from alpha.fins.storage.fs_processed_document_repository import FsProcessedDocumentRepository
+from alpha.fins.storage.fs_source_document_repository import FsSourceDocumentRepository
 
 
 @pytest.fixture
@@ -97,7 +97,7 @@ def test_company_meta_repository_scan_inventory_records_skipped_directories(
 
     company_repository, _, _, _, _ = fs_repositories
     workspace_root = company_repository._repository_set.core.workspace_root
-    (workspace_root / ".dayu" / "repo_batches").mkdir(parents=True, exist_ok=True)
+    (workspace_root / ".alpha" / "repo_batches").mkdir(parents=True, exist_ok=True)
     (workspace_root / "portfolio" / "NO_META").mkdir(parents=True, exist_ok=True)
     company_repository.upsert_company_meta(
         CompanyMeta(
@@ -113,7 +113,7 @@ def test_company_meta_repository_scan_inventory_records_skipped_directories(
     entries = company_repository.scan_company_meta_inventory()
     by_name = {entry.directory_name: entry for entry in entries}
 
-    assert by_name[".dayu"].status == "hidden_directory"
+    assert by_name[".alpha"].status == "hidden_directory"
     assert by_name["NO_META"].status == "missing_meta"
     assert by_name["AAPL"].status == "available"
     assert by_name["AAPL"].company_meta is not None

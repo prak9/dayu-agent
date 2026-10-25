@@ -16,7 +16,7 @@ for ticker in "${tickers[@]}"; do
 
   echo "[downloading][$i/$sum][$ticker]"
 
-  python -m dayu.cli download --ticker "$ticker" "$@" > "$log_file" 2>&1
+  python -m alpha.cli download --ticker "$ticker" "$@" > "$log_file" 2>&1
 
   ticker_end_ts=$(date +%s)
   echo "[download][$i/$sum][$ticker] 耗时: $((ticker_end_ts - ticker_start_ts))s | log: $log_file"

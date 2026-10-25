@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dayu.engine.tools.error_contract import ErrorCode
+from alpha.engine.tools.error_contract import ErrorCode
 
 
 def test_error_code_values_are_stable_machine_contracts() -> None:

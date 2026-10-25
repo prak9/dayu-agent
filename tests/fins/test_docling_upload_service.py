@@ -8,9 +8,9 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.storage import DocumentBlobRepositoryProtocol, SourceDocumentRepositoryProtocol
-from dayu.fins.pipelines.docling_upload_service import (
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.storage import DocumentBlobRepositoryProtocol, SourceDocumentRepositoryProtocol
+from alpha.fins.pipelines.docling_upload_service import (
     DoclingUploadService,
     _PendingFileAsset,
     _build_upload_source_fingerprint,
@@ -746,7 +746,7 @@ def test_convert_bytes_with_docling_import_error(tmp_path: Path, monkeypatch: py
 
     monkeypatch.setattr(builtins, "__import__", _fake_import)
 
-    from dayu.docling_runtime import DoclingRuntimeInitializationError
+    from alpha.docling_runtime import DoclingRuntimeInitializationError
 
     with pytest.raises(DoclingRuntimeInitializationError, match="Docling 未安装"):
         _convert_bytes_with_docling(b"x", "sample.pdf")
@@ -788,7 +788,7 @@ def test_convert_bytes_with_docling_conversion_failed(
         raise RuntimeError("convert boom")
 
     monkeypatch.setattr(
-        "dayu.fins.docling_export.convert_pdf_bytes_with_docling",
+        "alpha.fins.docling_export.convert_pdf_bytes_with_docling",
         _raise_convert_failure,
     )
 

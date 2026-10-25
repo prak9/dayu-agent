@@ -3,7 +3,7 @@ sudo -v || { echo "❌ 无法获取 sudo 权限"; return 1; }
 
 OUTPUT_DIR="$1"
 
-pgrep -f 'ython -m dayu.cli process --ci' | while read -r pid; do
+pgrep -f 'ython -m alpha.cli process --ci' | while read -r pid; do
   if [[ -n "$OUTPUT_DIR" ]]; then
     log_file="${OUTPUT_DIR}/process_${pid}_profile.log"
   else

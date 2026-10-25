@@ -11,11 +11,11 @@ from typing import Any, cast
 import pytest
 from bs4 import BeautifulSoup, Comment
 
-from dayu.fins.downloaders.sec_downloader import BrowseEdgarFiling, RemoteFileDescriptor
-from dayu.fins.pipelines import sec_download_state as download_state
-from dayu.fins.pipelines import sec_rebuild_workflow as rebuild_workflow
-from dayu.fins.processors import sec_dom_helpers
-from dayu.fins.resolver import fmp_company_alias_resolver as alias_module
+from alpha.fins.downloaders.sec_downloader import BrowseEdgarFiling, RemoteFileDescriptor
+from alpha.fins.pipelines import sec_download_state as download_state
+from alpha.fins.pipelines import sec_rebuild_workflow as rebuild_workflow
+from alpha.fins.processors import sec_dom_helpers
+from alpha.fins.resolver import fmp_company_alias_resolver as alias_module
 
 
 @pytest.mark.unit

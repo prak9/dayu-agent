@@ -10,12 +10,12 @@ from typing import Any, Protocol
 
 import pytest
 
-from dayu.fins.domain.document_models import FilingCreateRequest, MaterialCreateRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines import cn_pipeline
-from dayu.fins.pipelines.cn_pipeline import CnPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.storage.local_file_store import LocalFileStore
+from alpha.fins.domain.document_models import FilingCreateRequest, MaterialCreateRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines import cn_pipeline
+from alpha.fins.pipelines.cn_pipeline import CnPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.storage.local_file_store import LocalFileStore
 from tests.fins.storage_testkit import build_storage_core
 
 

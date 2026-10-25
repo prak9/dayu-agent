@@ -7,23 +7,23 @@ from dataclasses import dataclass, field, replace as dataclass_replace
 from datetime import datetime, timedelta, timezone
 from typing import Any, AsyncIterator, Callable, TypeVar
 
-from dayu.contracts.agent_execution import ExecutionContract, ReplayHandle
-from dayu.contracts.execution_metadata import (
+from alpha.contracts.agent_execution import ExecutionContract, ReplayHandle
+from alpha.contracts.execution_metadata import (
     ExecutionDeliveryContext,
     empty_execution_delivery_context,
 )
-from dayu.contracts.events import AppEvent, AppEventType, AppResult
-from dayu.contracts.run import RunCancelReason, RunRecord, RunState
-from dayu.contracts.session import SessionRecord, SessionSource, SessionState
-from dayu.host.host_execution import HostedRunContext, HostedRunSpec
-from dayu.host.pending_turn_store import (
+from alpha.contracts.events import AppEvent, AppEventType, AppResult
+from alpha.contracts.run import RunCancelReason, RunRecord, RunState
+from alpha.contracts.session import SessionRecord, SessionSource, SessionState
+from alpha.host.host_execution import HostedRunContext, HostedRunSpec
+from alpha.host.pending_turn_store import (
     InMemoryPendingConversationTurnStore,
     PendingConversationTurn,
     PendingConversationTurnState,
 )
-from dayu.host.prepared_turn import PreparedAgentTurnSnapshot
-from dayu.contracts.cancellation import CancellationToken
-from dayu.process_liveness import OwnerIdentity
+from alpha.host.prepared_turn import PreparedAgentTurnSnapshot
+from alpha.contracts.cancellation import CancellationToken
+from alpha.process_liveness import OwnerIdentity
 
 
 TStreamEvent = TypeVar("TStreamEvent")
@@ -152,7 +152,7 @@ class StubSessionRegistry:
         if existing is None:
             raise KeyError(f"session 不存在: {session_id}")
         if existing.state != SessionState.ACTIVE:
-            from dayu.host.protocols import SessionStateTransitionError
+            from alpha.host.protocols import SessionStateTransitionError
 
             raise SessionStateTransitionError(
                 session_id,
@@ -168,7 +168,7 @@ class StubSessionRegistry:
         if existing is None:
             raise KeyError(f"session 不存在: {session_id}")
         if existing.state != SessionState.CLEARING:
-            from dayu.host.protocols import SessionStateTransitionError
+            from alpha.host.protocols import SessionStateTransitionError
 
             raise SessionStateTransitionError(
                 session_id,
@@ -184,7 +184,7 @@ class StubSessionRegistry:
         if existing is None:
             raise KeyError(f"session 不存在: {session_id}")
         if existing.state != SessionState.CLEARING:
-            from dayu.host.protocols import SessionStateTransitionError
+            from alpha.host.protocols import SessionStateTransitionError
 
             raise SessionStateTransitionError(
                 session_id,
@@ -213,7 +213,7 @@ class StubRunRegistry:
         metadata: ExecutionDeliveryContext | None = None,
     ) -> RunRecord:
         """注册 run。"""
-        from dayu.process_liveness import current_owner_identity
+        from alpha.process_liveness import current_owner_identity
 
         run_id = f"run_{uuid.uuid4().hex[:12]}"
         now = datetime.now(timezone.utc)

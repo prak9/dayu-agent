@@ -31,12 +31,12 @@ def test_web_routes_do_not_use_global_service_locator() -> None:
     """Web 请求期路由不应再回退到全局 `get_dependencies()`。"""
 
     for relative_path in [
-        "dayu/web/routes/chat.py",
-        "dayu/web/routes/prompt.py",
-        "dayu/web/routes/fins.py",
-        "dayu/web/routes/sessions.py",
-        "dayu/web/routes/runs.py",
-        "dayu/web/routes/events.py",
+        "alpha/web/routes/chat.py",
+        "alpha/web/routes/prompt.py",
+        "alpha/web/routes/fins.py",
+        "alpha/web/routes/sessions.py",
+        "alpha/web/routes/runs.py",
+        "alpha/web/routes/events.py",
     ]:
         content = _read_repo_file(relative_path)
         assert "get_dependencies(" not in content
@@ -47,7 +47,7 @@ def test_web_routes_do_not_use_global_service_locator() -> None:
 def test_wechat_daemon_no_longer_holds_ensure_chat_session_callback() -> None:
     """WeChat daemon 不应再持有 `ensure_chat_session` 回调。"""
 
-    content = _read_repo_file("dayu/wechat/daemon.py")
+    content = _read_repo_file("alpha/wechat/daemon.py")
 
     assert "ensure_chat_session" not in content
 
@@ -56,7 +56,7 @@ def test_wechat_daemon_no_longer_holds_ensure_chat_session_callback() -> None:
 def test_cli_interactive_path_no_longer_directly_creates_host_session() -> None:
     """CLI interactive 请求路径不应再直接创建 Host session。"""
 
-    content = _read_repo_file("dayu/cli/main.py")
+    content = _read_repo_file("alpha/cli/main.py")
 
     assert 'args.command == "interactive"' in content
     assert "host.create_session" not in content

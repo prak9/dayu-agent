@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import cast
 
-from dayu.contracts.fins import (
+from alpha.contracts.fins import (
     DownloadFailedFile,
     DownloadFilingResultItem,
     DownloadFilingResultStatus,
@@ -17,10 +17,10 @@ from dayu.contracts.fins import (
     ProcessSummary,
     UploadFilingResultData,
 )
-from dayu.fins import cli_formatters as module
-from dayu.fins.ingestion.process_events import ProcessEvent, ProcessEventType
-from dayu.fins.pipelines.download_events import DownloadEvent, DownloadEventType
-from dayu.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
+from alpha.fins import cli_formatters as module
+from alpha.fins.ingestion.process_events import ProcessEvent, ProcessEventType
+from alpha.fins.pipelines.download_events import DownloadEvent, DownloadEventType
+from alpha.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
 
 
 def test_format_upload_stream_event_line_with_extra_fields() -> None:

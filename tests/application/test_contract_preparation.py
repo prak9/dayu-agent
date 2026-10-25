@@ -6,22 +6,22 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedInfrastructureSpec,
     AcceptedModelSpec,
     AcceptedRuntimeSpec,
     AcceptedToolConfigSpec,
 )
-from dayu.contracts.host_execution import ConcurrencyAcquirePolicy
-from dayu.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
-from dayu.contracts.toolset_config import build_toolset_config_snapshot
-from dayu.execution.options import (
+from alpha.contracts.host_execution import ConcurrencyAcquirePolicy
+from alpha.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
+from alpha.contracts.toolset_config import build_toolset_config_snapshot
+from alpha.execution.options import (
     ConversationMemorySettings,
     TraceSettings,
     resolve_web_tools_config_from_toolset_configs,
 )
-from dayu.services.contract_preparation import (
+from alpha.services.contract_preparation import (
     prepare_execution_contract,
     prepare_execution_permissions,
     prepare_message_inputs,

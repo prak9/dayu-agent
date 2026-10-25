@@ -7,10 +7,10 @@ from typing import Optional, cast
 
 import pytest
 
-from dayu.fins.domain.document_models import FilingCreateRequest, FilingUpdateRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines import sec_download_source_upsert
-from dayu.fins.storage import SourceDocumentRepositoryProtocol
+from alpha.fins.domain.document_models import FilingCreateRequest, FilingUpdateRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines import sec_download_source_upsert
+from alpha.fins.storage import SourceDocumentRepositoryProtocol
 
 
 @dataclass(frozen=True)

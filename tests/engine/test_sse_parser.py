@@ -17,11 +17,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from dayu.engine.async_openai_runner import AsyncOpenAIRunnerRunningConfig
-from dayu.contracts.cancellation import CancelledError as EngineCancelledError, CancellationToken
-from dayu.engine.events import EventType, StreamEvent
-from dayu.log import Log
-from dayu.engine.sse_parser import SSEStreamParser
+from alpha.engine.async_openai_runner import AsyncOpenAIRunnerRunningConfig
+from alpha.contracts.cancellation import CancelledError as EngineCancelledError, CancellationToken
+from alpha.engine.events import EventType, StreamEvent
+from alpha.log import Log
+from alpha.engine.sse_parser import SSEStreamParser
 
 if TYPE_CHECKING:
     from aiohttp import ClientResponse

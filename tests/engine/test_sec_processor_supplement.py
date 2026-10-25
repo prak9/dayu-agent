@@ -19,14 +19,14 @@ import pandas as pd
 import pytest
 from pandas.errors import PerformanceWarning
 
-from dayu.engine.processors import text_utils
-from dayu.fins.storage.local_file_source import LocalFileSource
-from dayu.fins.processors import sec_dom_helpers
-from dayu.fins.processors import sec_processor
-from dayu.fins.processors import sec_section_build
-from dayu.fins.processors import sec_table_extraction
-from dayu.fins.processors import sec_xbrl_query
-from dayu.fins.processors.sec_processor import SecProcessor
+from alpha.engine.processors import text_utils
+from alpha.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors import sec_dom_helpers
+from alpha.fins.processors import sec_processor
+from alpha.fins.processors import sec_section_build
+from alpha.fins.processors import sec_table_extraction
+from alpha.fins.processors import sec_xbrl_query
+from alpha.fins.processors.sec_processor import SecProcessor
 
 
 # ============================================================================
@@ -4245,7 +4245,7 @@ def test_table_html_and_records_rendering_branches() -> None:
 def test_table_classification_numeric_and_quality_helpers() -> None:
     """覆盖表格分类、数值标准化与 records 质量分支。"""
 
-    from dayu.fins.processors.sec_html_rules import is_sec_cover_page_table
+    from alpha.fins.processors.sec_html_rules import is_sec_cover_page_table
 
     assert sec_table_extraction._classify_table_type(
         is_financial=False,

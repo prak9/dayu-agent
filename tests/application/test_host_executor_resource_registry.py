@@ -15,10 +15,10 @@ from typing import cast
 
 import pytest
 
-from dayu.host.cancellation_bridge import CancellationBridge
-from dayu.host.executor import DefaultHostExecutor, _RunResources
-from dayu.host.protocols import ConcurrencyGovernorProtocol, ConcurrencyPermit, LaneStatus
-from dayu.host.executor import RunDeadlineWatcher
+from alpha.host.cancellation_bridge import CancellationBridge
+from alpha.host.executor import DefaultHostExecutor, _RunResources
+from alpha.host.protocols import ConcurrencyGovernorProtocol, ConcurrencyPermit, LaneStatus
+from alpha.host.executor import RunDeadlineWatcher
 from tests.application.conftest import StubRunRegistry
 
 
@@ -242,11 +242,11 @@ def test_host_cancel_run_and_settle_invokes_executor_release_resources(
 
     from typing import cast as _cast
 
-    from dayu.contracts.run import RunState
-    from dayu.host.host import Host
-    from dayu.host.host_execution import HostExecutorProtocol
-    from dayu.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
-    from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+    from alpha.contracts.run import RunState
+    from alpha.host.host import Host
+    from alpha.host.host_execution import HostExecutorProtocol
+    from alpha.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
+    from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
     from tests.application.conftest import StubSessionRegistry
 
     registry = StubRunRegistry()

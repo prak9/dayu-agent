@@ -23,29 +23,29 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.reply_outbox import ReplyOutboxSubmitRequest
-from dayu.contracts.session import SessionSource, SessionState
-from dayu.host.conversation_session_archive import (
+from alpha.contracts.reply_outbox import ReplyOutboxSubmitRequest
+from alpha.contracts.session import SessionSource, SessionState
+from alpha.host.conversation_session_archive import (
     ConversationHistoryTurnRecord,
     ConversationSessionArchive,
 )
-from dayu.host.conversation_store import (
+from alpha.host.conversation_store import (
     ConversationTurnRecord,
     FileConversationSessionArchiveStore,
 )
-from dayu.host.host import Host
-from dayu.host.pending_turn_store import (
+from alpha.host.host import Host
+from alpha.host.pending_turn_store import (
     InMemoryPendingConversationTurnStore,
     PendingConversationTurnState,
 )
-from dayu.host.protocols import (
+from alpha.host.protocols import (
     ConversationClearPartiallyAppliedError,
     ConversationClearRejectedError,
     ConversationClearStaleError,
     SessionClearingError,
     SessionClearingFailedError,
 )
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 from tests.application.conftest import (
     StubHostExecutor,
     StubRunRegistry,
@@ -301,7 +301,7 @@ def test_clear_stale_when_archive_revision_advanced(
     def conflicting_save(archive, *, expected_revision=None):  # type: ignore[no-untyped-def]
         # 第一次（清空空 archive）注入冲突，后续放行。
         if len(archive.history_archive.turns) == 0 and expected_revision is not None:
-            from dayu.host.protocols import ConversationArchiveRevisionConflictError
+            from alpha.host.protocols import ConversationArchiveRevisionConflictError
 
             raise ConversationArchiveRevisionConflictError(
                 archive.session_id,

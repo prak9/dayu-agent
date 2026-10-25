@@ -9,7 +9,7 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.fins.domain.document_models import (
+from alpha.fins.domain.document_models import (
     CompanyMeta,
     FileObjectMeta,
     RejectedFilingArtifact,
@@ -17,9 +17,9 @@ from dayu.fins.domain.document_models import (
     SourceFileEntry,
     now_iso8601,
 )
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins import rejected_6k_rescue as rescue_module
-from dayu.fins.rejected_6k_rescue import rescue_rejected_6k_filings
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins import rejected_6k_rescue as rescue_module
+from alpha.fins.rejected_6k_rescue import rescue_rejected_6k_filings
 from tests.fins.storage_testkit import FsStorageTestContext, build_fs_storage_test_context
 
 

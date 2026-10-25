@@ -1,0 +1,220 @@
+{
+  "origin_sha256": "8883f14468f6f29de05d01fdf9cc44e8a2769a1c6d5456149ca4e4916f512bcc",
+  "model_version": "conditional-pe-fcfe-v1",
+  "cases": [
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "growth": -0.1
+      },
+      "expected": {
+        "status": "ok",
+        "growth": -0.1,
+        "valuation": {
+          "base_pe": 2.937457326670407,
+          "period_pv_per_base_eps": 1.2823245369604326,
+          "terminal_pv_per_base_eps": 1.6551327897099744,
+          "terminal_value_share": 0.5634576457272518,
+          "price": 5.874914653340814,
+          "eps_end_year": 0.9565938000000002,
+          "eps_end_multiple": 0.4782969000000001
+        }
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "growth": 0
+      },
+      "expected": {
+        "status": "ok",
+        "growth": 0.0,
+        "valuation": {
+          "base_pe": 5.285974112870923,
+          "period_pv_per_base_eps": 1.8255026155436873,
+          "terminal_pv_per_base_eps": 3.460471497327235,
+          "terminal_value_share": 0.6546516164165966,
+          "price": 10.571948225741846,
+          "eps_end_year": 2.0,
+          "eps_end_multiple": 1.0
+        }
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "growth": 0.12
+      },
+      "expected": {
+        "status": "ok",
+        "growth": 0.12,
+        "valuation": {
+          "base_pe": 10.450000000000001,
+          "period_pv_per_base_eps": 2.8000000000000003,
+          "terminal_pv_per_base_eps": 7.65,
+          "terminal_value_share": 0.7320574162679425,
+          "price": 20.900000000000002,
+          "eps_end_year": 4.421362814812163,
+          "eps_end_multiple": 2.2106814074060814
+        }
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "growth": 0.3
+      },
+      "expected": {
+        "status": "ok",
+        "growth": 0.3,
+        "valuation": {
+          "base_pe": 27.02494882603975,
+          "period_pv_per_base_eps": 5.3110033682344095,
+          "terminal_pv_per_base_eps": 21.71394545780534,
+          "terminal_value_share": 0.8034777641052545,
+          "price": 54.0498976520795,
+          "eps_end_year": 12.549703400000004,
+          "eps_end_multiple": 6.274851700000002
+        }
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "pe": 20
+      },
+      "expected": {
+        "status": "ok",
+        "growth": 0.2410298928746488,
+        "valuation": {
+          "base_pe": 20.000000000122245,
+          "period_pv_per_base_eps": 4.3104324169848285,
+          "terminal_pv_per_base_eps": 15.689567583137418,
+          "terminal_value_share": 0.784478379152076,
+          "price": 40.00000000024449,
+          "eps_end_year": 9.067878521904074,
+          "eps_end_multiple": 4.533939260952037
+        }
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "pe": 18,
+        "pe_basis": "forward",
+        "forward_eps_ratio": 1.3
+      },
+      "expected": {
+        "status": "ok",
+        "growth": 0.27154017025808563,
+        "valuation": {
+          "base_pe": 23.40000000184669,
+          "period_pv_per_base_eps": 4.80287241409745,
+          "terminal_pv_per_base_eps": 18.597127587749238,
+          "terminal_value_share": 0.7947490421487856,
+          "price": 46.80000000369338,
+          "eps_end_year": 10.748320049515273,
+          "eps_end_multiple": 5.374160024757637
+        }
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "pe": 10000,
+        "growth_bounds": [
+          -0.1,
+          0.1
+        ]
+      },
+      "expected": {
+        "status": "unbracketed",
+        "growth": null,
+        "valuation": null
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0,
+        "terminal_cash_conversion": 0.75,
+        "terminal_growth": 0.02,
+        "growth": 0.1
+      },
+      "expected": {
+        "status": "ok",
+        "growth": 0.1,
+        "valuation": {
+          "base_pe": 6.743479980904188,
+          "period_pv_per_base_eps": 0.0,
+          "terminal_pv_per_base_eps": 6.743479980904188,
+          "terminal_value_share": 1.0,
+          "price": 13.486959961808376,
+          "eps_end_year": 3.8974342000000024,
+          "eps_end_multiple": 1.9487171000000012
+        }
+      }
+    },
+    {
+      "input": {
+        "base_eps": 2,
+        "years": 7,
+        "cost_of_equity": 0.12,
+        "cash_conversion": 0.4,
+        "terminal_cash_conversion": 0,
+        "terminal_growth": 0.02,
+        "growth": 0.1
+      },
+      "expected": {
+        "status": "ok",
+        "growth": 0.1,
+        "valuation": {
+          "base_pe": 2.6069856758310874,
+          "period_pv_per_base_eps": 2.6069856758310874,
+          "terminal_pv_per_base_eps": 0.0,
+          "terminal_value_share": 0.0,
+          "price": 5.213971351662175,
+          "eps_end_year": 3.8974342000000024,
+          "eps_end_multiple": 1.9487171000000012
+        }
+      }
+    }
+  ]
+}

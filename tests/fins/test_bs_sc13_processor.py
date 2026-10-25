@@ -7,8 +7,8 @@ from typing import Optional
 
 import pytest
 
-from dayu.fins.processors.bs_sc13_processor import BsSc13FormProcessor
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors.bs_sc13_processor import BsSc13FormProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 def _make_source(path: Path, *, media_type: Optional[str] = "text/html") -> LocalFileSource:

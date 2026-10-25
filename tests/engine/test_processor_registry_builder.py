@@ -7,9 +7,9 @@ from typing import Any, BinaryIO, Optional, cast
 
 import pytest
 
-from dayu.engine.processors.bs_processor import BSProcessor
-from dayu.engine.processors.registry import build_engine_processor_registry
-from dayu.engine.processors.source import Source
+from alpha.engine.processors.bs_processor import BSProcessor
+from alpha.engine.processors.registry import build_engine_processor_registry
+from alpha.engine.processors.source import Source
 
 
 class DummySource:

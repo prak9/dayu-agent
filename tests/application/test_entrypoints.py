@@ -45,9 +45,9 @@ def _install_main_module(monkeypatch: pytest.MonkeyPatch, module_name: str, retu
 @pytest.mark.parametrize(
     ("entrypoint_path", "dependency_module", "return_code"),
     [
-        (_REPO_ROOT / "dayu/__main__.py", "dayu.cli.main", 11),
-        (_REPO_ROOT / "dayu/cli/__main__.py", "dayu.cli.main", 12),
-        (_REPO_ROOT / "dayu/wechat/__main__.py", "dayu.wechat.main", 13),
+        (_REPO_ROOT / "alpha/__main__.py", "alpha.cli.main", 11),
+        (_REPO_ROOT / "alpha/cli/__main__.py", "alpha.cli.main", 12),
+        (_REPO_ROOT / "alpha/wechat/__main__.py", "alpha.wechat.main", 13),
     ],
 )
 def test_module_entrypoints_raise_system_exit(
@@ -70,8 +70,8 @@ def test_module_entrypoints_raise_system_exit(
 def test_tool_limits_reexports_stable_limit_types() -> None:
     """稳定导出模块应直接重导出 doc/fins limits 类型。"""
 
-    from dayu.contracts.tool_configs import DocToolLimits, FinsToolLimits
-    from dayu.tool_limits import __all__, DocToolLimits as ExportedDocToolLimits, FinsToolLimits as ExportedFinsToolLimits
+    from alpha.contracts.tool_configs import DocToolLimits, FinsToolLimits
+    from alpha.tool_limits import __all__, DocToolLimits as ExportedDocToolLimits, FinsToolLimits as ExportedFinsToolLimits
 
     assert ExportedDocToolLimits is DocToolLimits
     assert ExportedFinsToolLimits is FinsToolLimits
@@ -79,20 +79,20 @@ def test_tool_limits_reexports_stable_limit_types() -> None:
 
 
 @pytest.mark.unit
-def test_import_dayu_cli_main_keeps_heavy_runtime_modules_lazy() -> None:
-    """导入 `dayu.cli.main` 时不应抢先导入重运行时模块。"""
+def test_import_alpha_cli_main_keeps_heavy_runtime_modules_lazy() -> None:
+    """导入 `alpha.cli.main` 时不应抢先导入重运行时模块。"""
 
     command = [
         sys.executable,
         "-c",
         (
             "import json, sys; "
-            "import dayu.cli.main; "
+            "import alpha.cli.main; "
             "print(json.dumps({"
-            "\"host_commands\": \"dayu.cli.commands.host\" in sys.modules, "
-            "\"dependency_setup\": \"dayu.cli.dependency_setup\" in sys.modules, "
-            "\"services_package\": \"dayu.services\" in sys.modules, "
-            "\"write_service\": \"dayu.services.write_service\" in sys.modules"
+            "\"host_commands\": \"alpha.cli.commands.host\" in sys.modules, "
+            "\"dependency_setup\": \"alpha.cli.dependency_setup\" in sys.modules, "
+            "\"services_package\": \"alpha.services\" in sys.modules, "
+            "\"write_service\": \"alpha.services.write_service\" in sys.modules"
             "}))"
         ),
     ]
@@ -114,21 +114,21 @@ def test_import_dayu_cli_main_keeps_heavy_runtime_modules_lazy() -> None:
 
 
 @pytest.mark.unit
-def test_import_dayu_wechat_main_keeps_daemon_module_lazy() -> None:
-    """导入 `dayu.wechat.main` 时不应抢先导入 daemon。"""
+def test_import_alpha_wechat_main_keeps_daemon_module_lazy() -> None:
+    """导入 `alpha.wechat.main` 时不应抢先导入 daemon。"""
 
     command = [
         sys.executable,
         "-c",
         (
             "import json, sys; "
-            "import dayu.wechat.main; "
+            "import alpha.wechat.main; "
             "print(json.dumps({"
-            "\"wechat_package\": \"dayu.wechat\" in sys.modules, "
-            "\"wechat_daemon\": \"dayu.wechat.daemon\" in sys.modules, "
-            "\"host_runtime\": \"dayu.host.host\" in sys.modules, "
-            "\"services_package\": \"dayu.services\" in sys.modules, "
-            "\"fins_runtime\": \"dayu.fins.service_runtime\" in sys.modules"
+            "\"wechat_package\": \"alpha.wechat\" in sys.modules, "
+            "\"wechat_daemon\": \"alpha.wechat.daemon\" in sys.modules, "
+            "\"host_runtime\": \"alpha.host.host\" in sys.modules, "
+            "\"services_package\": \"alpha.services\" in sys.modules, "
+            "\"fins_runtime\": \"alpha.fins.service_runtime\" in sys.modules"
             "}))"
         ),
     ]

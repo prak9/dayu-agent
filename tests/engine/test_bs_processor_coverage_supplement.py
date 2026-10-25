@@ -11,10 +11,10 @@ from unittest.mock import MagicMock, patch, Mock
 
 import pytest
 
-from dayu.fins.storage.local_file_source import LocalFileSource
-from dayu.engine.processors import bs_processor
-from dayu.engine.processors.bs_processor import BSProcessor
-from dayu.engine.processors.table_utils import parse_html_table_dataframe
+from alpha.fins.storage.local_file_source import LocalFileSource
+from alpha.engine.processors import bs_processor
+from alpha.engine.processors.bs_processor import BSProcessor
+from alpha.engine.processors.table_utils import parse_html_table_dataframe
 
 
 def _write_html(tmp_path: Path, name: str, html: str) -> Path:
@@ -263,7 +263,7 @@ class TestBSProcessorTableParsing:
         Raises:
             AssertionError: 断言失败时抛出。
         """
-        with patch("dayu.engine.processors.table_utils.pd.read_html", side_effect=ValueError("boom")):
+        with patch("alpha.engine.processors.table_utils.pd.read_html", side_effect=ValueError("boom")):
             table_tag = bs_processor.BeautifulSoup("<table></table>", "lxml").table
             assert table_tag is not None
             actual = parse_html_table_dataframe(table_tag)
@@ -972,7 +972,7 @@ class TestBSProcessorPerformanceOptimizations:
         Raises:
             AssertionError: 断言失败时抛出。
         """
-        from dayu.engine.processors.bs_processor import (
+        from alpha.engine.processors.bs_processor import (
             _can_skip_dataframe,
             _TableBlock,
         )

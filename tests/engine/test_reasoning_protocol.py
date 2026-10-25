@@ -1,4 +1,4 @@
-"""测试 dayu.engine.reasoning_protocol 协议适配层。
+"""测试 alpha.engine.reasoning_protocol 协议适配层。
 
 覆盖三类边界：
 - Google Gemini ``thinking_config.include_thoughts=True`` 命中。
@@ -8,7 +8,7 @@
 
 from __future__ import annotations
 
-from dayu.engine.reasoning_protocol import (
+from alpha.engine.reasoning_protocol import (
     EMPTY_REASONING_HOOK,
     ReasoningProtocolHook,
     resolve_reasoning_protocol,

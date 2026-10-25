@@ -1,4 +1,4 @@
-"""``dayu.host.lease`` 公共原语的单元测试。
+"""``alpha.host.lease`` 公共原语的单元测试。
 
 确保 ``generate_lease_id`` 与 ``LeaseExpiredError`` 的契约稳定，避免 store
 层间接覆盖时漏测基本属性。
@@ -10,7 +10,7 @@ import re
 
 import pytest
 
-from dayu.host.lease import LeaseExpiredError, generate_lease_id
+from alpha.host.lease import LeaseExpiredError, generate_lease_id
 
 
 _HEX32 = re.compile(r"^[0-9a-f]{32}$")

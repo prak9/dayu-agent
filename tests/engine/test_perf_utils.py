@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.contracts.env_keys import FINS_PROCESSOR_PROFILE_ENV
-from dayu.engine.processors.perf_utils import (
+from alpha.contracts.env_keys import FINS_PROCESSOR_PROFILE_ENV
+from alpha.engine.processors.perf_utils import (
     ProcessorStageProfiler,
     is_processor_profile_enabled,
 )
@@ -147,7 +147,7 @@ class TestProcessorStageProfilerLogSummary:
         """enabled=False 时 log_summary 不调用 Log.info。"""
         calls: list[str] = []
         monkeypatch.setattr(
-            "dayu.engine.processors.perf_utils.Log",
+            "alpha.engine.processors.perf_utils.Log",
             type("FakeLog", (), {"info": staticmethod(lambda msg, **kw: calls.append(msg))})(),
         )
         profiler = ProcessorStageProfiler(component="C", enabled=False, records={"a": 1.0})
@@ -160,7 +160,7 @@ class TestProcessorStageProfilerLogSummary:
         """enabled=True 但 records 为空时 log_summary 不调用 Log.info。"""
         calls: list[str] = []
         monkeypatch.setattr(
-            "dayu.engine.processors.perf_utils.Log",
+            "alpha.engine.processors.perf_utils.Log",
             type("FakeLog", (), {"info": staticmethod(lambda msg, **kw: calls.append(msg))})(),
         )
         profiler = ProcessorStageProfiler(component="C", enabled=True)
@@ -173,7 +173,7 @@ class TestProcessorStageProfilerLogSummary:
         """启用时按阶段名称字母序输出日志。"""
         calls: list[str] = []
         monkeypatch.setattr(
-            "dayu.engine.processors.perf_utils.Log",
+            "alpha.engine.processors.perf_utils.Log",
             type("FakeLog", (), {"info": staticmethod(lambda msg, **kw: calls.append(msg))})(),
         )
         profiler = ProcessorStageProfiler(
@@ -196,7 +196,7 @@ class TestProcessorStageProfilerLogSummary:
         """extra 参数不为空时日志末尾包含 extra 内容。"""
         calls: list[str] = []
         monkeypatch.setattr(
-            "dayu.engine.processors.perf_utils.Log",
+            "alpha.engine.processors.perf_utils.Log",
             type("FakeLog", (), {"info": staticmethod(lambda msg, **kw: calls.append(msg))})(),
         )
         profiler = ProcessorStageProfiler(
@@ -211,7 +211,7 @@ class TestProcessorStageProfilerLogSummary:
         """extra 为空时日志不包含多余的 '|' 分隔符。"""
         calls: list[str] = []
         monkeypatch.setattr(
-            "dayu.engine.processors.perf_utils.Log",
+            "alpha.engine.processors.perf_utils.Log",
             type("FakeLog", (), {"info": staticmethod(lambda msg, **kw: calls.append(msg))})(),
         )
         profiler = ProcessorStageProfiler(
@@ -226,7 +226,7 @@ class TestProcessorStageProfilerLogSummary:
         """日志中耗时格式应为 name=x.xxms。"""
         calls: list[str] = []
         monkeypatch.setattr(
-            "dayu.engine.processors.perf_utils.Log",
+            "alpha.engine.processors.perf_utils.Log",
             type("FakeLog", (), {"info": staticmethod(lambda msg, **kw: calls.append(msg))})(),
         )
         profiler = ProcessorStageProfiler(

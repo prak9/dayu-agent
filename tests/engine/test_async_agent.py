@@ -6,9 +6,9 @@ from typing import Any
 
 import pytest
 
-from dayu.engine import AgentResult, AsyncAgent
-from dayu.engine.async_cli_runner import AsyncCliRunner
-from dayu.engine import (
+from alpha.engine import AgentResult, AsyncAgent
+from alpha.engine.async_cli_runner import AsyncCliRunner
+from alpha.engine import (
     EventType,
     content_complete,
     content_delta,
@@ -20,10 +20,10 @@ from dayu.engine import (
     tool_call_result,
     tool_calls_batch_done,
 )
-from dayu.engine.async_agent import AgentRunningConfig
-from dayu.contracts.cancellation import CancelledError, CancellationToken
-from dayu.engine.events import reasoning_delta
-from dayu.engine.tool_contracts import DupCallSpec
+from alpha.engine.async_agent import AgentRunningConfig
+from alpha.contracts.cancellation import CancelledError, CancellationToken
+from alpha.engine.events import reasoning_delta
+from alpha.engine.tool_contracts import DupCallSpec
 
 
 class DummyRunner:
@@ -682,7 +682,7 @@ class TestAsyncAgentInit:
     def test_init_with_max_iterations(self):
         """测试自定义最大迭代次数"""
         runner = DummyRunner([])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=5)
         agent = AsyncAgent(runner, running_config=config)
         
@@ -981,7 +981,7 @@ class TestAsyncAgentRun:
                 done_event(),
             ],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(fallback_mode="raise_error", max_duplicate_tool_calls=1)
         agent = AsyncAgent(runner, running_config=config)
 
@@ -1028,7 +1028,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("final answer"), content_complete("final answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(
             fallback_mode="raise_error",
             max_duplicate_tool_calls=2,
@@ -1089,7 +1089,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("final answer"), content_complete("final answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(
             fallback_mode="raise_error",
             max_duplicate_tool_calls=1,
@@ -1146,7 +1146,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("final answer"), content_complete("final answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
 
         tool_executor = DummyDupSpecToolExecutor(
             dup_specs={
@@ -1213,7 +1213,7 @@ class TestAsyncAgentRun:
                 done_event(),
             ],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
 
         tool_executor = DummyDupSpecToolExecutor(
             dup_specs={
@@ -1257,7 +1257,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("final answer"), content_complete("final answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(
             fallback_mode="raise_error",
             max_duplicate_tool_calls=0,
@@ -1303,7 +1303,7 @@ class TestAsyncAgentRun:
                 done_event(),
             ],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(
             fallback_mode="raise_error",
             max_consecutive_failed_tool_batches=2,
@@ -1351,7 +1351,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("forced answer"), content_complete("forced answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(
             fallback_mode="force_answer",
             max_consecutive_failed_tool_batches=2,
@@ -1441,7 +1441,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("forced answer"), content_complete("forced answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
 
         config = AgentRunningConfig(
             fallback_mode="force_answer",
@@ -1507,7 +1507,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("final answer"), content_complete("final answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(
             fallback_mode="raise_error",
             max_consecutive_failed_tool_batches=2,
@@ -1560,7 +1560,7 @@ class TestAsyncAgentRun:
             ],
             [content_delta("final answer"), content_complete("final answer"), done_event()],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(
             fallback_mode="raise_error",
             max_consecutive_failed_tool_batches=2,
@@ -1641,7 +1641,7 @@ class TestAsyncAgentRun:
                 error_event("fallback failed", recoverable=False),
             ],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=1, max_compactions=0, fallback_mode="force_answer")
         agent = AsyncAgent(runner, running_config=config)
 
@@ -1924,7 +1924,7 @@ class TestAsyncAgentStreaming:
             ]
         )
         executor = DummyToolExecutor([{"name": "tool"}])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
 
         config = AgentRunningConfig(
             max_iterations=1,
@@ -2011,7 +2011,7 @@ class TestAsyncAgentStreaming:
                 done_event(),
             ],
         ])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=2, max_compactions=2, fallback_mode="raise_error")
         agent = AsyncAgent(runner, running_config=config)
 
@@ -2040,7 +2040,7 @@ class TestAsyncAgentStreaming:
             [content_delta("final answer")],
         ])
         executor = DummyToolExecutor([{"name": "tool"}])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=1, max_compactions=0, fallback_mode="force_answer")
         agent = AsyncAgent(
             runner,
@@ -2077,7 +2077,7 @@ class TestAsyncAgentStreaming:
             [content_delta("forced answer"), content_complete("forced answer"), done_event()],
         ])
         executor = DummyToolExecutor([{"name": "tool"}])
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=1, max_compactions=0, fallback_mode="force_answer")
         agent = AsyncAgent(
             runner,
@@ -2282,7 +2282,7 @@ class TestAsyncAgentImport:
 
     def test_can_import_async_agent(self):
         """测试可以导入 AsyncAgent"""
-        from dayu.engine import AsyncAgent
+        from alpha.engine import AsyncAgent
 
         runner = DummyRunner([])
         agent = AsyncAgent(runner)

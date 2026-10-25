@@ -1,0 +1,5594 @@
+{
+  "origin_sha256": "c33280206b1eeb743a41bca42e0dd013068fa480a312bd3351229fc48ce715ec",
+  "cases": [
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": [],
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "classification"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 1,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_classification",
+            "location": "metrics[0].classification",
+            "message": "classification must distinguish fact, guidance, consensus, or analyst assumption"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: classification"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": {},
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "classification"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 1,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_classification",
+            "location": "metrics[0].classification",
+            "message": "classification must distinguish fact, guidance, consensus, or analyst assumption"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: classification"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": [],
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "unit"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_unit",
+            "location": "metrics[0].unit",
+            "message": "unit must be a non-empty string"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: unit"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": {},
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "unit"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_unit",
+            "location": "metrics[0].unit",
+            "message": "unit must be a non-empty string"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: unit"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": [],
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "currency"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_currency",
+            "location": "metrics[0].currency",
+            "message": "currency must be a non-empty string or explicit null"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: currency"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": {},
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "currency"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_currency",
+            "location": "metrics[0].currency",
+            "message": "currency must be a non-empty string or explicit null"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: currency"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": [],
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "period"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_period",
+            "location": "metrics[0].period",
+            "message": "period must be a non-empty string"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: period"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": {},
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "period"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_period",
+            "location": "metrics[0].period",
+            "message": "period must be a non-empty string"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: period"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": [],
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "basis"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_basis",
+            "location": "metrics[0].basis",
+            "message": "basis must be a non-empty string"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_bad_metric_types_return_structured_failures_in_linked_checks",
+      "input": {
+        "metrics": [
+          {
+            "id": "component",
+            "name": "component",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": {},
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total",
+            "name": "total",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "components": [
+                "component"
+              ],
+              "total": "total"
+            }
+          ],
+          "basis_groups": [
+            {
+              "items": [
+                "component",
+                "total"
+              ],
+              "fields": [
+                "basis"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_basis",
+            "location": "metrics[0].basis",
+            "message": "basis must be a non-empty string"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          },
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_declared_basis_group_detects_mixed_currency",
+      "input": {
+        "schema_version": 1,
+        "metrics": [
+          {
+            "id": "revenue_usd",
+            "name": "revenue_usd",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "revenue_eur",
+            "name": "revenue_eur",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "EUR",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "basis_groups": [
+            {
+              "name": "revenue comparability",
+              "items": [
+                "revenue_usd",
+                "revenue_eur"
+              ],
+              "fields": [
+                "unit",
+                "currency",
+                "basis"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 2,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.basis_groups[0]",
+            "message": "declared comparable metrics differ on: unit, currency, basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-06-30",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_periods",
+            "location": "checks.period_differences[0]",
+            "message": "require shared cumulative start and contiguous result period"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": null
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_period_differences",
+            "location": "checks.period_differences",
+            "message": "expected an array"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": {}
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_period_differences",
+            "location": "checks.period_differences",
+            "message": "expected an array"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            null
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_difference",
+            "location": "checks.period_differences[0]",
+            "message": "expected an object"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": [],
+              "prior_cumulative": "x",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_metric_refs",
+            "location": "checks.period_differences[0]",
+            "message": "metric references must be a non-empty array"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": null
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "missing_statement_context",
+            "location": "checks.period_differences[0]",
+            "message": "each input/result needs statement context"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": []
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "missing_statement_context",
+            "location": "checks.period_differences[0]",
+            "message": "each input/result needs statement context"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_bad_result_window_or_structure_returns_findings",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "kind": "flow"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.period_differences[0]",
+            "message": "difference inputs must share concept, units, scope and accounting/version/security basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_difference_is_not_silently_accepted_under_v1",
+      "input": {
+        "schema_version": 1,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "unsupported_check",
+            "location": "checks.period_differences",
+            "message": "period_differences requires schema_version 2"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_later_available_source_fails_historical_point_in_time",
+      "input": {
+        "schema_version": 1,
+        "decision_time": "2024-02-02T00:00:00Z",
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-03T00:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "point_in_time_violation",
+            "location": "metrics[0].source.available_at",
+            "message": "source became available after the historical decision time"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_missing_value_requires_reason_and_is_not_zero",
+      "input": {
+        "schema_version": 1,
+        "metrics": [
+          {
+            "id": "capex",
+            "name": "capex",
+            "value": null,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": ""
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "missing_reason_required",
+            "location": "metrics[0].missing_reason",
+            "message": "a null value needs a non-empty missing_reason; unknown is not zero"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_mixed_basis_sum_is_rejected_before_arithmetic",
+      "input": {
+        "schema_version": 1,
+        "metrics": [
+          {
+            "id": "gaap_revenue",
+            "name": "gaap_revenue",
+            "value": 60,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "adjusted_revenue",
+            "name": "adjusted_revenue",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "Adjusted",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "total_revenue",
+            "name": "total_revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "name": "invalid mixed sum",
+              "components": [
+                "gaap_revenue",
+                "adjusted_revenue"
+              ],
+              "total": "total_revenue"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.sums[0]",
+            "message": "sum inputs must share unit, currency, period, and basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_nonadditive_metrics_cannot_be_differenced",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "instant",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "instant",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "instant",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "nonadditive_difference",
+            "location": "checks.period_differences[0]",
+            "message": "only additive period flows may be subtracted"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_nonadditive_metrics_cannot_be_differenced",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "ratio",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "ratio",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "ratio",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "nonadditive_difference",
+            "location": "checks.period_differences[0]",
+            "message": "only additive period flows may be subtracted"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_nonadditive_metrics_cannot_be_differenced",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "per_share",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "per_share",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "per_share",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "nonadditive_difference",
+            "location": "checks.period_differences[0]",
+            "message": "only additive period flows may be subtracted"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_nonadditive_metrics_cannot_be_differenced",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "weighted_average",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "weighted_average",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "weighted_average",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "nonadditive_difference",
+            "location": "checks.period_differences[0]",
+            "message": "only additive period flows may be subtracted"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "segment_a",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.period_differences[0]",
+            "message": "difference inputs must share concept, units, scope and accounting/version/security basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "restated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.period_differences[0]",
+            "message": "difference inputs must share concept, units, scope and accounting/version/security basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "ADS"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.period_differences[0]",
+            "message": "difference inputs must share concept, units, scope and accounting/version/security basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "capex",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.period_differences[0]",
+            "message": "difference inputs must share concept, units, scope and accounting/version/security basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "IFRS",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_basis",
+            "location": "checks.period_differences[0]",
+            "message": "difference inputs must share concept, units, scope and accounting/version/security basis"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-02-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_periods",
+            "location": "checks.period_differences[0]",
+            "message": "require shared cumulative start and contiguous result period"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-12-31",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_periods",
+            "location": "checks.period_differences[0]",
+            "message": "require shared cumulative start and contiguous result period"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "bad-date",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "incompatible_periods",
+            "location": "checks.period_differences[0]",
+            "message": "require shared cumulative start and contiguous result period"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": null,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "missing_reason_required",
+            "location": "metrics[2].missing_reason",
+            "message": "a null value needs a non-empty missing_reason; unknown is not zero"
+          },
+          {
+            "severity": "error",
+            "code": "evidence_missing",
+            "location": "checks.period_differences[0]",
+            "message": "difference contains an unknown/nonfinite value"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 41,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "difference_mismatch",
+            "location": "checks.period_differences[0]",
+            "message": "calculated result is 40"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_period_difference_rejects_incompatible_context_and_bad_results",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "missing_derivation",
+            "location": "checks.period_differences[0]",
+            "message": "result must retain subtract operation and ordered source metric IDs"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_restatement_after_cutoff_cannot_enter_period_difference",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-03-01T00:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        },
+        "decision_time": "2024-02-02T00:00:00Z"
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 1
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "point_in_time_violation",
+            "location": "metrics[1].source.available_at",
+            "message": "source became available after the historical decision time"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_same_basis_cumulative_cash_flow_can_be_differenced",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "ytd9",
+            "name": "ytd9",
+            "value": 90,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "ytd6",
+            "name": "ytd6",
+            "value": 50,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-01-01/2023-06-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-01-01",
+              "end": "2023-06-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            }
+          },
+          {
+            "id": "q3",
+            "name": "q3",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "2023-07-01/2023-09-30",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null,
+            "statement": {
+              "concept": "operating_cash_flow",
+              "kind": "flow",
+              "start": "2023-07-01",
+              "end": "2023-09-30",
+              "scope": "consolidated",
+              "accounting_standard": "US-GAAP",
+              "version_basis": "original-unrestated",
+              "security_basis": "not_applicable"
+            },
+            "derivation": {
+              "operation": "subtract",
+              "inputs": [
+                "ytd9",
+                "ytd6"
+              ]
+            }
+          }
+        ],
+        "checks": {
+          "period_differences": [
+            {
+              "cumulative": "ytd9",
+              "prior_cumulative": "ytd6",
+              "result": "q3"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "pass",
+        "metrics_checked": 3,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 1
+        },
+        "findings": [],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_schema_version_requires_integer_one",
+      "input": {
+        "schema_version": true,
+        "metrics": [
+          {
+            "id": "x",
+            "name": "x",
+            "value": 1,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "unsupported_schema",
+            "location": "schema_version",
+            "message": "schema_version must be 1 or 2"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_schema_version_requires_integer_one",
+      "input": {
+        "schema_version": 1.0,
+        "metrics": [
+          {
+            "id": "x",
+            "name": "x",
+            "value": 1,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "unsupported_schema",
+            "location": "schema_version",
+            "message": "schema_version must be 1 or 2"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_schema_version_requires_integer_one",
+      "input": {
+        "schema_version": [],
+        "metrics": [
+          {
+            "id": "x",
+            "name": "x",
+            "value": 1,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "unsupported_schema",
+            "location": "schema_version",
+            "message": "schema_version must be 1 or 2"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_schema_version_requires_integer_one",
+      "input": {
+        "schema_version": {},
+        "metrics": [
+          {
+            "id": "x",
+            "name": "x",
+            "value": 1,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "unsupported_schema",
+            "location": "schema_version",
+            "message": "schema_version must be 1 or 2"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_bounded_publication_time",
+      "input": {
+        "schema_version": 2,
+        "decision_time": "2024-02-02T01:00:00+08:00",
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "available_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "pass",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_bounded_publication_time",
+      "input": {
+        "schema_version": 2,
+        "decision_time": "2024-02-01T12:00:00+08:00",
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "available_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "point_in_time_unresolved",
+            "location": "metrics[0].source",
+            "message": "time bounds cannot establish availability by the cutoff"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_bounded_publication_time",
+      "input": {
+        "schema_version": 2,
+        "decision_time": "2024-01-31T12:00:00+08:00",
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "available_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "point_in_time_violation",
+            "location": "metrics[0].source.available_at",
+            "message": "source became available after the historical decision time"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_bounded_publication_time",
+      "input": {
+        "schema_version": 1,
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "available_at": {
+                "earliest": "2024-02-01T00:00:00+08:00",
+                "latest": "2024-02-02T00:00:00+08:00",
+                "reason": "Only the Hong Kong publication date is known"
+              },
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_published_at",
+            "location": "metrics[0].source.published_at",
+            "message": "expected a zoned timestamp; v2 also accepts justified time bounds or explicit unknown"
+          },
+          {
+            "severity": "error",
+            "code": "invalid_available_at",
+            "location": "metrics[0].source.available_at",
+            "message": "expected a zoned timestamp; v2 also accepts justified time bounds or explicit unknown"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_invalid_time_windows",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "r",
+            "name": "r",
+            "value": 1,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": {
+                "earliest": "2024-02-02T00:00:00Z",
+                "latest": "2024-02-01T00:00:00Z",
+                "reason": "date"
+              },
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_published_at",
+            "location": "metrics[0].source.published_at",
+            "message": "expected a zoned timestamp; v2 also accepts justified time bounds or explicit unknown"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_invalid_time_windows",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "r",
+            "name": "r",
+            "value": 1,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": {
+                "earliest": "2024-02-01",
+                "latest": "2024-02-02",
+                "reason": "date"
+              },
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_published_at",
+            "location": "metrics[0].source.published_at",
+            "message": "expected a zoned timestamp; v2 also accepts justified time bounds or explicit unknown"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_invalid_time_windows",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "r",
+            "name": "r",
+            "value": 1,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": {
+                "earliest": "2024-02-01T00:00:00Z",
+                "latest": "2024-02-02T00:00:00Z"
+              },
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_published_at",
+            "location": "metrics[0].source.published_at",
+            "message": "expected a zoned timestamp; v2 also accepts justified time bounds or explicit unknown"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_unknown_time_does_not_fabricate_precision",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": null,
+              "available_at": null,
+              "locator": "p. 42",
+              "time_missing_reason": "Only an undated original PDF is accessible"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "pass",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "warning",
+            "code": "unknown_source_time",
+            "location": "metrics[0].source.published_at",
+            "message": "published_at is unknown"
+          },
+          {
+            "severity": "warning",
+            "code": "unknown_source_time",
+            "location": "metrics[0].source.available_at",
+            "message": "available_at is unknown"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_unknown_time_does_not_fabricate_precision",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": null,
+              "available_at": null,
+              "locator": "p. 42",
+              "time_missing_reason": "Only an undated original PDF is accessible"
+            },
+            "missing_reason": null
+          }
+        ],
+        "decision_time": "2024-02-02T00:00:00Z"
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "warning",
+            "code": "unknown_source_time",
+            "location": "metrics[0].source.published_at",
+            "message": "published_at is unknown"
+          },
+          {
+            "severity": "warning",
+            "code": "unknown_source_time",
+            "location": "metrics[0].source.available_at",
+            "message": "available_at is unknown"
+          },
+          {
+            "severity": "error",
+            "code": "point_in_time_unresolved",
+            "location": "metrics[0].source",
+            "message": "time bounds cannot establish availability by the cutoff"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_v2_unknown_time_does_not_fabricate_precision",
+      "input": {
+        "schema_version": 2,
+        "metrics": [
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": null,
+              "available_at": null,
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ]
+      },
+      "expected": {
+        "schema_version": 2,
+        "status": "fail",
+        "metrics_checked": 1,
+        "checks_run": {
+          "sums": 0,
+          "growth_rates": 0,
+          "probability_groups": 0,
+          "basis_groups": 0,
+          "period_differences": 0
+        },
+        "findings": [
+          {
+            "severity": "error",
+            "code": "invalid_published_at",
+            "location": "metrics[0].source.published_at",
+            "message": "expected a zoned timestamp; v2 also accepts justified time bounds or explicit unknown"
+          },
+          {
+            "severity": "error",
+            "code": "invalid_available_at",
+            "location": "metrics[0].source.available_at",
+            "message": "expected a zoned timestamp; v2 also accepts justified time bounds or explicit unknown"
+          }
+        ],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    },
+    {
+      "test": "test_valid_contract_checks_sum_growth_and_probability",
+      "input": {
+        "schema_version": 1,
+        "as_of": "2024-02-02T00:00:00Z",
+        "decision_time": "2024-02-02T00:00:00Z",
+        "metrics": [
+          {
+            "id": "segment_a",
+            "name": "segment_a",
+            "value": 60,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "segment_b",
+            "name": "segment_b",
+            "value": 40,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "revenue",
+            "name": "revenue",
+            "value": 100,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "revenue_prior",
+            "name": "revenue_prior",
+            "value": 80,
+            "unit": "USD million",
+            "currency": "USD",
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "bull_probability",
+            "name": "bull_probability",
+            "value": 0.3,
+            "unit": "decimal",
+            "currency": null,
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "base_probability",
+            "name": "base_probability",
+            "value": 0.5,
+            "unit": "decimal",
+            "currency": null,
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          },
+          {
+            "id": "bear_probability",
+            "name": "bear_probability",
+            "value": 0.2,
+            "unit": "decimal",
+            "currency": null,
+            "period": "FY2023",
+            "basis": "GAAP",
+            "classification": "reported_fact",
+            "source": {
+              "reference": "https://example.com/filing",
+              "document_type": "10-K",
+              "published_at": "2024-02-01T10:00:00Z",
+              "available_at": "2024-02-01T12:00:00Z",
+              "locator": "p. 42"
+            },
+            "missing_reason": null
+          }
+        ],
+        "checks": {
+          "sums": [
+            {
+              "name": "segment sum",
+              "components": [
+                "segment_a",
+                "segment_b"
+              ],
+              "total": "revenue"
+            }
+          ],
+          "growth_rates": [
+            {
+              "name": "revenue growth",
+              "prior": "revenue_prior",
+              "current": "revenue",
+              "expected": 0.25
+            }
+          ],
+          "probability_groups": [
+            {
+              "name": "scenario probabilities",
+              "items": [
+                "bull_probability",
+                "base_probability",
+                "bear_probability"
+              ]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "schema_version": 1,
+        "status": "pass",
+        "metrics_checked": 7,
+        "checks_run": {
+          "sums": 1,
+          "growth_rates": 1,
+          "probability_groups": 1,
+          "basis_groups": 0
+        },
+        "findings": [],
+        "limitations": [
+          "Arithmetic and metadata checks do not prove that a source supports a value or conclusion.",
+          "A clean point-in-time check covers only the timestamps recorded in this file."
+        ]
+      }
+    }
+  ]
+}

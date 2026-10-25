@@ -13,7 +13,7 @@
 
 ```bash
 source .venv/bin/activate
-python -m dayu.cli interactive --scene interactive
+python -m alpha.cli interactive --scene interactive
 ```
 
 每组测试结束后，建议结合 `output/tool_call_traces/` 与日志中 `compaction` 关键字交叉确认。
@@ -130,7 +130,7 @@ python -m dayu.cli interactive --scene interactive
 
 - [ ] `output/tool_call_traces/` 中查到本次 session 的 trace。
 - [ ] 日志中至少出现一次 `准备同步压缩 transcript` 或 `开始后台 compaction`。
-- [ ] 用 sqlite3 打开 `.dayu/host/dayu_host.db`，查 `conversation_transcripts` 表中本 session 的 `pinned_state` JSON，确认 `current_goal` / `confirmed_subjects` / `user_constraints` 不为空且单调演进。
+- [ ] 用 sqlite3 打开 `.alpha/host/alpha_host.db`，查 `conversation_transcripts` 表中本 session 的 `pinned_state` JSON，确认 `current_goal` / `confirmed_subjects` / `user_constraints` 不为空且单调演进。
 - [ ] 测试组 D 第 13 轮答案与第 2 轮严格一致（数值不漂）。
 - [ ] 测试组 A 第 7 轮答案与第 3 轮严格一致。
 

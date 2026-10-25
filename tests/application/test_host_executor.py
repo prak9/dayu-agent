@@ -11,8 +11,8 @@ from typing import cast
 
 import pytest
 
-import dayu.host.executor as executor_module
-from dayu.contracts.agent_execution import (
+import alpha.host.executor as executor_module
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedModelSpec,
     AgentCreateArgs,
@@ -25,15 +25,15 @@ from dayu.contracts.agent_execution import (
     ExecutionWebPermissions,
     ScenePreparationSpec,
 )
-from dayu.contracts.agent_types import AgentMessage
-from dayu.contracts.host_execution import ConcurrencyAcquirePolicy
-from dayu.contracts.run import RunCancelReason, RunState
-from dayu.execution.options import ConversationMemorySettings, ExecutionOptions
-from dayu.host.host import Host
-from dayu.host.conversation_store import ConversationTranscript
-from dayu.host.host_execution import HostedRunContext, HostedRunSpec
-from dayu.host.executor import DefaultHostExecutor
-from dayu.host.prepared_turn import (
+from alpha.contracts.agent_types import AgentMessage
+from alpha.contracts.host_execution import ConcurrencyAcquirePolicy
+from alpha.contracts.run import RunCancelReason, RunState
+from alpha.execution.options import ConversationMemorySettings, ExecutionOptions
+from alpha.host.host import Host
+from alpha.host.conversation_store import ConversationTranscript
+from alpha.host.host_execution import HostedRunContext, HostedRunSpec
+from alpha.host.executor import DefaultHostExecutor
+from alpha.host.prepared_turn import (
     AcceptedAgentTurnSnapshot,
     PreparedAgentTurnSnapshot,
     PreparedConversationSessionSnapshot,
@@ -42,17 +42,17 @@ from dayu.host.prepared_turn import (
     serialize_accepted_agent_turn_snapshot,
     serialize_prepared_agent_turn_snapshot,
 )
-from dayu.host.scene_preparer import PreparedAgentExecution
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.contracts.cancellation import CancelledError
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext
-from dayu.engine.events import EventType, StreamEvent
-from dayu.host.host_store import HostStore
-from dayu.host.run_registry import SQLiteRunRegistry
-from dayu.host.pending_turn_store import PendingConversationTurn, PendingConversationTurnState
-from dayu.host.protocols import SessionClosedError
-from dayu.log import Log
-from dayu.contracts.run import ORPHAN_RUN_ERROR_SUMMARY
+from alpha.host.scene_preparer import PreparedAgentExecution
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.contracts.cancellation import CancelledError
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext
+from alpha.engine.events import EventType, StreamEvent
+from alpha.host.host_store import HostStore
+from alpha.host.run_registry import SQLiteRunRegistry
+from alpha.host.pending_turn_store import PendingConversationTurn, PendingConversationTurnState
+from alpha.host.protocols import SessionClosedError
+from alpha.log import Log
+from alpha.contracts.run import ORPHAN_RUN_ERROR_SUMMARY
 
 
 def _minimal_accepted_execution_spec() -> AcceptedExecutionSpec:
@@ -636,7 +636,7 @@ def test_run_agent_stream_cleans_pending_turn_before_marking_success(monkeypatch
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -698,7 +698,7 @@ def test_run_agent_stream_keeps_session_id_for_non_resumable_turn(monkeypatch: p
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -750,7 +750,7 @@ def test_run_agent_stream_keeps_accepted_pending_turn_when_prepare_times_out(mon
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
     monkeypatch.setattr(
-        "dayu.host.executor.build_async_agent",
+        "alpha.host.executor.build_async_agent",
         lambda **_: (_ for _ in ()).throw(AssertionError("prepare timeout 不应进入 agent 构造")),
     )
     execution_contract = ExecutionContract(
@@ -816,7 +816,7 @@ def test_run_agent_stream_keeps_prepared_pending_turn_when_timeout_occurs_before
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
     log_calls: list[str] = []
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     monkeypatch.setattr(
         Log,
         "verbose",
@@ -893,7 +893,7 @@ def test_run_agent_stream_keeps_prepared_pending_turn_when_timeout_occurs_after_
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -981,7 +981,7 @@ def test_run_agent_stream_skips_persist_turn_after_external_cancel(monkeypatch: 
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -1068,7 +1068,7 @@ def test_run_agent_stream_emits_verbose_logs_for_pending_turn_lifecycle(monkeypa
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
     log_calls: list[str] = []
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     monkeypatch.setattr(
         Log,
         "verbose",
@@ -1127,7 +1127,7 @@ def test_run_agent_stream_emits_debug_logs_for_start_and_complete(monkeypatch: p
         run_registry=StubRunRegistry(),
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     monkeypatch.setattr(Log, "debug", lambda message, *, module: debug_logs.append(f"{module}:{message}"))
     execution_contract = ExecutionContract(
         service_name="chat_turn",
@@ -1178,7 +1178,7 @@ def test_run_agent_stream_emits_debug_logs_for_fail_path(monkeypatch: pytest.Mon
         run_registry=StubRunRegistry(),
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FailingAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FailingAgent())
     monkeypatch.setattr(Log, "debug", lambda message, *, module: debug_logs.append(f"{module}:{message}"))
     execution_contract = ExecutionContract(
         service_name="chat_turn",
@@ -1230,7 +1230,7 @@ def test_run_agent_stream_emits_debug_logs_for_cancel_path(monkeypatch: pytest.M
         run_registry=run_registry,
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     monkeypatch.setattr(Log, "debug", lambda message, *, module: debug_logs.append(f"{module}:{message}"))
     execution_contract = ExecutionContract(
         service_name="chat_turn",
@@ -1283,7 +1283,7 @@ def test_run_agent_stream_deletes_pending_turn_for_user_cancel(monkeypatch: pyte
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -1348,7 +1348,7 @@ def test_run_prepared_turn_stream_yields_cancelled_event(monkeypatch: pytest.Mon
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -1407,7 +1407,7 @@ def test_run_agent_stream_keeps_prepared_pending_turn_when_agent_build_fails(mon
     def _raise_build_error(**_kwargs):
         raise RuntimeError("build failed")
 
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", _raise_build_error)
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", _raise_build_error)
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -1480,7 +1480,7 @@ def test_run_agent_stream_keeps_prepared_pending_turn_when_persist_turn_fails(mo
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -1562,7 +1562,7 @@ def test_run_agent_stream_keeps_success_when_sent_to_llm_update_fails(monkeypatc
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -1641,7 +1641,7 @@ def test_run_agent_stream_delete_pending_failure_keeps_succeeded_run_and_blocks_
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -1717,7 +1717,7 @@ def test_run_agent_sync_returns_filtered_app_result(monkeypatch: pytest.MonkeyPa
         run_registry=StubRunRegistry(),
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
     execution_contract = ExecutionContract(
         service_name="chat_turn",
         scene_name="interactive",
@@ -2208,7 +2208,7 @@ def test_resume_pending_turn_stream_keeps_lease_through_executor(
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
 
     # 侦测 _register_*_pending_turn 是否被调用；resume 路径下严禁触发
     accepted_register_calls: list[str] = []
@@ -2464,7 +2464,7 @@ def test_resume_pending_turn_stream_rebinds_source_run_id_and_blocks_reresume_wh
         pending_turn_store=pending_turn_store,  # type: ignore[arg-type]
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: _FakeAgent())
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: _FakeAgent())
 
     host = Host(
         executor=executor,
@@ -2984,7 +2984,7 @@ def test_register_accepted_pending_turn_absorbs_clearing_error() -> None:
     """``CLEARING`` 屏障期间 ``_register_accepted_pending_turn`` 抛 ``SessionClearingError``
     必须被吸收为 ``None`` 返回（与 ``SessionClosedError`` 同侧降级）。"""
 
-    from dayu.host.protocols import SessionClearingError
+    from alpha.host.protocols import SessionClearingError
 
     class _ClearingPendingTurnStore:
         """无条件抛 SessionClearingError 的最小 stub。"""
@@ -3018,7 +3018,7 @@ def test_register_accepted_pending_turn_absorbs_clearing_error() -> None:
 def test_register_accepted_pending_turn_absorbs_clearing_failed_error() -> None:
     """``CLEARING_FAILED`` 持久锁定下迟到 accepted 登记同样降级为 no-op。"""
 
-    from dayu.host.protocols import SessionClearingFailedError
+    from alpha.host.protocols import SessionClearingFailedError
 
     class _ClearingFailedPendingTurnStore:
         def upsert_pending_turn(self, **kwargs):  # type: ignore[no-untyped-def]
@@ -3064,7 +3064,7 @@ def test_resume_pending_turn_stream_lease_expired_during_failure_record_does_not
     是 ``LeaseExpiredError`` 这种内部 fence token 异常，原因诊断被掩盖。
     """
 
-    from dayu.host.lease import LeaseExpiredError
+    from alpha.host.lease import LeaseExpiredError
     from tests.application.conftest import (
         StubPendingTurnStore,
         StubRunRegistry,

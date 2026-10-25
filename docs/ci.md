@@ -1,7 +1,7 @@
 # 提高 CI 分数（执行版）
 
 ## 任务目标
-- 对当前工作区内**已存在且可被 `dayu.fins.storage` 扫描识别**的 SEC 公司全集做 CI 评估。
+- 对当前工作区内**已存在且可被 `alpha.fins.storage` 扫描识别**的 SEC 公司全集做 CI 评估。
 - 找出并修复**提取真问题**，提高 CI 分数。
 - 优先级固定：**20-F → 10-K → 10-Q → 6-K → 其它 form**。
 - 每轮只处理**一个问题簇**：同一 form、同一扣分模式、同一真源。
@@ -16,9 +16,9 @@
 - 不修改评分标准，不引入明显 regression。
 
 ## 已知接口
-- `process`：`python -m dayu.cli process --ticker {ticker} --ci --overwrite [--document-id ...]`
+- `process`：`python -m alpha.cli process --ticker {ticker} --ci --overwrite [--document-id ...]`
   - 只能按 ticker 执行，但可重复 `--document-id` 缩小到指定文档。
-- `score`：`python -m dayu.fins.score_sec_ci --form {form} --base workspace --tickers {tickers}`
+- `score`：`python -m alpha.fins.score_sec_ci --form {form} --base workspace --tickers {tickers}`
   - 每次只评一个 form。
   - 支持 `--output-json` / `--output-md`。
   - 后续分析以 **JSON 报告** 为主，stdout 只作日志。
@@ -42,7 +42,7 @@
    - `单 form 专属 processor`
    - `pipeline / snapshot 导出问题`
 10. **禁止用 fallback / 路由切换绕过问题**，除非根因本身就是路由错误。
-11. 文档、processed、blob 的读取和定位必须走 `dayu.fins.storage` 仓储协议 / 实现，禁止手拼 `workspace/portfolio/...` 路径。
+11. 文档、processed、blob 的读取和定位必须走 `alpha.fins.storage` 仓储协议 / 实现，禁止手拼 `workspace/portfolio/...` 路径。
 12. process 很耗时；除首次补齐基线和最终人工总验外，**禁止每轮全量 process**。
 13. 内环验证采用最小增量；`pyright`、全量 `pytest tests/ -x`、README 对齐、全 7 form 全量回归留到最后人工统一检查。
 
@@ -61,7 +61,7 @@
 - 创建报告：`workspace/ci_optimization_report_mmdd_HHMM.md`。
 - 本轮不新增 ticker，不执行下载。
 - 用 `CompanyMetaRepositoryProtocol.scan_company_meta_inventory()` 扫描当前工作区已有公司清单；跳过并记录隐藏目录、缺失 `meta.json`、非法目录。
-- 通过 `dayu.fins.storage` 公开仓储接口，扫描**本轮应纳入 CI 的文档全集**，作为 baseline 真源清单。
+- 通过 `alpha.fins.storage` 公开仓储接口，扫描**本轮应纳入 CI 的文档全集**，作为 baseline 真源清单。
 - 直接使用 `utils/llm_ci_process.py`：
   - 支持 `--tickers`、`--documents-json`、`--tag`
   - `--documents-json` 为数组，每项至少包含：`ticker`、`document_id`
@@ -73,7 +73,7 @@
 - 直接使用 `utils/llm_ci_score.py`：
   - 支持 `--forms`、`--tickers`、`--tag`
   - 默认 forms：`10-K,10-Q,20-F,6-K,8-K,SC 13G,DEF 14A`
-  - 对每个 form 调用 `python -m dayu.fins.score_sec_ci`
+  - 对每个 form 调用 `python -m alpha.fins.score_sec_ci`
   - 显式输出：
     - `workspace/tmp/ci_score/{tag}/score_{slug}.json`
     - `workspace/tmp/ci_score/{tag}/score_{slug}.md`
@@ -100,7 +100,7 @@
   - `fins 共享表单逻辑`
   - `单 form 专属 processor`
   - `pipeline / snapshot 导出问题`
-- 分析主输入：`workspace/tmp/ci_score/baseline/score_{slug}.json`；必要时辅助读取对应 `.txt`，并通过 `dayu.fins.storage` 核查原文。
+- 分析主输入：`workspace/tmp/ci_score/baseline/score_{slug}.json`；必要时辅助读取对应 `.txt`，并通过 `alpha.fins.storage` 核查原文。
 - 当前 form 内优先级：
   1. GateFail
   2. 高频扣分（同一维度、至少 3 个 ticker 受影响）

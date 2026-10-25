@@ -4,11 +4,11 @@
 
 ## 文件说明
 
-- `dayu_docling_integration_fixture.pdf`
+- `alpha_docling_integration_fixture.pdf`
   - 一页、可搜索文本 PDF
   - 包含标题、章节、小段正文和 1 个稳定表格
   - 用于验证真实 `PDF -> Docling -> Markdown / _docling.json` 链路
-- `dayu_docling_integration_fixture.source.html`
+- `alpha_docling_integration_fixture.source.html`
   - 生成上述 PDF 的源 HTML
   - 便于后续重新生成或审阅断言依据
 

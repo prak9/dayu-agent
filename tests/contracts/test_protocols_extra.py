@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.contracts.cancellation import CancellationToken
-from dayu.contracts.protocols import ToolExecutionContext
+from alpha.contracts.cancellation import CancellationToken
+from alpha.contracts.protocols import ToolExecutionContext
 
 
 @pytest.mark.unit

@@ -11,7 +11,7 @@ from typing import Any, Optional, cast
 
 import pytest
 
-from dayu.fins.processors.financial_enhancer import (
+from alpha.fins.processors.financial_enhancer import (
     FinsProcessorMixin,
     extra_financial_table_fields,
     is_financial_table,
@@ -894,7 +894,7 @@ class TestFinsProcessorMixin:
         Raises:
             AssertionError: 断言失败时抛出。
         """
-        from dayu.fins.processors.fins_bs_processor import FinsBSProcessor
+        from alpha.fins.processors.fins_bs_processor import FinsBSProcessor
         assert issubclass(FinsBSProcessor, FinsProcessorMixin)
         mro_names = [c.__name__ for c in FinsBSProcessor.__mro__]
         mixin_idx = mro_names.index("FinsProcessorMixin")
@@ -913,7 +913,7 @@ class TestFinsProcessorMixin:
         Raises:
             AssertionError: 断言失败时抛出。
         """
-        from dayu.fins.processors.fins_docling_processor import FinsDoclingProcessor
+        from alpha.fins.processors.fins_docling_processor import FinsDoclingProcessor
         assert issubclass(FinsDoclingProcessor, FinsProcessorMixin)
 
     def test_fins_markdown_processor_inherits_mixin(self) -> None:
@@ -928,5 +928,5 @@ class TestFinsProcessorMixin:
         Raises:
             AssertionError: 断言失败时抛出。
         """
-        from dayu.fins.processors.fins_markdown_processor import FinsMarkdownProcessor
+        from alpha.fins.processors.fins_markdown_processor import FinsMarkdownProcessor
         assert issubclass(FinsMarkdownProcessor, FinsProcessorMixin)

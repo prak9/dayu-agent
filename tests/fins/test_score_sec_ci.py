@@ -11,9 +11,9 @@ from typing import Any
 
 import pytest
 
-from dayu.fins.domain.document_models import ProcessedCreateRequest, SourceDocumentUpsertRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.score_sec_ci import (
+from alpha.fins.domain.document_models import ProcessedCreateRequest, SourceDocumentUpsertRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.score_sec_ci import (
     BatchScore,
     CompletenessFailure,
     DimensionScore,
@@ -2495,9 +2495,9 @@ class TestReportAndCliPaths:
         def _fake_write_md(path: str, batch: BatchScore, cfg: ScoreConfig, form_type: str) -> None:
             calls["md"].append(path)
 
-        monkeypatch.setattr("dayu.fins.score_sec_ci.write_json_report", _fake_write_json)
-        monkeypatch.setattr("dayu.fins.score_sec_ci.write_markdown_report", _fake_write_md)
-        monkeypatch.setattr("dayu.fins.score_sec_ci._print_console_summary", lambda batch, form_type: None)
+        monkeypatch.setattr("alpha.fins.score_sec_ci.write_json_report", _fake_write_json)
+        monkeypatch.setattr("alpha.fins.score_sec_ci.write_markdown_report", _fake_write_md)
+        monkeypatch.setattr("alpha.fins.score_sec_ci._print_console_summary", lambda batch, form_type: None)
 
         class _Args:
             """main 测试参数。"""
@@ -2512,13 +2512,13 @@ class TestReportAndCliPaths:
             min_batch_avg = 85.0
             min_batch_p10 = 78.0
 
-        monkeypatch.setattr("dayu.fins.score_sec_ci.parse_args", lambda argv=None: _Args())
-        monkeypatch.setattr("dayu.fins.score_sec_ci.score_batch", lambda **kwargs: self._make_batch(passed=True))
+        monkeypatch.setattr("alpha.fins.score_sec_ci.parse_args", lambda argv=None: _Args())
+        monkeypatch.setattr("alpha.fins.score_sec_ci.score_batch", lambda **kwargs: self._make_batch(passed=True))
         assert main([]) == 0
         assert calls["json"][0].endswith("score_10k_ci.json")
         assert calls["md"][0].endswith("score_10k_ci.md")
 
-        monkeypatch.setattr("dayu.fins.score_sec_ci.score_batch", lambda **kwargs: self._make_batch(passed=False))
+        monkeypatch.setattr("alpha.fins.score_sec_ci.score_batch", lambda **kwargs: self._make_batch(passed=False))
         assert main([]) == 1
 
     def test_main_uses_default_portfolio_base_when_cli_omits_base(self, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -2539,16 +2539,16 @@ class TestReportAndCliPaths:
             min_batch_avg = 85.0
             min_batch_p10 = 78.0
 
-        monkeypatch.setattr("dayu.fins.score_sec_ci.parse_args", lambda argv=None: _Args())
+        monkeypatch.setattr("alpha.fins.score_sec_ci.parse_args", lambda argv=None: _Args())
 
         def _fake_score_batch(**kwargs: object) -> BatchScore:
             observed.append(str(kwargs.get("base")))
             return self._make_batch(passed=True)
 
-        monkeypatch.setattr("dayu.fins.score_sec_ci.score_batch", _fake_score_batch)
-        monkeypatch.setattr("dayu.fins.score_sec_ci.write_json_report", lambda *args, **kwargs: None)
-        monkeypatch.setattr("dayu.fins.score_sec_ci.write_markdown_report", lambda *args, **kwargs: None)
-        monkeypatch.setattr("dayu.fins.score_sec_ci._print_console_summary", lambda *args, **kwargs: None)
+        monkeypatch.setattr("alpha.fins.score_sec_ci.score_batch", _fake_score_batch)
+        monkeypatch.setattr("alpha.fins.score_sec_ci.write_json_report", lambda *args, **kwargs: None)
+        monkeypatch.setattr("alpha.fins.score_sec_ci.write_markdown_report", lambda *args, **kwargs: None)
+        monkeypatch.setattr("alpha.fins.score_sec_ci._print_console_summary", lambda *args, **kwargs: None)
 
         assert main([]) == 0
         assert observed == ["workspace"]

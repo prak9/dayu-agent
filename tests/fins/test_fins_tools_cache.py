@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-from dayu.fins.tools.cache import ProcessorCacheKey, ProcessorLRUCache
+from alpha.fins.tools.cache import ProcessorCacheKey, ProcessorLRUCache
 
 
 @pytest.mark.unit

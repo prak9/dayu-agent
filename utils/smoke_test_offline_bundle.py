@@ -1,4 +1,4 @@
-"""验证 Dayu Agent 离线安装包。
+"""验证 Alpha Agent 离线安装包。
 
 本脚本会把离线安装包解压到临时目录，创建干净虚拟环境，执行离线安装脚本，
 并验证最小 import / CLI smoke 流程是否通过。
@@ -149,17 +149,17 @@ def _run_smoke_checks(python_path: Path, scripts_dir: Path) -> None:
         subprocess.CalledProcessError：任一 smoke 命令失败时抛出。
     """
 
-    _run_command([str(python_path), "-c", "import dayu"])
-    dayu_cli = scripts_dir / ("dayu-cli.exe" if os.name == "nt" else "dayu-cli")
-    dayu_wechat = scripts_dir / ("dayu-wechat.exe" if os.name == "nt" else "dayu-wechat")
-    dayu_render = scripts_dir / ("dayu-render.exe" if os.name == "nt" else "dayu-render")
-    _run_command([str(dayu_cli), "--help"])
-    _run_command([str(dayu_wechat), "--help"])
-    # `dayu-web --help` 当前尚未完成，暂不作为离线包 smoke 阻塞项。
-    # dayu_web = scripts_dir / ("dayu-web.exe" if os.name == "nt" else "dayu-web")
-    # _run_command([str(dayu_web), "--help"])
-    _run_command([str(dayu_render), "--help"])
-    _run_command([str(dayu_cli), "init", "--help"])
+    _run_command([str(python_path), "-c", "import alpha"])
+    alpha_cli = scripts_dir / ("alpha.exe" if os.name == "nt" else "alpha")
+    alpha_wechat = scripts_dir / ("alpha-wechat.exe" if os.name == "nt" else "alpha-wechat")
+    alpha_render = scripts_dir / ("alpha-render.exe" if os.name == "nt" else "alpha-render")
+    _run_command([str(alpha_cli), "--help"])
+    _run_command([str(alpha_wechat), "--help"])
+    # `alpha-web --help` 当前尚未完成，暂不作为离线包 smoke 阻塞项。
+    # alpha_web = scripts_dir / ("alpha-web.exe" if os.name == "nt" else "alpha-web")
+    # _run_command([str(alpha_web), "--help"])
+    _run_command([str(alpha_render), "--help"])
+    _run_command([str(alpha_cli), "init", "--help"])
 
 
 def main() -> None:
@@ -179,7 +179,7 @@ def main() -> None:
 
     args = _parse_args()
     archive_path = args.archive.resolve()
-    with tempfile.TemporaryDirectory(prefix="dayu-offline-smoke-") as temp_dir_name:
+    with tempfile.TemporaryDirectory(prefix="alpha-offline-smoke-") as temp_dir_name:
         temp_root = Path(temp_dir_name)
         extraction_root = temp_root / "bundle"
         extraction_root.mkdir(parents=True, exist_ok=True)

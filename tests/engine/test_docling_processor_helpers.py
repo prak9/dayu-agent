@@ -10,9 +10,9 @@ import pandas as pd
 import pytest
 from docling_core.types.doc.document import DoclingDocument, NodeItem, TableItem
 
-from dayu.engine.processors import docling_processor as dp
-from dayu.engine.processors.docling_processor import DoclingProcessor
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.engine.processors import docling_processor as dp
+from alpha.engine.processors.docling_processor import DoclingProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 @dataclass
@@ -325,7 +325,7 @@ def _build_processor(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Docling
         (table, 1),
     ]
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: _FakeDocument(linear_items=linear_items, tables=[table]),
     )
     return DoclingProcessor(_make_source(json_path))

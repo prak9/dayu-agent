@@ -1,0 +1,56 @@
+# Reconcile Prior Claims And Learn From Repeated Errors
+
+Use for earnings/thesis updates, review of prior judgments, or a requested cross-case review. This is a view over the existing memo and evidence record, not a new ledger or a requirement to rebuild a Full report. A first-time stock analysis does not need retrospective scoring.
+
+## Reconcile The Old Claim Before Writing A New Story
+
+Retrieve the relevant dated memo and original information set through authorized sources. Preserve claim IDs, original forecast ranges, definitions and resolution windows. If no prior forecast is recoverable, say `prior forecast unavailable`: analyze what is supported and establish a dated baseline in the response. Prior-year actuals, management guidance and consensus are separate comparators, not substitutes for the analyst's missing prediction.
+
+For claims materially affected by the update, use a compact row or equivalent prose:
+
+| Prior claim/version | What should be observable by now | Actual evidence and original source | Resolution and rival explanation | Model/value consequence |
+|---|---|---|---|---|
+| Original range, metric basis and horizon | Measurement, maturity and disclosure timing | Comparable actual, unavailable item or changed perimeter | Met / missed / not due / unresolvable; distinguish cause from outcome | Changed input, uncertainty, value requirement and next discriminating check |
+
+Compare equal periods, units, cohorts and reporting perimeters. A restatement or definition change may require a separately labeled reconciliation, not rewriting the original forecast. Resolve numerical accuracy separately from mechanism support and investment payoff: a forecast can miss while the cause remains unknown; a hit does not uniquely establish its cause. Retain conflicting evidence and management's explanation as a hypothesis until supported.
+
+Trace material revisions through the affected revenue/cost, reinvestment, cash-flow and per-share assumptions. Distinguish changed business estimates from changed discount/terminal assumptions and the current quote. Hold other inputs fixed for attribution when meaningful, then reconcile interactions in the joint result; do not imply a uniquely additive causal bridge. If a model input is missing, identify the direction or sensitivity and leave numeric value unresolved. Do not manufacture a probability change or target price merely to complete the row.
+
+Make clear what changed in the model, within that same row or explanation:
+
+- **Parameter:** the mechanism remains, but an estimated level, rate, cost or timing changes.
+- **Structure:** evidence supports adding, removing or changing a mechanism, relationship or interaction—not just fitting a new number to the miss.
+- **Boundary:** retain the mechanism only for the supported segment, lifecycle stage or operating conditions; do not generalize a local failure to the whole business.
+- **No warranted revision yet:** noise or insufficient discriminating evidence leaves rival explanations open. Record the miss and uncertainty without inventing a replacement story.
+
+These distinctions can coexist; they are not a required labeling exercise for every update. Tie the smallest warranted revision to the evidence and a changed, observable next prediction (or explain why it does not change). A story fitted to the old residual is only a candidate explanation until later evidence discriminates it. A numerical miss alone does not identify a structural failure, and a numerical hit alone does not validate the mechanism. Preserve the old forecast and its conditions rather than retroactively narrowing it.
+
+Keep the **old claim's resolution** separate from the **current investment case**. A new profitable business or higher share price cannot turn a failed original premise into a correct forecast. Equally, a failed premise does not automatically rule out a newly supported case: examine its own mechanism, funding/transition costs, governance, per-share economics and current valuation. Preserve versions and state whether this is parameter repair, a genuinely new thesis or an unsupported replacement story.
+
+An earnings release is a review opportunity, not every claim's settlement date. Separate the operating-delivery clock from market repricing: flat prices alone do not settle operating claims; repeated missed delivery and funding needs cannot be dismissed as slow recognition. Keep long-horizon claims open until their own evidence or falsifier warrants resolution; an earlier breached necessary condition can warrant an earlier update. Material off-cycle evidence need not wait for earnings. When no material claim changes, a concise `no thesis change` with the evidence window suffices. Do not rebuild background, all four quarters or an unaffected model solely for this view.
+
+## Learn Across Comparable Claims, Not Only Winning Stocks
+
+Use this section only when reviewing a supplied or authorized history of judgments. Group by the kind of claim and mechanism—operating leverage, reinvestment, advantage duration, dilution or capital allocation—not just ticker, sector or realized return. Retain dates, horizons and comparable outcome definitions; separate errors in data, mechanism, timing and valuation. Include dated rejected/unchosen cases when available, unresolved claims and missing records so a selected history is not mistaken for the whole population.
+
+Look for repeated directional errors with a plausible shared cause. Account for common macro shocks, supply-chain links, overlapping horizons and repeated forecasts of one event; several rows are not necessarily several independent observations. Small or selected samples support a provisional failure hypothesis, not a calibrated personal skill score, permanent sector ban or universal probability haircut.
+
+Where the history permits, contrast comparable cases with the same apparent signal but different operating outcomes, not just several failures that fit one story. Record the signal combination, competing explanations, subsequent outcome and evidence that distinguished them; separate what was observable at the original decision from what became known later. For example, rising receivables with later normal collections versus rising overdue balances and credit losses can teach a collection-quality check, not “receivables growth is bad.” Neither reading volume nor pattern familiarity validates a rule. Reuse the existing memo/journal, preserve counterexamples and applicability limits, and test the proposed distinction on later cases rather than selecting winners with hindsight.
+
+Convert a supported pattern into a narrow, checkable change: failure pattern -> suspected omitted mechanism -> affected assumption/evidence check -> applicable boundary -> test on later comparable cases not used to derive it. For example, recurring ramp-cost misses may justify separating ramp utilization/cost from mature economics before assuming scale-driven margins, not assuming scale economies never exist. Preserve old judgments and exceptions; retire or narrow the correction when fresh evidence contradicts it. “Be more careful” is not an operational lesson.
+
+## Locate The Skill Gap And Practice The Correction
+
+For a requested process review, distinguish discovery, analysis, entry, holding and exit rather than grading all five by final P&L. Use only stages for which contemporaneous evidence exists: was a candidate overlooked despite an observable signal; was the business or price misread; did entry ignore a known funding constraint; did holding ignore a breached thesis; did exit contradict the then-available evidence? A stock rising after a sale is not by itself a selling error, and buying a subsequent winner is not proof of sound analysis. Include dated non-purchases where available; never invent what the investor knew or could have executed.
+
+Choose the consequential recurring weakness, then practice a small observable task: reconcile a cash-flow bridge, reconstruct a past decision with later information hidden, distinguish rival mechanisms, or reassess an exit from its original information set. Specify the expected answer or observation before revealing outcomes, obtain evidence-based feedback, revise, and test on another comparable case. Historical winner comparisons follow the [matched-outcome checks](mode-d-serenity-alpha.md#neglect-and-historical-winners). Simulations can test reasoning but do not establish live execution skill. Reading hours, number of cases, a long career or a painful loss are not proficiency thresholds; no real-money loss is required for practice.
+
+Use feedback to find an unsupported link, omitted evidence or an unfamiliar mechanism—not to collect approval. Ask a reviewer to identify the precise claim, evidence and decision consequence; distinguish factual correction, competing model and personal preference. Resolve substantive disagreement with a discriminating check, not status, confidence or a vote. A dissenting view deserves examination, not automatic acceptance or rejection; external contact still requires authorization.
+
+For an authorized watchlist or repeated comparison, keep the existing concise dated thesis with its falsifier and the price/evidence condition that would make it actionable. Compare holdings and unchosen candidates at a common as-of date and relevant horizon using net scenario payoffs, downside, funding path and uncertainty; two to three years is an example, not a fixed horizon. A precise IRR ranking is unwarranted when cash-flow timing or outcomes are poorly bounded, and a higher estimated return alone need not justify switching. Append material updates without erasing the initial view. Use supported intermediate milestones to shorten feedback delay, not stock-price noise or forced quarterly settlement of long-term claims.
+
+Change the process only as far as the diagnosed error warrants, preserving the earlier rule, reason for revision and applicability limits in existing records. Check whether the correction improves later comparable judgments rather than merely fitting a recent win or loss. Keep principles stable enough to evaluate but revise them when mechanisms or conditions change; neither style loyalty nor perpetual strategy switching is learning.
+
+When this history feeds an authorized [research flywheel](../../research-craft/references/research-flywheel.md), retain the original claim ID, information cutoff, resolution rule and due date alongside linked cases/runs. Use a fast loop for source, accounting, calculation and reasoning checks, and a slower loop for comparable operating outcomes and forecast calibration. Keep not-yet-due and unresolvable claims in the denominator accounting without grading them as misses. Sample successes and unchosen cases as well as reported failures; hard-case practice can be oversampled while representative evaluation keeps its declared distribution. A replay of supplied figures tests reconciliation, not open-ended research or investment returns.
+
+Use the existing journal and the skill's delivery authorization. A request to analyze or reconcile does not itself authorize a file update, new watchlist, alert, Notion write or trade. Missing history limits retrospective conclusions, not completion of the feasible current analysis.

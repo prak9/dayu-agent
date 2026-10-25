@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.fins.ticker_normalization import NormalizedTicker
-from dayu.fins.tools import register_fins_ingestion_tools
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.fins.ticker_normalization import NormalizedTicker
+from alpha.fins.tools import register_fins_ingestion_tools
 
 
 class _FakeJobManager:
@@ -148,7 +148,7 @@ class _FakeJobManager:
 
 @pytest.mark.unit
 def test_ingestion_tool_schema_hides_internal_switches(monkeypatch: pytest.MonkeyPatch) -> None:
-    """验证长事务工具 schema 不暴露内部开关和文档级过滤参数。"""
+    """验证处理入口支持选定文档且不泄漏内部开关。参数：环境。返回：无。异常：断言失败。"""
 
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
@@ -156,10 +156,23 @@ def test_ingestion_tool_schema_hides_internal_switches(monkeypatch: pytest.Monke
     download_schema = registry.schemas["start_financial_filing_download_job"]["function"]["parameters"]["properties"]
 
     assert "rebuild" not in download_schema
-    assert "start_financial_document_preprocess_job" not in registry.schemas
+    process_schema = registry.schemas["start_financial_document_preprocess_job"]["function"]["parameters"]["properties"]
+    assert "document_ids" in process_schema
+    assert "ci" not in process_schema
     assert "FY" in download_schema["form_types"]["items"]["enum"]
     assert "Q3" in download_schema["form_types"]["items"]["enum"]
     assert "Q4" in download_schema["form_types"]["items"]["enum"]
+
+
+def test_process_tool_passes_selected_documents(monkeypatch: pytest.MonkeyPatch) -> None:
+    """预处理只接受明确选定文档。参数：环境。返回：无。异常：断言失败。"""
+    manager = _FakeJobManager()
+    registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
+    response = _execute_tool(registry, "start_financial_document_preprocess_job", {
+        "ticker": "BABA", "document_ids": ["fil_2026", "fil_2025"],
+    })
+    assert response["job"]["job_type"] == "document_preprocess"
+    assert manager.start_process_calls == [{"ticker": "BABA", "overwrite": False, "document_ids": ["fil_2026", "fil_2025"]}]
 
 
 @pytest.mark.unit
@@ -252,7 +265,7 @@ def test_start_download_job_tool_supports_cn_and_hk_tickers(
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     monkeypatch.setattr(
         module,
@@ -296,7 +309,7 @@ def test_start_download_job_tool_rejects_cross_market_forms(
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     monkeypatch.setattr(
         module,
@@ -369,7 +382,7 @@ def _register_tools(
 ) -> ToolRegistry:
     """注册带 fake manager 的 ingestion 工具集合。"""
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     monkeypatch.setattr(module, "get_or_create_ingestion_job_manager", lambda **_kwargs: manager)
 
@@ -400,7 +413,7 @@ def test_register_ingestion_tools_raises_when_registry_is_none(
 ) -> None:
     """验证 registry 为 None 时抛出 ValueError。"""
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     monkeypatch.setattr(module, "get_or_create_ingestion_job_manager", lambda **_kwargs: None)
 
@@ -414,7 +427,7 @@ def test_register_ingestion_tools_raises_when_service_factory_is_none(
 ) -> None:
     """验证 service_factory 为 None 时抛出 ValueError。"""
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     monkeypatch.setattr(module, "get_or_create_ingestion_job_manager", lambda **_kwargs: None)
 
@@ -428,7 +441,7 @@ def test_register_ingestion_tools_raises_when_manager_key_is_blank(
 ) -> None:
     """验证 manager_key 为空白时抛出 ValueError。"""
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     monkeypatch.setattr(module, "get_or_create_ingestion_job_manager", lambda **_kwargs: None)
 
@@ -443,8 +456,8 @@ def test_register_ingestion_tools_raises_when_manager_key_is_blank(
 def test_require_non_empty_text_raises_on_empty() -> None:
     """验证空值触发 ToolArgumentError。"""
 
-    from dayu.engine.exceptions import ToolArgumentError
-    from dayu.fins._converters import require_non_empty_text
+    from alpha.engine.exceptions import ToolArgumentError
+    from alpha.fins._converters import require_non_empty_text
 
     with pytest.raises(ToolArgumentError):
         require_non_empty_text("", empty_error=ToolArgumentError("t", "a", "", "不能为空"))
@@ -454,8 +467,8 @@ def test_require_non_empty_text_raises_on_empty() -> None:
 def test_require_non_empty_text_raises_on_none() -> None:
     """验证 None 值触发 ToolArgumentError。"""
 
-    from dayu.engine.exceptions import ToolArgumentError
-    from dayu.fins._converters import require_non_empty_text
+    from alpha.engine.exceptions import ToolArgumentError
+    from alpha.fins._converters import require_non_empty_text
 
     with pytest.raises(ToolArgumentError):
         require_non_empty_text(None, empty_error=ToolArgumentError("t", "a", None, "不能为空"))
@@ -468,7 +481,7 @@ def test_require_non_empty_text_raises_on_none() -> None:
 def test_normalize_form_types_returns_none_for_none_input() -> None:
     """验证 None 输入返回 None。"""
 
-    from dayu.fins.tools.ingestion_tools import _normalize_form_types
+    from alpha.fins.tools.ingestion_tools import _normalize_form_types
 
     assert _normalize_form_types(None) is None
 
@@ -477,8 +490,8 @@ def test_normalize_form_types_returns_none_for_none_input() -> None:
 def test_normalize_form_types_raises_on_blank_item() -> None:
     """验证表单数组包含空白项时抛出 ToolArgumentError。"""
 
-    from dayu.engine.exceptions import ToolArgumentError
-    from dayu.fins.tools.ingestion_tools import _normalize_form_types
+    from alpha.engine.exceptions import ToolArgumentError
+    from alpha.fins.tools.ingestion_tools import _normalize_form_types
 
     with pytest.raises(ToolArgumentError, match="不能包含空白表单类型"):
         _normalize_form_types(["10-K", "  "])
@@ -488,7 +501,7 @@ def test_normalize_form_types_raises_on_blank_item() -> None:
 def test_normalize_form_types_returns_none_for_empty_list() -> None:
     """验证空列表返回 None。"""
 
-    from dayu.fins.tools.ingestion_tools import _normalize_form_types
+    from alpha.fins.tools.ingestion_tools import _normalize_form_types
 
     assert _normalize_form_types([]) is None
 
@@ -497,7 +510,7 @@ def test_normalize_form_types_returns_none_for_empty_list() -> None:
 def test_normalize_form_types_deduplicates_and_sorts() -> None:
     """验证去重与排序。"""
 
-    from dayu.fins.tools.ingestion_tools import _normalize_form_types
+    from alpha.fins.tools.ingestion_tools import _normalize_form_types
 
     assert _normalize_form_types(["10-Q", "10-K", "10-K"]) == ["10-K", "10-Q"]
 
@@ -506,8 +519,8 @@ def test_normalize_form_types_deduplicates_and_sorts() -> None:
 def test_validate_download_form_types_for_market_raises_tool_argument_error() -> None:
     """验证跨市场 form 校验真源抛出工具参数错误。"""
 
-    from dayu.engine.exceptions import ToolArgumentError
-    from dayu.fins.tools.ingestion_tools import _validate_download_form_types_for_market
+    from alpha.engine.exceptions import ToolArgumentError
+    from alpha.fins.tools.ingestion_tools import _validate_download_form_types_for_market
 
     with pytest.raises(ToolArgumentError, match="CN 市场不支持这些表单"):
         _validate_download_form_types_for_market(form_types=["10-K"], market="CN")
@@ -523,7 +536,7 @@ def test_start_process_job_tool(monkeypatch: pytest.MonkeyPatch) -> None:
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     name, func, schema = module._create_start_process_job_tool(registry=registry, manager=manager)  # type: ignore[arg-type]
     registry.register(name, func, schema)
@@ -542,7 +555,7 @@ def test_get_process_job_status_tool(monkeypatch: pytest.MonkeyPatch) -> None:
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     name, func, schema = module._create_get_process_job_status_tool(registry=registry, manager=manager)  # type: ignore[arg-type]  # type: ignore[arg-type]
     registry.register(name, func, schema)
@@ -561,7 +574,7 @@ def test_get_process_job_status_tool_not_found(monkeypatch: pytest.MonkeyPatch) 
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     name, func, schema = module._create_get_process_job_status_tool(registry=registry, manager=manager)  # type: ignore[arg-type]
     registry.register(name, func, schema)
@@ -579,7 +592,7 @@ def test_cancel_process_job_tool(monkeypatch: pytest.MonkeyPatch) -> None:
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     name, func, schema = module._create_cancel_process_job_tool(registry=registry, manager=manager)  # type: ignore[arg-type]
     registry.register(name, func, schema)
@@ -598,7 +611,7 @@ def test_cancel_process_job_tool_not_found(monkeypatch: pytest.MonkeyPatch) -> N
     manager = _FakeJobManager()
     registry = _register_tools(monkeypatch=monkeypatch, manager=manager)
 
-    from dayu.fins.tools import ingestion_tools as module
+    from alpha.fins.tools import ingestion_tools as module
 
     name, func, schema = module._create_cancel_process_job_tool(registry=registry, manager=manager)  # type: ignore[arg-type]
     registry.register(name, func, schema)
@@ -617,7 +630,7 @@ def test_cancel_process_job_tool_not_found(monkeypatch: pytest.MonkeyPatch) -> N
 def test_build_cancel_response_snapshot_is_none() -> None:
     """验证 snapshot 为 None 时 cancellation_outcome 映射为 job_not_found。"""
 
-    from dayu.fins.tools.ingestion_tools import _build_cancel_response
+    from alpha.fins.tools.ingestion_tools import _build_cancel_response
 
     result = _build_cancel_response(
         cancellation_outcome="some_outcome",
@@ -638,7 +651,7 @@ def test_build_cancel_response_snapshot_is_none() -> None:
 def test_build_public_job_raises_when_job_missing() -> None:
     """验证 snapshot.job 缺失时抛出 ValueError。"""
 
-    from dayu.fins.tools.ingestion_tools import _build_public_job
+    from alpha.fins.tools.ingestion_tools import _build_public_job
 
     with pytest.raises(ValueError, match="snapshot.job 缺失"):
         _build_public_job({"progress": {}})
@@ -651,7 +664,7 @@ def test_build_public_job_raises_when_job_missing() -> None:
 def test_build_public_progress_returns_none_for_non_dict() -> None:
     """验证 progress 非 dict 时返回 None。"""
 
-    from dayu.fins.tools.ingestion_tools import _build_public_progress
+    from alpha.fins.tools.ingestion_tools import _build_public_progress
 
     assert _build_public_progress({"progress": "not_a_dict"}) is None
     assert _build_public_progress({}) is None
@@ -664,7 +677,7 @@ def test_build_public_progress_returns_none_for_non_dict() -> None:
 def test_map_public_job_type_process() -> None:
     """验证 process 类型映射为 document_preprocess。"""
 
-    from dayu.fins.tools.ingestion_tools import _map_public_job_type
+    from alpha.fins.tools.ingestion_tools import _map_public_job_type
 
     assert _map_public_job_type("process") == "document_preprocess"
 
@@ -673,7 +686,7 @@ def test_map_public_job_type_process() -> None:
 def test_map_public_job_type_unknown() -> None:
     """验证未知类型映射为 unknown。"""
 
-    from dayu.fins.tools.ingestion_tools import _map_public_job_type
+    from alpha.fins.tools.ingestion_tools import _map_public_job_type
 
     assert _map_public_job_type("something_else") == "unknown"
     assert _map_public_job_type(None) == "unknown"
@@ -686,7 +699,7 @@ def test_map_public_job_type_unknown() -> None:
 def test_has_failed_units_true() -> None:
     """验证存在失败计数时返回 True。"""
 
-    from dayu.fins.tools.ingestion_tools import _has_failed_units
+    from alpha.fins.tools.ingestion_tools import _has_failed_units
 
     assert _has_failed_units({"filings_failed": 2, "filings_total": 5}) is True
 
@@ -695,7 +708,7 @@ def test_has_failed_units_true() -> None:
 def test_has_failed_units_false_when_zero() -> None:
     """验证失败计数为 0 时返回 False。"""
 
-    from dayu.fins.tools.ingestion_tools import _has_failed_units
+    from alpha.fins.tools.ingestion_tools import _has_failed_units
 
     assert _has_failed_units({"filings_failed": 0}) is False
 
@@ -704,7 +717,7 @@ def test_has_failed_units_false_when_zero() -> None:
 def test_has_failed_units_false_for_non_dict() -> None:
     """验证非 dict 输入返回 False。"""
 
-    from dayu.fins.tools.ingestion_tools import _has_failed_units
+    from alpha.fins.tools.ingestion_tools import _has_failed_units
 
     assert _has_failed_units(None) is False
     assert _has_failed_units("string") is False
@@ -714,7 +727,7 @@ def test_has_failed_units_false_for_non_dict() -> None:
 def test_has_failed_units_skips_non_int_values() -> None:
     """验证非整数值被跳过。"""
 
-    from dayu.fins.tools.ingestion_tools import _has_failed_units
+    from alpha.fins.tools.ingestion_tools import _has_failed_units
 
     assert _has_failed_units({"materials_failed": "abc"}) is False
 
@@ -726,7 +739,7 @@ def test_has_failed_units_skips_non_int_values() -> None:
 def test_build_next_step_stop_or_retry_when_succeeded_with_failed_units() -> None:
     """验证 succeeded 状态但有失败单元时返回 stop_or_retry。"""
 
-    from dayu.fins.tools.ingestion_tools import _build_next_step
+    from alpha.fins.tools.ingestion_tools import _build_next_step
 
     snapshot = {
         "job": {"job_id": "j1", "job_type": "download", "ticker": "AAPL", "status": "succeeded", "stage": "done", "created_at": None, "started_at": None, "finished_at": None},
@@ -742,7 +755,7 @@ def test_build_next_step_stop_or_retry_when_succeeded_with_failed_units() -> Non
 def test_build_next_step_stop_when_succeeded_no_failed_units() -> None:
     """验证 succeeded 状态且无失败单元时返回 stop。"""
 
-    from dayu.fins.tools.ingestion_tools import _build_next_step
+    from alpha.fins.tools.ingestion_tools import _build_next_step
 
     snapshot = {
         "job": {"job_id": "j1", "job_type": "download", "ticker": "AAPL", "status": "succeeded", "stage": "done", "created_at": None, "started_at": None, "finished_at": None},
@@ -757,7 +770,7 @@ def test_build_next_step_stop_when_succeeded_no_failed_units() -> None:
 def test_build_next_step_poll_status_when_running() -> None:
     """验证 running 状态返回 poll_status。"""
 
-    from dayu.fins.tools.ingestion_tools import _build_next_step
+    from alpha.fins.tools.ingestion_tools import _build_next_step
 
     snapshot = {
         "job": {"job_id": "j1", "job_type": "download", "ticker": "AAPL", "status": "running", "stage": "downloading", "created_at": None, "started_at": None, "finished_at": None},
@@ -773,7 +786,7 @@ def test_build_next_step_poll_status_when_running() -> None:
 def test_build_next_step_stop_or_retry_when_failed() -> None:
     """验证 failed 状态返回 stop_or_retry。"""
 
-    from dayu.fins.tools.ingestion_tools import _build_next_step
+    from alpha.fins.tools.ingestion_tools import _build_next_step
 
     snapshot = {
         "job": {"job_id": "j1", "job_type": "download", "ticker": "AAPL", "status": "failed", "stage": "done", "created_at": None, "started_at": None, "finished_at": None},
@@ -792,7 +805,7 @@ def test_build_next_step_stop_or_retry_when_failed() -> None:
 def test_normalize_optional_text_none() -> None:
     """验证 None 返回 None。"""
 
-    from dayu.fins._converters import normalize_optional_text
+    from alpha.fins._converters import normalize_optional_text
 
     assert normalize_optional_text(None) is None
 
@@ -801,7 +814,7 @@ def test_normalize_optional_text_none() -> None:
 def test_normalize_optional_text_blank() -> None:
     """验证空白字符串返回 None。"""
 
-    from dayu.fins._converters import normalize_optional_text
+    from alpha.fins._converters import normalize_optional_text
 
     assert normalize_optional_text("  ") is None
 
@@ -810,7 +823,7 @@ def test_normalize_optional_text_blank() -> None:
 def test_normalize_optional_text_strips() -> None:
     """验证去空白。"""
 
-    from dayu.fins._converters import normalize_optional_text
+    from alpha.fins._converters import normalize_optional_text
 
     assert normalize_optional_text("  hello  ") == "hello"
 
@@ -819,7 +832,7 @@ def test_normalize_optional_text_strips() -> None:
 def test_require_non_empty_text_preserves_falsy_scalars() -> None:
     """验证必填文本收口不会把 0/False 误判为空。"""
 
-    from dayu.fins._converters import require_non_empty_text
+    from alpha.fins._converters import require_non_empty_text
 
     assert require_non_empty_text(0, empty_error=ValueError("bad")) == "0"
     assert require_non_empty_text(False, empty_error=ValueError("bad")) == "False"

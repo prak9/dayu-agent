@@ -24,9 +24,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from dayu.fins.downloaders.sec_downloader import BrowseEdgarFiling
-from dayu.fins.pipelines import sec_pipeline
-from dayu.fins.pipelines.sec_download_state import (
+from alpha.fins.downloaders.sec_downloader import BrowseEdgarFiling
+from alpha.fins.pipelines import sec_pipeline
+from alpha.fins.pipelines.sec_download_state import (
     _SEC_CACHE_CATEGORY_BROWSE_EDGAR,
     _SEC_CACHE_CATEGORY_SUBMISSIONS,
     _SEC_CACHE_DIR,
@@ -37,9 +37,9 @@ from dayu.fins.pipelines.sec_download_state import (
     _sec_cache_path,
     _write_sec_cache,
 )
-from dayu.fins.pipelines.sec_filing_collection import FilingRecord
-from dayu.fins.pipelines.sec_pipeline import SecPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.pipelines.sec_filing_collection import FilingRecord
+from alpha.fins.pipelines.sec_pipeline import SecPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
 
 
 # ---------------------------------------------------------------------------

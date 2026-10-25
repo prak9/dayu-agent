@@ -55,7 +55,7 @@ for form in "${FORMS[@]}"; do
 
   echo "[score-ci][$i/$sum][$form]"
 
-  python -m dayu.fins.score_sec_ci \
+  python -m alpha.fins.score_sec_ci \
     --form "$form" \
     --base "$BASE_DIR" \
     --tickers "$TICKERS" \

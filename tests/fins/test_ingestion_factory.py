@@ -9,13 +9,13 @@ from typing import Any, AsyncIterator, cast
 
 import pytest
 
-import dayu.fins.ingestion.factory as module
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.ingestion.process_events import ProcessEvent, ProcessEventType
-from dayu.fins.ingestion.service import FinsIngestionService
-from dayu.fins.pipelines.download_events import DownloadEvent, DownloadEventType
-from dayu.fins.ticker_normalization import NormalizedTicker
-from dayu.fins.storage import (
+import alpha.fins.ingestion.factory as module
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.ingestion.process_events import ProcessEvent, ProcessEventType
+from alpha.fins.ingestion.service import FinsIngestionService
+from alpha.fins.pipelines.download_events import DownloadEvent, DownloadEventType
+from alpha.fins.ticker_normalization import NormalizedTicker
+from alpha.fins.storage import (
     CompanyMetaRepositoryProtocol,
     DocumentBlobRepositoryProtocol,
     FilingMaintenanceRepositoryProtocol,

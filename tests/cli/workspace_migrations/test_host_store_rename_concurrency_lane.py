@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.cli.workspace_migrations.host_store_rename_concurrency_lane import (
+from alpha.cli.workspace_migrations.host_store_rename_concurrency_lane import (
     migrate_host_store_rename_concurrency_lane,
 )
 
@@ -56,7 +56,7 @@ def _read_row(db_path: Path, pending_turn_id: str) -> str:
 def test_migration_renames_top_level_concurrency_lane(tmp_path: Path) -> None:
     """顶层 ``host_policy.concurrency_lane`` 应被改名。"""
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     payload = {
         "host_policy": {
             "concurrency_lane": "write_chapter",
@@ -79,7 +79,7 @@ def test_migration_renames_top_level_concurrency_lane(tmp_path: Path) -> None:
 def test_migration_renames_nested_prepared_snapshot(tmp_path: Path) -> None:
     """嵌套 ``PreparedAgentTurnSnapshot.concurrency_lane`` 也要被改名。"""
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     payload = {
         "prepared_turn": {
             "scene_name": "x",
@@ -101,7 +101,7 @@ def test_migration_renames_nested_prepared_snapshot(tmp_path: Path) -> None:
 def test_migration_is_idempotent(tmp_path: Path) -> None:
     """二次执行必须是 no-op。"""
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     payload = {"host_policy": {"concurrency_lane": "write_chapter"}}
     _build_pending_turns_db(db_path, [("p1", json.dumps(payload))])
 
@@ -115,7 +115,7 @@ def test_migration_is_idempotent(tmp_path: Path) -> None:
 def test_migration_skips_rows_without_old_key(tmp_path: Path) -> None:
     """没有旧 key 的行不应被动。"""
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     payload = {"host_policy": {"business_concurrency_lane": "write_chapter"}}
     _build_pending_turns_db(db_path, [("p1", json.dumps(payload))])
 
@@ -134,7 +134,7 @@ def test_migration_missing_db_returns_zero(tmp_path: Path) -> None:
 def test_migration_missing_table_returns_zero(tmp_path: Path) -> None:
     """目标表不存在时返回 0 不抛异常。"""
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     conn = sqlite3.connect(str(db_path))
     try:
         conn.execute("CREATE TABLE other (id INTEGER)")
@@ -149,7 +149,7 @@ def test_migration_missing_table_returns_zero(tmp_path: Path) -> None:
 def test_migration_invalid_json_is_skipped(tmp_path: Path) -> None:
     """resume_source_json 非法 JSON 的行应被跳过。"""
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     good = {"host_policy": {"concurrency_lane": "write_chapter"}}
     _build_pending_turns_db(
         db_path,
@@ -173,7 +173,7 @@ def test_migration_invalid_json_is_skipped(tmp_path: Path) -> None:
 def test_migration_drops_old_key_when_new_key_already_exists(tmp_path: Path) -> None:
     """新旧 key 同时存在时丢弃旧 key，保留新 key。"""
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     payload = {
         "host_policy": {
             "concurrency_lane": "OLD",
@@ -200,7 +200,7 @@ def test_migration_propagates_sqlite_error(tmp_path: Path, monkeypatch: pytest.M
     旧 schema 还自称迁移成功。
     """
 
-    db_path = tmp_path / "dayu_host.db"
+    db_path = tmp_path / "alpha_host.db"
     _build_pending_turns_db(
         db_path,
         [("p1", json.dumps({"host_policy": {"concurrency_lane": "write_chapter"}}))],
@@ -209,7 +209,7 @@ def test_migration_propagates_sqlite_error(tmp_path: Path, monkeypatch: pytest.M
     def boom(_path: Path) -> sqlite3.Connection:
         raise sqlite3.OperationalError("disk I/O error")
 
-    import dayu.cli.workspace_migrations.host_store_rename_concurrency_lane as module
+    import alpha.cli.workspace_migrations.host_store_rename_concurrency_lane as module
 
     monkeypatch.setattr(module, "create_host_store_connection", boom)
 

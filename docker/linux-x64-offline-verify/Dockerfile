@@ -19,6 +19,6 @@ RUN apt-get update && \
 
 RUN python -m pip install --upgrade pip build
 
-WORKDIR /dayu-agent
+WORKDIR /alpha-agent
 
 CMD ["/bin/bash"]

@@ -7,11 +7,11 @@ from typing import Any, Optional
 
 import pytest
 
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.domain.document_models import ProcessedCreateRequest, ProcessedUpdateRequest
-from dayu.fins.domain.document_models import DocumentHandle, DocumentMeta, DocumentQuery, DocumentSummary, ProcessedDeleteRequest, ProcessedHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines import processing_helpers as helpers
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.domain.document_models import ProcessedCreateRequest, ProcessedUpdateRequest
+from alpha.fins.domain.document_models import DocumentHandle, DocumentMeta, DocumentQuery, DocumentSummary, ProcessedDeleteRequest, ProcessedHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines import processing_helpers as helpers
 
 
 @dataclass

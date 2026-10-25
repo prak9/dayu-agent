@@ -7,22 +7,22 @@ from typing import Any, Optional
 
 import pytest
 
-from dayu.engine.processors.base import SearchHit
-from dayu.engine.processors.source import Source
-from dayu.fins.domain.document_models import CompanyMeta, SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.tools.search_engine import (
+from alpha.engine.processors.base import SearchHit
+from alpha.engine.processors.source import Source
+from alpha.fins.domain.document_models import CompanyMeta, SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.tools.search_engine import (
     _build_search_query_expansions,
     _normalize_search_matches,
     _resolve_search_mode,
 )
-from dayu.fins.tools.search_models import (
+from alpha.fins.tools.search_models import (
     SEARCH_MODE_AUTO,
     SEARCH_MODE_EXACT,
     SEARCH_MODE_KEYWORD,
     SEARCH_MODE_SEMANTIC,
 )
-from dayu.fins.tools.service_helpers import (
+from alpha.fins.tools.service_helpers import (
     _infer_scale_from_decimals,
     _parse_xbrl_decimals_value,
 )
@@ -184,7 +184,7 @@ class TestResolveSearchMode:
         assert _resolve_search_mode("Keyword") == "keyword"
 
     def test_invalid_raises(self) -> None:
-        from dayu.engine.exceptions import ToolArgumentError
+        from alpha.engine.exceptions import ToolArgumentError
         with pytest.raises(ToolArgumentError):
             _resolve_search_mode("fuzzy")
 

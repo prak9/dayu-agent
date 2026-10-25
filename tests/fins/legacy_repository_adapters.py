@@ -10,9 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, BinaryIO, Callable, Literal, Optional, Protocol, cast
 
-from dayu.engine.processors.source import Source
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.fins.domain.document_models import (
+from alpha.engine.processors.source import Source
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.fins.domain.document_models import (
     CompanyMeta,
     CompanyMetaInventoryEntry,
     DocumentEntry,
@@ -29,17 +29,17 @@ from dayu.fins.domain.document_models import (
     SourceDocumentUpsertRequest,
     SourceHandle,
 )
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines.tool_snapshot_export import export_tool_snapshot as _export_tool_snapshot
-from dayu.fins.storage import (
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines.tool_snapshot_export import export_tool_snapshot as _export_tool_snapshot
+from alpha.fins.storage import (
     CompanyMetaRepositoryProtocol,
     DocumentBlobRepositoryProtocol,
     ProcessedDocumentRepositoryProtocol,
     SourceDocumentRepositoryProtocol,
 )
-from dayu.fins.tools import FinsToolLimits
-from dayu.fins.tools.fins_tools import register_fins_read_tools as _register_fins_read_tools
-from dayu.fins.tools.service import FinsToolService as _FinsToolService
+from alpha.fins.tools import FinsToolLimits
+from alpha.fins.tools.fins_tools import register_fins_read_tools as _register_fins_read_tools
+from alpha.fins.tools.service import FinsToolService as _FinsToolService
 
 
 def _forward_legacy_processed_write(

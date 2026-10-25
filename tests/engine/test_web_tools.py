@@ -15,12 +15,12 @@ import pytest
 import requests
 from urllib3.exceptions import MaxRetryError, ReadTimeoutError as Urllib3ReadTimeoutError
 
-from dayu.contracts.protocols import ToolExecutionContext
-from dayu.contracts.cancellation import CancelledError, CancellationToken
-from dayu.engine.processors.html_pipeline import HtmlPipelineStageError
-from dayu.engine.tool_errors import ToolBusinessError
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.engine.tools.web_search_providers import (
+from alpha.contracts.protocols import ToolExecutionContext
+from alpha.contracts.cancellation import CancelledError, CancellationToken
+from alpha.engine.processors.html_pipeline import HtmlPipelineStageError
+from alpha.engine.tool_errors import ToolBusinessError
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.engine.tools.web_search_providers import (
     _candidate_providers,
     _normalize_domains,
     _resolve_duckduckgo_result_url,
@@ -29,7 +29,7 @@ from dayu.engine.tools.web_search_providers import (
     _search_with_serper,
     _search_with_tavily,
 )
-from dayu.engine.tools.web_tools import (
+from alpha.engine.tools.web_tools import (
     _DEFAULT_BROWSER_USER_AGENT,
     _DEFAULT_SEC_USER_AGENT,
     _build_fetch_headers,
@@ -80,7 +80,7 @@ def _mock_public_dns(monkeypatch: pytest.MonkeyPatch) -> None:
         return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", (ip, 0))]
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.socket.getaddrinfo",
+        "alpha.engine.tools.web_tools.socket.getaddrinfo",
         _fake_getaddrinfo,
     )
 
@@ -616,7 +616,7 @@ def test_is_safe_public_url_blocks_private_dns_resolution(monkeypatch: pytest.Mo
         return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("10.8.0.12", 0))]
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.socket.getaddrinfo",
+        "alpha.engine.tools.web_tools.socket.getaddrinfo",
         _private_dns,
     )
 
@@ -649,7 +649,7 @@ def test_is_safe_public_url_allows_fake_ip_for_public_hostname(monkeypatch: pyte
         return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("198.18.12.34", 0))]
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.socket.getaddrinfo",
+        "alpha.engine.tools.web_tools.socket.getaddrinfo",
         _fake_ip_dns,
     )
 
@@ -735,9 +735,9 @@ def test_search_web_falls_back_to_next_provider(monkeypatch: pytest.MonkeyPatch)
     def _raise_error(**_kwargs: Any) -> list[dict[str, str]]:
         raise RuntimeError("boom")
 
-    monkeypatch.setattr("dayu.engine.tools.web_search_providers._search_with_tavily", _raise_error)
+    monkeypatch.setattr("alpha.engine.tools.web_search_providers._search_with_tavily", _raise_error)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_serper",
+        "alpha.engine.tools.web_search_providers._search_with_serper",
         lambda **_kwargs: [
             {
                 "title": "SEC",
@@ -788,11 +788,11 @@ def test_search_web_auto_missing_optional_api_keys_skips_provider_without_loggin
     serper_calls = 0
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers.Log.info",
+        "alpha.engine.tools.web_search_providers.Log.info",
         lambda message, *, module="APP": captured_infos.append(f"{module}|{message}"),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers.Log.warn",
+        "alpha.engine.tools.web_search_providers.Log.warn",
         lambda message, *, module="APP": captured_warns.append(f"{module}|{message}"),
     )
     monkeypatch.delenv("TAVILY_API_KEY", raising=False)
@@ -833,15 +833,15 @@ def test_search_web_auto_missing_optional_api_keys_skips_provider_without_loggin
         raise AssertionError("auto 模式缺少 SERPER_API_KEY 时不应调用 Serper")
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_tavily",
+        "alpha.engine.tools.web_search_providers._search_with_tavily",
         _fake_tavily,
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_serper",
+        "alpha.engine.tools.web_search_providers._search_with_serper",
         _fake_serper,
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_duckduckgo",
+        "alpha.engine.tools.web_search_providers._search_with_duckduckgo",
         lambda **_kwargs: [
             {
                 "title": "Example",
@@ -888,20 +888,20 @@ def test_search_web_explicit_provider_missing_api_key_still_logs_warning(
     captured_warns: list[str] = []
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers.Log.info",
+        "alpha.engine.tools.web_search_providers.Log.info",
         lambda message, *, module="APP": captured_infos.append(f"{module}|{message}"),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers.Log.warn",
+        "alpha.engine.tools.web_search_providers.Log.warn",
         lambda message, *, module="APP": captured_warns.append(f"{module}|{message}"),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_tavily",
+        "alpha.engine.tools.web_search_providers._search_with_tavily",
         lambda **_kwargs: (_ for _ in ()).throw(RuntimeError("TAVILY_API_KEY 未配置")),
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_duckduckgo",
+        "alpha.engine.tools.web_search_providers._search_with_duckduckgo",
         lambda **_kwargs: [
             {
                 "title": "Example",
@@ -943,7 +943,7 @@ def test_search_web_uses_duckduckgo_branch_and_filters_unsafe(monkeypatch: pytes
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_duckduckgo",
+        "alpha.engine.tools.web_search_providers._search_with_duckduckgo",
         lambda **_kwargs: [
             {"title": "local", "url": "http://localhost:8080", "snippet": "", "published_date": ""},
             {"title": "ok", "url": "https://example.com/news", "snippet": "", "published_date": ""},
@@ -982,7 +982,7 @@ def test_search_web_allows_private_network_results_when_enabled(monkeypatch: pyt
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_duckduckgo",
+        "alpha.engine.tools.web_search_providers._search_with_duckduckgo",
         lambda **_kwargs: [
             {"title": "local", "url": "http://localhost:8080", "snippet": "", "published_date": ""},
         ],
@@ -1021,7 +1021,7 @@ def test_search_web_returns_refine_query_hint_when_no_safe_results(
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers._search_with_duckduckgo",
+        "alpha.engine.tools.web_search_providers._search_with_duckduckgo",
         lambda **_kwargs: [
             {"title": "local", "url": "http://localhost:8080", "snippet": "blocked", "published_date": ""},
         ],
@@ -1065,9 +1065,9 @@ def test_search_web_empty_query_and_all_provider_failed(monkeypatch: pytest.Monk
     def _raise_error(**_kwargs: Any) -> list[dict[str, str]]:
         raise RuntimeError("down")
 
-    monkeypatch.setattr("dayu.engine.tools.web_search_providers._search_with_tavily", _raise_error)
-    monkeypatch.setattr("dayu.engine.tools.web_search_providers._search_with_serper", _raise_error)
-    monkeypatch.setattr("dayu.engine.tools.web_search_providers._search_with_duckduckgo", _raise_error)
+    monkeypatch.setattr("alpha.engine.tools.web_search_providers._search_with_tavily", _raise_error)
+    monkeypatch.setattr("alpha.engine.tools.web_search_providers._search_with_serper", _raise_error)
+    monkeypatch.setattr("alpha.engine.tools.web_search_providers._search_with_duckduckgo", _raise_error)
 
     with pytest.raises(RuntimeError, match="所有 provider 均不可用"):
         search_web(query="AAPL")
@@ -1110,10 +1110,10 @@ def test_fetch_web_page_reads_html(monkeypatch: pytest.MonkeyPatch) -> None:
         headers={"Content-Type": "text/html"},
         url="https://example.com/demo",
     ))
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Demo",
             markdown="# Demo\n\nhello world",
@@ -1208,12 +1208,12 @@ def test_fetch_web_page_uses_sec_user_agent_header(monkeypatch: pytest.MonkeyPat
 
     monkeypatch.setenv("SEC_USER_AGENT", "MyApp test@example.com")
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._get_web_session",
+        "alpha.engine.tools.web_tools._get_web_session",
         lambda: _FakeSession(get_handler=_fake_get, head_handler=_fake_head),
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="SEC Doc",
             markdown="# SEC Doc",
@@ -1281,12 +1281,12 @@ def test_fetch_web_page_percent_encodes_non_ascii_referer(monkeypatch: pytest.Mo
         )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._get_web_session",
+        "alpha.engine.tools.web_tools._get_web_session",
         lambda: _FakeSession(get_handler=_fake_get, head_handler=_fake_head),
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Demo",
             markdown="# Demo",
@@ -1368,7 +1368,7 @@ def test_search_with_tavily_maps_payload_and_rows(monkeypatch: pytest.MonkeyPatc
         )
 
     monkeypatch.setenv("TAVILY_API_KEY", "t-key")
-    monkeypatch.setattr("dayu.engine.tools.web_search_providers.requests.post", _fake_post)
+    monkeypatch.setattr("alpha.engine.tools.web_search_providers.requests.post", _fake_post)
 
     rows = _search_with_tavily(
         query="AAPL",
@@ -1448,7 +1448,7 @@ def test_search_with_serper_maps_payload_and_rows(monkeypatch: pytest.MonkeyPatc
         )
 
     monkeypatch.setenv("SERPER_API_KEY", "s-key")
-    monkeypatch.setattr("dayu.engine.tools.web_search_providers.requests.post", _fake_post)
+    monkeypatch.setattr("alpha.engine.tools.web_search_providers.requests.post", _fake_post)
 
     rows = _search_with_serper(
         query="AAPL",
@@ -1489,7 +1489,7 @@ def test_duckduckgo_extracts_redirect_target_url(monkeypatch: pytest.MonkeyPatch
     """
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_search_providers.requests.get",
+        "alpha.engine.tools.web_search_providers.requests.get",
         lambda *_args, **_kwargs: _FakeHttpResponse(text=fake_html),
     )
 
@@ -1536,7 +1536,7 @@ def test_search_with_duckduckgo_skips_invalid_rows_and_breaks(monkeypatch: pytes
         captured_params["headers"] = headers
         return _FakeHttpResponse(text=fake_html)
 
-    monkeypatch.setattr("dayu.engine.tools.web_search_providers.requests.get", _fake_get)
+    monkeypatch.setattr("alpha.engine.tools.web_search_providers.requests.get", _fake_get)
 
     rows = _search_with_duckduckgo(
         query="visa",
@@ -1649,14 +1649,14 @@ def test_build_fetch_headers_adapts_accept_encoding_to_runtime_capabilities(
     """
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_http_encoding._is_optional_module_available",
+        "alpha.engine.tools.web_http_encoding._is_optional_module_available",
         lambda module_names: any(name in {"brotli", "zstandard"} for name in module_names),
     )
     headers_with_optional_codecs = _build_fetch_headers("https://example.com/article")
     assert headers_with_optional_codecs["Accept-Encoding"] == "gzip, deflate, br, zstd"
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_http_encoding._is_optional_module_available",
+        "alpha.engine.tools.web_http_encoding._is_optional_module_available",
         lambda module_names: False,
     )
     headers_without_optional_codecs = _build_fetch_headers("https://example.com/article")
@@ -1808,7 +1808,7 @@ def test_fetch_and_convert_content_pdf_convert_error(monkeypatch: pytest.MonkeyP
         raise ValueError("convert failed")
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_fetch_orchestrator.convert_pdf_bytes_with_docling",
+        "alpha.engine.tools.web_fetch_orchestrator.convert_pdf_bytes_with_docling",
         _raise_convert_failure,
     )
 
@@ -1870,7 +1870,7 @@ def test_fetch_and_convert_content_pdf_success(monkeypatch: pytest.MonkeyPatch) 
         return _FakeConvertResult("# My Title\n\nBody")
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_fetch_orchestrator.convert_pdf_bytes_with_docling",
+        "alpha.engine.tools.web_fetch_orchestrator.convert_pdf_bytes_with_docling",
         _return_success,
     )
 
@@ -1907,11 +1907,11 @@ def test_fetch_and_convert_content_plain_text_uses_docling(monkeypatch: pytest.M
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": (_ for _ in ()).throw(AssertionError("plain text 不应走 HTML pipeline")),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._docling_convert_to_markdown",
+        "alpha.engine.tools.web_tools._docling_convert_to_markdown",
         lambda raw_bytes, stream_name: ("Plain Title", "# Plain Title\n\nPlain body", "docling"),
     )
 
@@ -1971,7 +1971,7 @@ def test_fetch_and_convert_content_html_uses_four_stage_pipeline(
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="示例新闻标题",
             markdown="# 示例新闻标题\n\n第一段：公司发布业绩后，市场对全年增速指引低于预期作出负面反应。",
@@ -2024,7 +2024,7 @@ def test_fetch_and_convert_content_html_without_content_type_uses_pipeline(
     )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="隐式 HTML",
             markdown="# 隐式 HTML\n\n正文一",
@@ -2097,7 +2097,7 @@ def test_fetch_and_convert_content_corrects_html_charset_before_pipeline(
         )
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         _fake_convert,
     )
 
@@ -2150,7 +2150,7 @@ def test_fetch_and_convert_content_follows_immediate_meta_refresh(monkeypatch: p
 
     fake_session = _FakeSession(get_handler=_get_handler)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="经济频道",
             markdown="# 经济频道\n\n正文一\n\n正文二",
@@ -2230,11 +2230,11 @@ def test_fetch_and_convert_content_recomputes_timeout_for_each_meta_refresh_hop(
 
     monotonic_values = iter([100.0, 101.6])
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.time.monotonic",
+        "alpha.engine.tools.web_tools.time.monotonic",
         lambda: next(monotonic_values),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Next",
             markdown="# Next\n\n正文",
@@ -2310,14 +2310,14 @@ def test_fetch_web_page_uses_playwright_for_unsupported_content_encoding(
             headers={"Content-Type": "text/html; charset=utf-8"},
         ),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"attempted": True, "ok": True, "content_type": "text/html; charset=utf-8"},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "联合早报财经",
@@ -2368,14 +2368,14 @@ def test_fetch_web_page_uses_playwright_for_delayed_meta_refresh(
             headers={"Content-Type": "text/html; charset=utf-8"},
         ),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"attempted": True, "ok": True, "content_type": "text/html; charset=utf-8"},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Delayed Refresh",
@@ -2413,18 +2413,18 @@ def test_fetch_web_page_uses_playwright_fallback_on_ssl_error(
         fetch_truncate_chars=80000,
     )
     fake_session = _FakeSession()
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"attempted": True, "ok": True, "content_type": "text/html; charset=utf-8"},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_content",
+        "alpha.engine.tools.web_tools._fetch_and_convert_content",
         lambda *args, **kwargs: (_ for _ in ()).throw(requests.exceptions.SSLError("[SSL: UNEXPECTED_EOF_WHILE_READING]")),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "TLS Browser Recovery",
@@ -2462,18 +2462,18 @@ def test_fetch_web_page_reports_ssl_error_when_browser_recovery_fails(
         fetch_truncate_chars=80000,
     )
     fake_session = _FakeSession()
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"attempted": True, "ok": True, "content_type": "text/html; charset=utf-8"},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_content",
+        "alpha.engine.tools.web_tools._fetch_and_convert_content",
         lambda *args, **kwargs: (_ for _ in ()).throw(requests.exceptions.SSLError("certificate verify failed")),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": False,
             "availability": "unprocessable",
@@ -2502,14 +2502,14 @@ def test_fetch_web_page_passes_execution_cancellation_token_to_playwright_fallba
     cancellation_token = CancellationToken()
     captured: dict[str, object] = {}
     fake_session = _FakeSession()
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"attempted": True, "ok": True, "content_type": "text/html; charset=utf-8"},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_content",
+        "alpha.engine.tools.web_tools._fetch_and_convert_content",
         lambda *args, **kwargs: (_ for _ in ()).throw(requests.exceptions.SSLError("certificate verify failed")),
     )
 
@@ -2536,7 +2536,7 @@ def test_fetch_web_page_passes_execution_cancellation_token_to_playwright_fallba
         }
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         _fake_playwright_fallback,
     )
 
@@ -2599,14 +2599,14 @@ def test_fetch_web_page_logs_pipeline_diagnostics_for_html(
             url="https://example.com/fallback",
         ),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     diagnostics_payloads: list[dict[str, Any]] = []
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._log_fetch_diagnostics",
+        "alpha.engine.tools.web_tools._log_fetch_diagnostics",
         lambda payload: diagnostics_payloads.append(payload),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="通用回退测试",
             markdown="# 通用回退测试\n\n公司公布业绩后，市场担忧增速放缓。",
@@ -2651,10 +2651,10 @@ def test_fetch_web_page_returns_structured_failure_on_http_403(monkeypatch: pyte
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=403, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     # 确保 Playwright 回退也失败，以验证结构化失败信息的格式
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": False,
             "availability": "unprocessable",
@@ -2690,7 +2690,7 @@ def test_fetch_web_page_calls_playwright_placeholder_on_http_403(monkeypatch: py
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=403, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
 
     called = {"value": 0}
 
@@ -2717,7 +2717,7 @@ def test_fetch_web_page_calls_playwright_placeholder_on_http_403(monkeypatch: py
         return {"ok": False, "availability": "unprocessable", "reason": "playwright_error"}
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         _fake_playwright_fallback,
     )
 
@@ -2737,10 +2737,10 @@ def test_fetch_web_page_normalizes_connection_wrapped_read_timeout(monkeypatch: 
         request_timeout_seconds=12.0,
         fetch_truncate_chars=80000,
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"ok": True, "content_type": "text/html"},
     )
 
@@ -2750,9 +2750,9 @@ def test_fetch_web_page_normalizes_connection_wrapped_read_timeout(monkeypatch: 
         _ = (args, kwargs)
         raise wrapped_timeout
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _raise_wrapped_timeout)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _raise_wrapped_timeout)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": False,
             "availability": "timeout",
@@ -2778,10 +2778,10 @@ def test_fetch_web_page_uses_playwright_fallback_on_connection_wrapped_read_time
         request_timeout_seconds=12.0,
         fetch_truncate_chars=80000,
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"ok": True, "content_type": "text/html"},
     )
 
@@ -2791,9 +2791,9 @@ def test_fetch_web_page_uses_playwright_fallback_on_connection_wrapped_read_time
         _ = (args, kwargs)
         raise wrapped_timeout
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _raise_wrapped_timeout)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _raise_wrapped_timeout)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Recovered By Browser",
@@ -2823,9 +2823,9 @@ def test_fetch_web_page_escalates_to_browser_after_warmup_timeout(
         fetch_truncate_chars=80000,
         playwright_channel="chrome",
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._warmup_domain",
+        "alpha.engine.tools.web_tools._warmup_domain",
         lambda *args, **kwargs: {
             "attempted": True,
             "success": False,
@@ -2869,9 +2869,9 @@ def test_fetch_web_page_escalates_to_browser_after_warmup_timeout(
             "final_url": "https://example.com/warmup?browser=1",
         }
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._probe_content_type", _unexpected_probe)
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _unexpected_content_fetch)
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_with_playwright", _fake_playwright)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._probe_content_type", _unexpected_probe)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _unexpected_content_fetch)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_with_playwright", _fake_playwright)
 
     output = fetch_web_page(url="https://example.com/warmup")
 
@@ -2895,13 +2895,13 @@ def test_fetch_web_page_escalates_to_browser_after_probe_timeout(
         fetch_truncate_chars=80000,
         playwright_channel="chrome",
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._warmup_domain",
+        "alpha.engine.tools.web_tools._warmup_domain",
         lambda *args, **kwargs: {"attempted": True, "success": True, "http_status": 200},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {
             "attempted": True,
             "ok": False,
@@ -2918,9 +2918,9 @@ def test_fetch_web_page_escalates_to_browser_after_probe_timeout(
         content_fetch_calls["value"] += 1
         return {"content": "should not happen"}
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _unexpected_content_fetch)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _unexpected_content_fetch)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Probe Browser",
@@ -2956,10 +2956,10 @@ def test_fetch_web_page_returns_browser_fallback_for_challenge(monkeypatch: pyte
         ),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=200, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Just a moment",
             markdown="# Just a moment\n\nChecking your browser before accessing",
@@ -2971,7 +2971,7 @@ def test_fetch_web_page_returns_browser_fallback_for_challenge(monkeypatch: pyte
         ),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": False,
             "availability": "unprocessable",
@@ -3014,13 +3014,13 @@ def test_fetch_web_page_detects_raw_html_challenge_before_pipeline(
             headers={"Content-Type": "text/html; charset=utf-8"},
         ),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("原始挑战页不应进入主体抽取")),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "雪球正文",
@@ -3043,7 +3043,7 @@ def test_fetch_web_page_retries_playwright_after_html_pipeline_error_with_raw_ch
 ) -> None:
     """验证 HTML 抽取失败后仍会基于原始响应上下文判定 challenge 并升级到 Playwright。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     registry = ToolRegistry()
     _, fetch_web_page, _ = web_tools_mod._create_fetch_web_page_tool(
@@ -3051,10 +3051,10 @@ def test_fetch_web_page_retries_playwright_after_html_pipeline_error_with_raw_ch
         request_timeout_seconds=12.0,
         fetch_truncate_chars=80000,
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {
             "attempted": True,
             "ok": True,
@@ -3085,9 +3085,9 @@ def test_fetch_web_page_retries_playwright_after_html_pipeline_error_with_raw_ch
             original_error=pipeline_error,
         )
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _raise_conversion_error)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _raise_conversion_error)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "恢复后的正文",
@@ -3110,7 +3110,7 @@ def test_fetch_web_page_escalates_empty_html_shell_to_browser(
 ) -> None:
     """验证 2xx HTML 壳页抽取失败时会升级到浏览器回退。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     registry = ToolRegistry()
     _, fetch_web_page, _ = web_tools_mod._create_fetch_web_page_tool(
@@ -3118,10 +3118,10 @@ def test_fetch_web_page_escalates_empty_html_shell_to_browser(
         request_timeout_seconds=12.0,
         fetch_truncate_chars=80000,
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {
             "attempted": True,
             "ok": True,
@@ -3158,9 +3158,9 @@ def test_fetch_web_page_escalates_empty_html_shell_to_browser(
             original_error=pipeline_error,
         )
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _raise_shell_extract_failure)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _raise_shell_extract_failure)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "浏览器渲染后的正文",
@@ -3183,7 +3183,7 @@ def test_fetch_web_page_escalates_untyped_html_extract_failure_to_browser(
 ) -> None:
     """验证未类型化但明显是前端壳页的抽取失败也会升级到浏览器。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     registry = ToolRegistry()
     _, fetch_web_page, _ = web_tools_mod._create_fetch_web_page_tool(
@@ -3191,10 +3191,10 @@ def test_fetch_web_page_escalates_untyped_html_extract_failure_to_browser(
         request_timeout_seconds=12.0,
         fetch_truncate_chars=80000,
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
-    monkeypatch.setattr("dayu.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._warmup_domain", lambda *args, **kwargs: {"attempted": False})
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {
             "attempted": True,
             "ok": True,
@@ -3221,9 +3221,9 @@ def test_fetch_web_page_escalates_untyped_html_extract_failure_to_browser(
             original_error=RuntimeError("extract failed"),
         )
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _raise_untyped_conversion_error)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _raise_untyped_conversion_error)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Rendered App",
@@ -3243,7 +3243,7 @@ def test_fetch_web_page_escalates_untyped_html_extract_failure_to_browser(
 def test_detect_bot_challenge_ignores_cloudflare_infra_signals_on_article() -> None:
     """验证正常正文页不会仅因 Cloudflare 基础设施头被误判为挑战页。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -3287,9 +3287,9 @@ def test_fetch_web_page_accepts_cloudflare_served_article(monkeypatch: pytest.Mo
             headers={"Content-Type": "text/html; charset=utf-8"},
         ),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Roblox",
             markdown="# Roblox\n\nRoblox bookings increased year over year and margins improved.",
@@ -3301,7 +3301,7 @@ def test_fetch_web_page_accepts_cloudflare_served_article(monkeypatch: pytest.Mo
         ),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda **_kwargs: (_ for _ in ()).throw(AssertionError("不应升级到 Playwright 回退")),
     )
 
@@ -3316,7 +3316,7 @@ def test_fetch_web_page_accepts_cloudflare_served_article(monkeypatch: pytest.Mo
 def test_detect_bot_challenge_ignores_datadome_cookie_without_other_signals() -> None:
     """验证单独的 DataDome cookie 信号不会把正常页面误判为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -3368,9 +3368,9 @@ def test_fetch_web_page_accepts_article_when_datadome_cookie_is_cleared(
             url="https://www.nytimes.com/",
         ),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="The New York Times",
             markdown="# The New York Times\n\nLive news, investigations, opinion and analysis.",
@@ -3382,7 +3382,7 @@ def test_fetch_web_page_accepts_article_when_datadome_cookie_is_cleared(
         ),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda **_kwargs: (_ for _ in ()).throw(AssertionError("不应升级到 Playwright 回退")),
     )
 
@@ -3419,9 +3419,9 @@ def test_fetch_web_page_treats_datadome_401_as_blocked(monkeypatch: pytest.Monke
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=401, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": False,
             "availability": "blocked",
@@ -3464,9 +3464,9 @@ def test_playwright_fallback_success_on_403(monkeypatch: pytest.MonkeyPatch) -> 
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=403, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Protected Page",
@@ -3504,9 +3504,9 @@ def test_fetch_web_page_escalates_http_412_to_browser(monkeypatch: pytest.Monkey
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=412, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Recovered 412",
@@ -3543,9 +3543,9 @@ def test_fetch_web_page_does_not_escalate_plain_401_to_browser(monkeypatch: pyte
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=401, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda **_kwargs: (_ for _ in ()).throw(AssertionError("普通 401 不应触发 Playwright 回退")),
     )
 
@@ -3576,10 +3576,10 @@ def test_playwright_fallback_success_on_bot_challenge(monkeypatch: pytest.Monkey
         ),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=200, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Just a moment",
             markdown="# Just a moment\n\nChecking your browser before accessing",
@@ -3591,7 +3591,7 @@ def test_playwright_fallback_success_on_bot_challenge(monkeypatch: pytest.Monkey
         ),
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._fetch_and_convert_with_playwright",
+        "alpha.engine.tools.web_tools._fetch_and_convert_with_playwright",
         lambda *, url, timeout_seconds, headers=None, timeout_budget=None, deadline_monotonic=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Real Page",
@@ -3614,10 +3614,10 @@ def test_fetch_and_convert_with_playwright_accepts_cloudflare_served_article(
 ) -> None:
     """验证浏览器回退拿到正常正文时，不会仅因 Cloudflare 头部被判为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._playwright_sync_worker",
+        "alpha.engine.tools.web_tools._playwright_sync_worker",
         lambda *, url, timeout_seconds, headers=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "Roblox",
@@ -3647,7 +3647,7 @@ def test_fetch_and_convert_with_playwright_accepts_cloudflare_served_article(
 def test_playwright_fallback_not_installed(monkeypatch: pytest.MonkeyPatch) -> None:
     """验证 playwright 未安装时，_fetch_and_convert_with_playwright 返回 availability=unprocessable。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     # 模拟 playwright 未安装：覆盖 __import__ 使 playwright 导入失败
     original_import = builtins.__import__
@@ -3673,10 +3673,10 @@ def test_playwright_fallback_not_installed(monkeypatch: pytest.MonkeyPatch) -> N
 def test_playwright_fallback_non_html_content_type(monkeypatch: pytest.MonkeyPatch) -> None:
     """验证 Playwright 返回非 text/html 内容类型时，返回 availability=unprocessable。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._playwright_sync_worker",
+        "alpha.engine.tools.web_tools._playwright_sync_worker",
         lambda *, url, timeout_seconds, headers=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": False,
             "availability": "unprocessable",
@@ -3699,7 +3699,7 @@ def test_playwright_fallback_non_html_content_type(monkeypatch: pytest.MonkeyPat
 def test_playwright_sync_worker_returns_pipeline_metadata(monkeypatch: pytest.MonkeyPatch) -> None:
     """验证 Playwright worker 会返回四段式 pipeline 元数据。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     fake_playwright_module = ModuleType("playwright")
     fake_sync_api_module = ModuleType("playwright.sync_api")
@@ -3770,9 +3770,9 @@ def test_playwright_sync_worker_returns_pipeline_metadata(monkeypatch: pytest.Mo
             _ = kwargs
             return _FakeContext()
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_playwright_browser", lambda **kwargs: _FakeBrowser())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_playwright_browser", lambda **kwargs: _FakeBrowser())
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Browser Title",
             markdown="# Browser Title\n\nBrowser content.",
@@ -3803,7 +3803,7 @@ def test_playwright_sync_worker_uses_storage_state_when_provided(
 ) -> None:
     """验证 Playwright worker 会把 storage state 文件传给 BrowserContext。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     storage_state_path = tmp_path / "storage-state.json"
     storage_state_path.write_text("{}", encoding="utf-8")
@@ -3869,9 +3869,9 @@ def test_playwright_sync_worker_uses_storage_state_when_provided(
             captured.update(kwargs)
             return _FakeContext()
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_playwright_browser", lambda **kwargs: _FakeBrowser())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_playwright_browser", lambda **kwargs: _FakeBrowser())
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Browser Title",
             markdown="# Browser Title\n\nBrowser content.",
@@ -3900,7 +3900,7 @@ def test_playwright_sync_worker_uses_storage_state_when_provided(
 def test_playwright_sync_worker_uses_single_deadline_budget(monkeypatch: pytest.MonkeyPatch) -> None:
     """验证 Playwright worker 的 warmup/goto/settle 共享同一个总 deadline。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     fake_stealth_module = ModuleType("playwright_stealth")
 
@@ -3977,10 +3977,10 @@ def test_playwright_sync_worker_uses_single_deadline_budget(monkeypatch: pytest.
             _ = kwargs
             return _FakeContext()
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools.time.monotonic", lambda: current_time["value"])
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_playwright_browser", lambda **kwargs: _FakeBrowser())
+    monkeypatch.setattr("alpha.engine.tools.web_tools.time.monotonic", lambda: current_time["value"])
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_playwright_browser", lambda **kwargs: _FakeBrowser())
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools.convert_html_to_llm_markdown",
+        "alpha.engine.tools.web_tools.convert_html_to_llm_markdown",
         lambda html, url="": SimpleNamespace(
             title="Browser Title",
             markdown="# Browser Title\n\nBrowser content.",
@@ -4023,9 +4023,9 @@ def test_fetch_web_page_resolves_storage_state_by_host(
         fetch_truncate_chars=80000,
         playwright_storage_state_dir=str(storage_dir),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: _FakeSession())
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._warmup_domain",
+        "alpha.engine.tools.web_tools._warmup_domain",
         lambda *args, **kwargs: {"attempted": True, "success": False, "timeout_like": True},
     )
 
@@ -4050,7 +4050,7 @@ def test_fetch_web_page_resolves_storage_state_by_host(
             "final_url": "https://www.reuters.com/article",
         }
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_with_playwright", _fake_playwright)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_with_playwright", _fake_playwright)
 
     fetch_web_page(url="https://reuters.com/article")
 
@@ -4080,15 +4080,15 @@ def test_fetch_web_page_applies_storage_state_cookies_to_requests_session(
         playwright_storage_state_dir=str(storage_dir),
         timeout_budget=10.0,
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", requests.Session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", requests.Session)
     no_retry_session = requests.Session()
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_no_retry_web_session", lambda: no_retry_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_no_retry_web_session", lambda: no_retry_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._warmup_domain",
+        "alpha.engine.tools.web_tools._warmup_domain",
         lambda *args, **kwargs: {"attempted": True, "success": True, "http_status": 200},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"attempted": True, "ok": True, "content_type": "text/html; charset=utf-8"},
     )
 
@@ -4125,7 +4125,7 @@ def test_fetch_web_page_applies_storage_state_cookies_to_requests_session(
             "response_excerpt": "Markets - Bloomberg",
         }
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _fake_fetch_and_convert_content)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _fake_fetch_and_convert_content)
 
     output = fetch_web_page(url="https://www.bloomberg.com/markets")
 
@@ -4159,15 +4159,15 @@ def test_fetch_web_page_skips_cookies_with_non_latin1_values(
         playwright_storage_state_dir=str(storage_dir),
         timeout_budget=10.0,
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", requests.Session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", requests.Session)
     no_retry_session = requests.Session()
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_no_retry_web_session", lambda: no_retry_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_no_retry_web_session", lambda: no_retry_session)
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._warmup_domain",
+        "alpha.engine.tools.web_tools._warmup_domain",
         lambda *args, **kwargs: {"attempted": True, "success": True, "http_status": 200},
     )
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._probe_content_type",
+        "alpha.engine.tools.web_tools._probe_content_type",
         lambda *args, **kwargs: {"attempted": True, "ok": True, "content_type": "text/html; charset=utf-8"},
     )
 
@@ -4203,7 +4203,7 @@ def test_fetch_web_page_skips_cookies_with_non_latin1_values(
             "response_excerpt": "新浪财经",
         }
 
-    monkeypatch.setattr("dayu.engine.tools.web_tools._fetch_and_convert_content", _fake_fetch_and_convert_content)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._fetch_and_convert_content", _fake_fetch_and_convert_content)
 
     output = fetch_web_page(url="https://finance.sina.com.cn/stock/y/2026-04-27/doc-inhvwscs9380008.shtml")
 
@@ -4216,10 +4216,10 @@ def test_fetch_web_page_skips_cookies_with_non_latin1_values(
 def test_fetch_and_convert_with_playwright_rejects_challenge_page(monkeypatch: pytest.MonkeyPatch) -> None:
     """验证浏览器回退若拿到挑战页，不会被误判为正文成功。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     monkeypatch.setattr(
-        "dayu.engine.tools.web_tools._playwright_sync_worker",
+        "alpha.engine.tools.web_tools._playwright_sync_worker",
         lambda *, url, timeout_seconds, headers=None, playwright_channel=None, playwright_storage_state_path="": {
             "ok": True,
             "title": "reuters.com",
@@ -4252,7 +4252,7 @@ def test_run_playwright_worker_process_consumes_queue_before_worker_exit(
 ) -> None:
     """验证父进程会先消费结果队列，不要求 worker 先完全退出。"""
 
-    import dayu.engine.tools.web_playwright_backend as backend_mod
+    import alpha.engine.tools.web_playwright_backend as backend_mod
 
     state: dict[str, bool] = {"alive": True}
 
@@ -4331,7 +4331,7 @@ def test_run_playwright_worker_process_allows_queue_drain_after_worker_exit(
 ) -> None:
     """验证 worker 已退出后，父进程仍会给结果队列一个短暂 drain 窗口。"""
 
-    import dayu.engine.tools.web_playwright_backend as backend_mod
+    import alpha.engine.tools.web_playwright_backend as backend_mod
 
     state: dict[str, int] = {"poll_count": 0}
 
@@ -4440,7 +4440,7 @@ def test_fetch_web_page_failure_fields_use_stable_enums(monkeypatch: pytest.Monk
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=500, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
 
     with pytest.raises(ToolBusinessError) as exc_info:
         fetch_web_page(url="https://example.com/error")
@@ -4493,7 +4493,7 @@ def test_fetch_web_page_retry_after_seconds_from_response_header(monkeypatch: py
         get_handler=lambda _url, **_kwargs: _FakeHttpResponse(http_error=http_error),
         head_handler=lambda _url, **_kwargs: _FakeHttpResponse(status_code=429, headers={"Content-Type": "text/html"}),
     )
-    monkeypatch.setattr("dayu.engine.tools.web_tools._get_web_session", lambda: fake_session)
+    monkeypatch.setattr("alpha.engine.tools.web_tools._get_web_session", lambda: fake_session)
 
     with pytest.raises(ToolBusinessError) as exc_info:
         fetch_web_page(url="https://example.com/rate-limit")
@@ -4511,7 +4511,7 @@ def test_fetch_web_page_retry_after_seconds_from_response_header(monkeypatch: py
 def test_detect_bot_challenge_bloomberg_are_you_a_robot() -> None:
     """验证 Bloomberg 'Are you a robot?' challenge 页面被正确检测。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -4528,7 +4528,7 @@ def test_detect_bot_challenge_bloomberg_are_you_a_robot() -> None:
 def test_detect_bot_challenge_cloudflare_chinese_variant() -> None:
     """验证 Cloudflare 中文验证页被正确检测。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -4546,7 +4546,7 @@ def test_detect_bot_challenge_cloudflare_chinese_variant() -> None:
 def test_detect_bot_challenge_not_a_robot_pattern() -> None:
     """验证 'not a robot' 模式被检测为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -4562,7 +4562,7 @@ def test_detect_bot_challenge_not_a_robot_pattern() -> None:
 def test_detect_bot_challenge_unusual_activity_pattern() -> None:
     """验证 'unusual activity' 模式被检测为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -4578,7 +4578,7 @@ def test_detect_bot_challenge_unusual_activity_pattern() -> None:
 def test_detect_bot_challenge_challenges_cloudflare_domain() -> None:
     """验证包含 challenges.cloudflare.com 的页面被检测为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -4594,7 +4594,7 @@ def test_detect_bot_challenge_challenges_cloudflare_domain() -> None:
 def test_normal_article_not_false_positive_on_cloudflare() -> None:
     """验证 Cloudflare 正常文章页面不会因 infra signals 被误判为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     result = web_tools_mod._detect_bot_challenge(
         response=None,
@@ -4645,7 +4645,7 @@ def test_build_fetch_headers_sec_host_no_client_hints() -> None:
 def test_detect_bot_challenge_catches_eo_bot() -> None:
     """验证 EO_Bot 类中国 WAF 挑战页被检测为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     html = (
         "<script>function a(a){var t='EO_Bot_Ssid=';t+=2703425536;"
@@ -4663,7 +4663,7 @@ def test_detect_bot_challenge_catches_eo_bot() -> None:
 def test_detect_bot_challenge_catches_antibot() -> None:
     """验证带 antibot 关键词的页面被检测为 challenge。"""
 
-    import dayu.engine.tools.web_tools as web_tools_mod
+    import alpha.engine.tools.web_tools as web_tools_mod
 
     html = '<script src="/antibot/check.js"></script><div>验证中</div>'
     result = web_tools_mod._detect_bot_challenge(

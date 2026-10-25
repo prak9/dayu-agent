@@ -10,7 +10,7 @@ from typing import Any, AsyncIterator, Optional, cast
 
 import pytest
 
-from dayu.contracts.fins import (
+from alpha.contracts.fins import (
     DownloadCommandPayload,
     FinsCommand,
     FinsCommandName,
@@ -28,17 +28,17 @@ from dayu.contracts.fins import (
     UploadFilingResultData,
     UploadMaterialProgressPayload,
 )
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.domain.document_models import CompanyMeta, SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.ingestion.process_events import ProcessEvent, ProcessEventType
-from dayu.fins.pipelines.download_events import DownloadEvent, DownloadEventType
-from dayu.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
-from dayu.fins.pipelines.upload_material_events import UploadMaterialEvent, UploadMaterialEventType
-import dayu.fins.service_runtime as service_runtime_module
-from dayu.fins.tools.service import FinsToolService
-from dayu.fins.service_runtime import DefaultFinsRuntime
-from dayu.fins.storage import DocumentBlobRepositoryProtocol, FilingMaintenanceRepositoryProtocol
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.domain.document_models import CompanyMeta, SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.ingestion.process_events import ProcessEvent, ProcessEventType
+from alpha.fins.pipelines.download_events import DownloadEvent, DownloadEventType
+from alpha.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
+from alpha.fins.pipelines.upload_material_events import UploadMaterialEvent, UploadMaterialEventType
+import alpha.fins.service_runtime as service_runtime_module
+from alpha.fins.tools.service import FinsToolService
+from alpha.fins.service_runtime import DefaultFinsRuntime
+from alpha.fins.storage import DocumentBlobRepositoryProtocol, FilingMaintenanceRepositoryProtocol
 from tests.fins.legacy_repository_adapters import build_legacy_repository_adapters
 
 
@@ -372,7 +372,7 @@ def test_service_runtime_helper_functions_cover_result_builders_and_event_narrow
     upload_material_progress = service_runtime_module._build_upload_material_progress_payload(upload_material_event)
 
     assert service_runtime_module._coerce_forms_input(None) is None
-    from dayu.fins._converters import optional_int
+    from alpha.fins._converters import optional_int
     assert optional_int(bytearray(b"7")) == 7
     assert optional_int(object()) is None
     assert download_item.failed_files[0].file_name == "x.htm"
@@ -623,7 +623,7 @@ def test_execute_uses_runtime_repository_and_processor_registry(
         captured["processor_registry"] = processor_registry
         return _FakePipeline()
 
-    monkeypatch.setattr("dayu.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
+    monkeypatch.setattr("alpha.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
 
     result = _require_sync_result(
         runtime.execute(
@@ -746,7 +746,7 @@ def test_execute_download_uses_normalized_namespace_values(
         captured["pipeline_ticker"] = normalized_ticker.canonical
         return _FakePipeline()
 
-    monkeypatch.setattr("dayu.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
+    monkeypatch.setattr("alpha.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
 
     result = _require_sync_result(
         runtime.execute(
@@ -820,9 +820,9 @@ def test_execute_upload_filing_uses_normalized_namespace_values(
         captured["pipeline_ticker"] = normalized_ticker.canonical
         return _FakePipeline()
 
-    monkeypatch.setattr("dayu.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
+    monkeypatch.setattr("alpha.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
     monkeypatch.setattr(
-        "dayu.fins.cli_support.infer_company_aliases_from_fmp",
+        "alpha.fins.cli_support.infer_company_aliases_from_fmp",
         lambda _ticker: (_ for _ in ()).throw(RuntimeError("should not be required for preserved payload data")),
     )
 
@@ -902,7 +902,7 @@ def test_execute_upload_filing_stream_accepts_file_uploaded_progress_event(
     def _fake_factory(**_kwargs: Any) -> Any:
         return _FakePipeline()
 
-    monkeypatch.setattr("dayu.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
+    monkeypatch.setattr("alpha.fins.service_runtime.get_pipeline_from_normalized_ticker", _fake_factory)
 
     async def _collect() -> list[Any]:
         stream = _require_stream_result(runtime.execute(

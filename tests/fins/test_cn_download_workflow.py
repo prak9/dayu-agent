@@ -16,15 +16,15 @@ from pathlib import Path
 
 import pytest
 
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.domain.document_models import (
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.domain.document_models import (
     FileObjectMeta,
     FilingUpdateRequest,
     RejectedFilingArtifact,
     RejectedFilingArtifactUpsertRequest,
 )
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines.cn_download_models import (
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines.cn_download_models import (
     CN_PIPELINE_DOWNLOAD_VERSION,
     CnCompanyProfile,
     CnFiscalPeriod,
@@ -32,10 +32,10 @@ from dayu.fins.pipelines.cn_download_models import (
     CnReportQuery,
     DownloadedReportAsset,
 )
-from dayu.fins.pipelines.cn_pipeline import CnPipeline
-from dayu.fins.pipelines.docling_upload_service import build_cn_filing_ids
-from dayu.fins.pipelines.download_events import DownloadEvent, DownloadEventType
-from dayu.fins.storage import FilingMaintenanceRepositoryProtocol
+from alpha.fins.pipelines.cn_pipeline import CnPipeline
+from alpha.fins.pipelines.docling_upload_service import build_cn_filing_ids
+from alpha.fins.pipelines.download_events import DownloadEvent, DownloadEventType
+from alpha.fins.storage import FilingMaintenanceRepositoryProtocol
 from tests.fins.storage_testkit import build_fs_storage_test_context
 
 JsonScalar: TypeAlias = str | int | float | bool | None
@@ -356,11 +356,11 @@ def test_cn_download_logs_match_sec_download_shape(
         info_logs.append(f"{module} {message}")
 
     monkeypatch.setattr(
-        "dayu.fins.pipelines.cn_download_workflow.Log.info",
+        "alpha.fins.pipelines.cn_download_workflow.Log.info",
         capture_info,
     )
     monkeypatch.setattr(
-        "dayu.fins.pipelines.cn_download_filing_workflow.Log.info",
+        "alpha.fins.pipelines.cn_download_filing_workflow.Log.info",
         capture_info,
     )
     discovery = _FakeDiscoveryClient(temp_dir=tmp_path, candidates=(_candidate(),))

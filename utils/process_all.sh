@@ -34,7 +34,7 @@ for ticker in "${tickers[@]}"; do
 
     echo "[processing][$idx/$sum][$ticker]"
 
-    if python -m dayu.cli process --ci --ticker "$ticker" "$@" > "$log_file" 2>&1; then
+    if python -m alpha.cli process --ci --ticker "$ticker" "$@" > "$log_file" 2>&1; then
       exit_code=0
     else
       exit_code=$?

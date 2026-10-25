@@ -7,13 +7,13 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.contracts.agent_execution import AgentCreateArgs
-from dayu.contracts.agent_types import AgentTraceIdentity
-from dayu.contracts.model_config import OpenAICompatibleRunnerParams, RunnerType
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot
-from dayu.execution.options import ConversationMemorySettings, ResolvedExecutionOptions, TraceSettings
-from dayu.execution.runtime_config import AgentRuntimeConfig, OpenAIRunnerRuntimeConfig
-from dayu.host import agent_builder as module
+from alpha.contracts.agent_execution import AgentCreateArgs
+from alpha.contracts.agent_types import AgentTraceIdentity
+from alpha.contracts.model_config import OpenAICompatibleRunnerParams, RunnerType
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot
+from alpha.execution.options import ConversationMemorySettings, ResolvedExecutionOptions, TraceSettings
+from alpha.execution.runtime_config import AgentRuntimeConfig, OpenAIRunnerRuntimeConfig
+from alpha.host import agent_builder as module
 
 
 @pytest.mark.unit

@@ -19,27 +19,27 @@ from typing import cast
 
 import pytest
 
-from dayu.contracts.agent_execution import AgentCreateArgs
-from dayu.execution.options import ConversationMemorySettings
-from dayu.host import scene_preparer as scene_preparer_module
-from dayu.host.conversation_session_archive import (
+from alpha.contracts.agent_execution import AgentCreateArgs
+from alpha.execution.options import ConversationMemorySettings
+from alpha.host import scene_preparer as scene_preparer_module
+from alpha.host.conversation_session_archive import (
     ConversationArchiveMissingError,
     ConversationHistoryArchive,
     ConversationSessionArchive,
 )
-from dayu.host.conversation_store import (
+from alpha.host.conversation_store import (
     ConversationTranscript,
     ConversationTurnRecord,
     FileConversationSessionArchiveStore,
 )
-from dayu.host.prepared_turn import (
+from alpha.host.prepared_turn import (
     PreparedAgentTurnSnapshot,
     PreparedConversationSessionSnapshot,
     serialize_prepared_agent_turn_snapshot,
 )
-from dayu.contracts.host_execution import ConcurrencyAcquirePolicy
-from dayu.contracts.execution_metadata import empty_execution_delivery_context
-from dayu.contracts.agent_execution import ExecutionPermissions
+from alpha.contracts.host_execution import ConcurrencyAcquirePolicy
+from alpha.contracts.execution_metadata import empty_execution_delivery_context
+from alpha.contracts.agent_execution import ExecutionPermissions
 
 
 def _make_prepared_snapshot(transcript: ConversationTranscript) -> PreparedAgentTurnSnapshot:
@@ -144,7 +144,7 @@ def test_resume_persist_turn_reconciles_with_live_archive(tmp_path: Path) -> Non
         user_text="先前",
         assistant_final="先前回答",
     )
-    from dayu.host.conversation_session_archive import ConversationHistoryTurnRecord
+    from alpha.host.conversation_session_archive import ConversationHistoryTurnRecord
 
     seeded_history = ConversationHistoryTurnRecord(
         turn_id=seeded_turn.turn_id,

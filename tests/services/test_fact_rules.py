@@ -12,7 +12,7 @@ import pytest
 
 _FACT_RULES_PATH = (
     Path(__file__).resolve().parents[2]
-    / "dayu"
+    / "alpha"
     / "config"
     / "prompts"
     / "base"

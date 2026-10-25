@@ -6,9 +6,9 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.contracts.protocols import ToolExecutor
-from dayu.engine import async_openai_runner as aor
-from dayu.engine.events import EventType
+from alpha.contracts.protocols import ToolExecutor
+from alpha.engine import async_openai_runner as aor
+from alpha.engine.events import EventType
 
 
 class _DummyExecutor:
@@ -242,7 +242,7 @@ async def test_emit_tool_batch_success():
 async def test_emit_tool_batch_aborts_quickly_on_cancellation():
     """取消令牌触发后，_emit_tool_batch 应在很短时间内抛出 EngineCancelledError，不等待工具 timeout。"""
 
-    from dayu.contracts.cancellation import CancelledError as EngineCancelledError, CancellationToken
+    from alpha.contracts.cancellation import CancelledError as EngineCancelledError, CancellationToken
 
     class _SlowExecutor:
         def get_schemas(self):

@@ -9,8 +9,8 @@ from typing import Optional, cast
 
 import pytest
 
-from dayu.contracts.cancellation import CancelledError
-from dayu.engine.processors.base import (
+from alpha.contracts.cancellation import CancelledError
+from alpha.engine.processors.base import (
     DocumentProcessor,
     SearchHit,
     SectionContent,
@@ -18,17 +18,17 @@ from dayu.engine.processors.base import (
     TableContent,
     TableSummary,
 )
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.engine.processors.source import Source
-from dayu.fins.domain.document_models import DocumentQuery, FilingCreateRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines.sec_pipeline import SecPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.score_sec_ci import find_form_dirs
-from dayu.fins.storage import FsProcessedDocumentRepository
-from dayu.fins.storage._fs_storage_core import FsStorageCore
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.engine.processors.source import Source
+from alpha.fins.domain.document_models import DocumentQuery, FilingCreateRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines.sec_pipeline import SecPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.score_sec_ci import find_form_dirs
+from alpha.fins.storage import FsProcessedDocumentRepository
+from alpha.fins.storage._fs_storage_core import FsStorageCore
 from tests.fins.storage_testkit import build_storage_core
-from dayu.fins.storage.local_file_store import LocalFileStore
+from alpha.fins.storage.local_file_store import LocalFileStore
 
 
 def _prepare_filing(

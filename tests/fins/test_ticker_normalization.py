@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.fins.ticker_normalization import (
+from alpha.fins.ticker_normalization import (
     NormalizedTicker,
     normalize_ticker,
     ticker_to_company_id,

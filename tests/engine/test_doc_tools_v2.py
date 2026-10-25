@@ -15,9 +15,9 @@ from typing import Any
 
 import pytest
 
-from dayu.engine import ToolRegistry, register_doc_tools
-from dayu.engine.exceptions import FileAccessError, ToolArgumentError
-from dayu.engine.tools import doc_tools
+from alpha.engine import ToolRegistry, register_doc_tools
+from alpha.engine.exceptions import FileAccessError, ToolArgumentError
+from alpha.engine.tools import doc_tools
 
 
 # ---------------------------------------------------------------------------

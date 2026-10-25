@@ -13,7 +13,7 @@ from utils import smoke_test_offline_bundle as module
 pytestmark = pytest.mark.unit
 
 
-def test_run_smoke_checks_temporarily_skips_dayu_web(
+def test_run_smoke_checks_temporarily_skips_alpha_web(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -56,5 +56,5 @@ def test_run_smoke_checks_temporarily_skips_dayu_web(
 
     module._run_smoke_checks(python_path, scripts_dir)
 
-    skipped_web_name = "dayu-web.exe" if os.name == "nt" else "dayu-web"
+    skipped_web_name = "alpha-web.exe" if os.name == "nt" else "alpha-web"
     assert skipped_web_name not in command_names

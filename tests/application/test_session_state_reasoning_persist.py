@@ -16,11 +16,11 @@ from typing import cast
 
 import pytest
 
-from dayu.host import scene_preparer as scene_preparer_module
-from dayu.host.conversation_session_archive import (
+from alpha.host import scene_preparer as scene_preparer_module
+from alpha.host.conversation_session_archive import (
     ConversationSessionArchive,
 )
-from dayu.host.conversation_store import (
+from alpha.host.conversation_store import (
     ConversationToolUseSummary,
     FileConversationSessionArchiveStore,
 )
@@ -126,7 +126,7 @@ def test_persist_turn_failure_keeps_reasoning_buffer_and_old_archive(
     state = _make_session_state(store, archive=archive)
     state.record_reasoning_delta("buffered-thought")
 
-    from dayu.host import conversation_store as cs
+    from alpha.host import conversation_store as cs
 
     def _raise(*args: object, **kwargs: object) -> None:
         del args, kwargs

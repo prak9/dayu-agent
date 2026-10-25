@@ -7,8 +7,8 @@ from typing import Callable
 
 import pytest
 
-from dayu.process_lifecycle import EXIT_CODE_SIGINT, ProcessShutdownCoordinator
-from dayu.process_lifecycle.sync_signals import (
+from alpha.process_lifecycle import EXIT_CODE_SIGINT, ProcessShutdownCoordinator
+from alpha.process_lifecycle.sync_signals import (
     _reset_registration_for_testing,
     register_process_shutdown_hook,
 )

@@ -9,7 +9,7 @@ import pytest
 
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_APP_SRC = _REPO_ROOT / "dayu"
+_APP_SRC = _REPO_ROOT / "alpha"
 
 
 def _iter_python_files(base_dir: Path) -> list[Path]:
@@ -98,15 +98,15 @@ def _collect_forbidden_host_attribute_accesses(file_path: Path, forbidden_attrs:
 @pytest.mark.parametrize(
     "target_dir,forbidden_prefixes",
     [
-        (_APP_SRC / "engine", ("dayu.host", "dayu.services", "dayu.startup", "dayu.cli", "dayu.web", "dayu.wechat")),
-        (_APP_SRC / "host", ("dayu.services", "dayu.cli", "dayu.web", "dayu.wechat")),
+        (_APP_SRC / "engine", ("alpha.host", "alpha.services", "alpha.startup", "alpha.cli", "alpha.web", "alpha.wechat")),
+        (_APP_SRC / "host", ("alpha.services", "alpha.cli", "alpha.web", "alpha.wechat")),
         (
             _APP_SRC / "services",
-            ("dayu.engine", "dayu.cli", "dayu.web", "dayu.wechat", "dayu.application", "dayu.runtime", "dayu.capabilities"),
+            ("alpha.engine", "alpha.cli", "alpha.web", "alpha.wechat", "alpha.application", "alpha.runtime", "alpha.capabilities"),
         ),
-        (_APP_SRC / "cli", ("dayu.application", "dayu.runtime", "dayu.capabilities")),
-        (_APP_SRC / "web", ("dayu.application", "dayu.runtime", "dayu.capabilities")),
-        (_APP_SRC / "wechat", ("dayu.application", "dayu.runtime", "dayu.capabilities")),
+        (_APP_SRC / "cli", ("alpha.application", "alpha.runtime", "alpha.capabilities")),
+        (_APP_SRC / "web", ("alpha.application", "alpha.runtime", "alpha.capabilities")),
+        (_APP_SRC / "wechat", ("alpha.application", "alpha.runtime", "alpha.capabilities")),
     ],
 )
 def test_layers_do_not_import_forbidden_modules(
@@ -127,8 +127,8 @@ def test_layers_do_not_import_forbidden_modules(
 @pytest.mark.parametrize(
     "target_dir,forbidden_prefixes",
     [
-        (_APP_SRC / "contracts", ("dayu.engine",)),
-        (_APP_SRC / "execution", ("dayu.engine",)),
+        (_APP_SRC / "contracts", ("alpha.engine",)),
+        (_APP_SRC / "execution", ("alpha.engine",)),
     ],
 )
 def test_contract_and_execution_layers_do_not_import_engine_modules(
@@ -159,10 +159,10 @@ def test_ui_request_entrypoints_do_not_import_limit_model_types(entrypoint_path:
     hits = _collect_exact_imports(
         entrypoint_path,
         (
-            "dayu.execution.doc_limits",
-            "dayu.execution.web_limits",
-            "dayu.fins.tools.fins_limits",
-            "dayu.tool_limits",
+            "alpha.execution.doc_limits",
+            "alpha.execution.web_limits",
+            "alpha.fins.tools.fins_limits",
+            "alpha.tool_limits",
         ),
     )
     assert hits == [], "\n".join(
@@ -239,10 +239,10 @@ def test_startup_preparation_only_uses_public_service_and_host_preparation_modul
 
     startup_root = _APP_SRC / "startup"
     forbidden_prefixes = (
-        "dayu.services.conversation_policy_reader",
-        "dayu.services.scene_definition_reader",
-        "dayu.services.scene_execution_acceptance",
-        "dayu.host.concurrency",
+        "alpha.services.conversation_policy_reader",
+        "alpha.services.scene_definition_reader",
+        "alpha.services.scene_execution_acceptance",
+        "alpha.host.concurrency",
     )
     violations: list[str] = []
     for file_path in _iter_python_files(startup_root):
@@ -338,9 +338,9 @@ def _collect_package_root_imports(
 @pytest.mark.parametrize(
     "target_dir,forbidden_package_roots",
     [
-        (_APP_SRC / "services", ("dayu.prompting",)),
-        (_APP_SRC / "host", ("dayu.prompting", "dayu.fins")),
-        (_APP_SRC / "fins", ("dayu.fins",)),
+        (_APP_SRC / "services", ("alpha.prompting",)),
+        (_APP_SRC / "host", ("alpha.prompting", "alpha.fins")),
+        (_APP_SRC / "fins", ("alpha.fins",)),
     ],
 )
 def test_internal_modules_do_not_import_package_roots_for_implementation_symbols(
@@ -366,7 +366,7 @@ def test_service_layer_does_not_import_pending_turn_store_module() -> None:
     services_root = _APP_SRC / "services"
     violations: list[str] = []
     for file_path in _iter_python_files(services_root):
-        hits = _collect_exact_imports(file_path, ("dayu.host.pending_turn_store",))
+        hits = _collect_exact_imports(file_path, ("alpha.host.pending_turn_store",))
         for module_name in hits:
             violations.append(f"{file_path.relative_to(_REPO_ROOT)}: {module_name}")
     assert not violations, "\n".join(["发现 Service 直接依赖 Host pending turn 内部模块：", *violations])
@@ -379,7 +379,7 @@ def test_service_layer_does_not_import_host_concrete_type() -> None:
     services_root = _APP_SRC / "services"
     violations: list[str] = []
     for file_path in _iter_python_files(services_root):
-        hits = _collect_exact_imports(file_path, ("dayu.host.host",))
+        hits = _collect_exact_imports(file_path, ("alpha.host.host",))
         for module_name in hits:
             violations.append(f"{file_path.relative_to(_REPO_ROOT)}: {module_name}")
     assert not violations, "\n".join(["发现 Service 对 Host 具体实现的依赖：", *violations])
@@ -418,7 +418,7 @@ def test_prompting_layer_does_not_depend_on_engine_prompt_module() -> None:
     prompting_root = _APP_SRC / "prompting"
     violations: list[str] = []
     for file_path in _iter_python_files(prompting_root):
-        hits = _collect_forbidden_imports(file_path, ("dayu.engine.prompts",))
+        hits = _collect_forbidden_imports(file_path, ("alpha.engine.prompts",))
         for module_name in hits:
             violations.append(f"{file_path.relative_to(_REPO_ROOT)}: {module_name}")
     assert not violations, "\n".join(["发现 prompting 对已删除 engine prompt 模块的依赖：", *violations])
@@ -429,7 +429,7 @@ def test_engine_layer_does_not_keep_prompt_rendering_module_or_symbols() -> None
     """验证 Engine 不再拥有 prompt 渲染模块或相关实现符号。"""
 
     prompts_module = _APP_SRC / "engine" / "prompts.py"
-    assert not prompts_module.exists(), "发现遗留的 dayu/engine/prompts.py"
+    assert not prompts_module.exists(), "发现遗留的 alpha/engine/prompts.py"
 
     engine_root = _APP_SRC / "engine"
     forbidden_tokens = (
@@ -476,8 +476,8 @@ def test_fins_pipelines_and_tools_do_not_import_legacy_document_repository_modul
         _APP_SRC / "fins" / "tools",
     )
     forbidden_prefixes = (
-        "dayu.fins.storage.document_repository",
-        "dayu.fins.storage.fs_document_repository",
+        "alpha.fins.storage.document_repository",
+        "alpha.fins.storage.fs_document_repository",
     )
     violations: list[str] = []
     for root in target_roots:

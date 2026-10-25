@@ -7,10 +7,10 @@ from typing import Any, Optional
 
 import pytest
 
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines import cn_pipeline as module
-from dayu.fins.pipelines.tool_snapshot_export import TOOL_SNAPSHOT_META_FILE_NAME
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines import cn_pipeline as module
+from alpha.fins.pipelines.tool_snapshot_export import TOOL_SNAPSHOT_META_FILE_NAME
 
 
 @pytest.mark.unit

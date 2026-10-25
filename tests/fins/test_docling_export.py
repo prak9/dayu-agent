@@ -1,4 +1,4 @@
-"""``dayu/fins/docling_export.py`` 单元测试。
+"""``alpha/fins/docling_export.py`` 单元测试。
 
 仅验证公共出口的契约：
 - ``convert_pdf_bytes_to_docling_payload`` 返回 SDK 字典；
@@ -13,7 +13,7 @@
 
 测试内部禁用 ``Any``：用 ``JsonValue`` 递归别名表达 fake payload 的 JSON 结构，
 ``_CapturedKwargs`` dataclass 表达底层调用入参。docling-runtime 真源 ``export_to_dict``
-返回 ``dict[str, Any]`` 是第三方 SDK 边界，仅在 ``dayu/fins/docling_export.py`` 内
+返回 ``dict[str, Any]`` 是第三方 SDK 边界，仅在 ``alpha/fins/docling_export.py`` 内
 允许出现，不外泄到测试。
 """
 
@@ -25,9 +25,9 @@ from typing import Union
 
 import pytest
 
-from dayu import docling_runtime
-from dayu.docling_runtime import DoclingRuntimeInitializationError
-from dayu.fins import docling_export
+from alpha import docling_runtime
+from alpha.docling_runtime import DoclingRuntimeInitializationError
+from alpha.fins import docling_export
 
 # 测试用 JSON 递归类型别名；fake payload 仅使用合法 JSON 结构，不引入 ``Any``。
 JsonValue = Union[
@@ -258,7 +258,7 @@ def test_convert_pdf_bytes_to_docling_json_bytes_propagates_runtime_error(
 
 
 def test_docling_runtime_dependency_uses_real_runtime_symbol() -> None:
-    """``docling_export`` 必须直接复用 ``dayu.docling_runtime`` 的真源类型。
+    """``docling_export`` 必须直接复用 ``alpha.docling_runtime`` 的真源类型。
 
     通过对比模块内被 monkeypatch 替换前的原始绑定，确保 ``except`` 分支拦截的
     是 docling-runtime 真源 ``DoclingRuntimeInitializationError``，避免被静默

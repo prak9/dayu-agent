@@ -12,8 +12,20 @@ from __future__ import annotations
 
 from typing import Any, cast
 
-from dayu.engine.argument_validator import ArgumentValidator
-from dayu.engine.tool_result import validate_tool_result_contract
+from alpha.engine.argument_validator import ArgumentValidator
+from alpha.engine.tool_result import validate_tool_result_contract
+
+
+def test_union_types_preserve_json_value_before_attempting_coercion() -> None:
+    """联合类型先保留已有JSON类型，防止修订数字字符串或空值。参数：无。返回：无。异常：断言失败。"""
+    validator = ArgumentValidator()
+    for value in [None, "100", "true", {"x": 1}, [1], 100, False]:
+        result = validator.validate_and_coerce({"value": value}, parameters={
+            "type": "object", "properties": {"value": {"type": ["string", "object", "array", "number", "boolean", "null"],
+            "additionalProperties": True, "items": {}}}, "required": ["value"], "additionalProperties": False})
+        assert result["ok"] is True
+        assert result["arguments"]["value"] == value
+        assert type(result["arguments"]["value"]) is type(value)
 
 
 class _NotStringableNumber:

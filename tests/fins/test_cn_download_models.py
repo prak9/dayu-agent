@@ -1,4 +1,4 @@
-"""``dayu/fins/pipelines/cn_download_models.py`` 单元测试。
+"""``alpha/fins/pipelines/cn_download_models.py`` 单元测试。
 
 仅验证 typed model / 字面量 / 版本常量层面的契约；本模块禁止 IO。
 """
@@ -10,7 +10,7 @@ from typing import get_args
 
 import pytest
 
-from dayu.fins.pipelines.cn_download_models import (
+from alpha.fins.pipelines.cn_download_models import (
     CN_PIPELINE_DOWNLOAD_VERSION,
     CnCompanyProfile,
     CnFilingStage,

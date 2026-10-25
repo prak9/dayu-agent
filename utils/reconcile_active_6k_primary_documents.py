@@ -36,7 +36,7 @@ def _ensure_repo_root_on_sys_path() -> None:
 
 _ensure_repo_root_on_sys_path()
 
-from dayu.fins.pipelines.sec_6k_primary_document_repair import (
+from alpha.fins.pipelines.sec_6k_primary_document_repair import (
     reconcile_active_6k_primary_documents,
 )
 

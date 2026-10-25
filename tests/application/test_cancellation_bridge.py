@@ -10,10 +10,10 @@ from typing import cast
 
 import pytest
 
-from dayu.host.cancellation_bridge import CancellationBridge
-from dayu.host.protocols import RunRegistryProtocol
-from dayu.contracts.run import RunRecord, RunState
-from dayu.contracts.cancellation import CancellationToken
+from alpha.host.cancellation_bridge import CancellationBridge
+from alpha.host.protocols import RunRegistryProtocol
+from alpha.contracts.run import RunRecord, RunState
+from alpha.contracts.cancellation import CancellationToken
 
 
 @dataclass

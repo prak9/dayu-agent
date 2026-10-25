@@ -31,7 +31,7 @@ def _ensure_repo_root_on_sys_path() -> None:
 
 _ensure_repo_root_on_sys_path()
 
-from dayu.fins.active_6k_retriage import retriage_active_6k_filings
+from alpha.fins.active_6k_retriage import retriage_active_6k_filings
 
 
 def _build_argument_parser() -> argparse.ArgumentParser:

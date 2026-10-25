@@ -32,21 +32,21 @@ test-integration:
 	cd .. && pytest tests/integration/ -v
 
 test-cov:
-	cd .. && pytest tests/ --cov=dayu/engine --cov-report=term
+	cd .. && pytest tests/ --cov=alpha/engine --cov-report=term
 
 test-cov-html:
-	cd .. && pytest tests/ --cov=dayu/engine --cov-report=html --cov-report=term
+	cd .. && pytest tests/ --cov=alpha/engine --cov-report=html --cov-report=term
 	@echo ""
 	@echo "HTML 覆盖率报告已生成: htmlcov/index.html"
 	@echo "运行 'open htmlcov/index.html' 查看报告"
 
 test-verify:
-	cd .. && pytest tests/ --cov=dayu/engine --cov-report=term --cov-fail-under=80
+	cd .. && pytest tests/ --cov=alpha/engine --cov-report=term --cov-fail-under=80
 	@echo ""
 	@echo "✅ 覆盖率验证通过（>80%）"
 
 score-ci:
-	cd .. && python -m dayu.fins.score_sec_ci --form $(FORM) --base $(SCORE_BASE) --tickers $(TICKERS) $(if $(SCORE_OUT_JSON),--output-json $(SCORE_OUT_JSON),) $(if $(SCORE_OUT_MD),--output-md $(SCORE_OUT_MD),)
+	cd .. && python -m alpha.fins.score_sec_ci --form $(FORM) --base $(SCORE_BASE) --tickers $(TICKERS) $(if $(SCORE_OUT_JSON),--output-json $(SCORE_OUT_JSON),) $(if $(SCORE_OUT_MD),--output-md $(SCORE_OUT_MD),)
 	@echo ""
 	@echo "✅ $(FORM) CI 评分完成"
 

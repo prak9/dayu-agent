@@ -9,8 +9,8 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.engine import tool_trace as tool_trace_module
-from dayu.engine.tool_trace import JsonlToolTraceStore, V2ToolTraceRecorder
+from alpha.engine import tool_trace as tool_trace_module
+from alpha.engine.tool_trace import JsonlToolTraceStore, V2ToolTraceRecorder
 
 
 def _read_trace_records(output_dir: Path) -> list[dict[str, Any]]:

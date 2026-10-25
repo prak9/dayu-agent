@@ -7,11 +7,11 @@ from typing import Any, AsyncIterator, Optional
 
 import pytest
 
-from dayu.fins.ingestion.process_events import ProcessEvent
-from dayu.fins.ingestion.process_events import ProcessEventType
-from dayu.fins.ingestion.service import FinsIngestionService
-from dayu.fins.pipelines.download_events import DownloadEvent
-from dayu.fins.pipelines.download_events import DownloadEventType
+from alpha.fins.ingestion.process_events import ProcessEvent
+from alpha.fins.ingestion.process_events import ProcessEventType
+from alpha.fins.ingestion.service import FinsIngestionService
+from alpha.fins.pipelines.download_events import DownloadEvent
+from alpha.fins.pipelines.download_events import DownloadEventType
 
 
 class _FakeIngestionBackend:

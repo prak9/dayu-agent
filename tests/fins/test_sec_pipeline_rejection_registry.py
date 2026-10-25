@@ -20,27 +20,27 @@ from typing import Any, Optional, cast
 
 import pytest
 
-from dayu.fins.downloaders.sec_downloader import (
+from alpha.fins.downloaders.sec_downloader import (
     DownloaderEvent,
     RemoteFileDescriptor,
     Sc13PartyRoles,
 )
-from dayu.fins.pipelines import sec_pipeline
-from dayu.fins.pipelines.sec_download_state import (
+from alpha.fins.pipelines import sec_pipeline
+from alpha.fins.pipelines.sec_download_state import (
     _load_rejection_registry,
     _save_rejection_registry,
 )
-from dayu.fins.pipelines.sec_filing_collection import FilingRecord
-from dayu.fins.pipelines.sec_pipeline import (
+from alpha.fins.pipelines.sec_filing_collection import FilingRecord
+from alpha.fins.pipelines.sec_pipeline import (
     SecPipeline,
     _is_rejected,
     _record_rejection,
 )
-from dayu.fins.pipelines.sec_sc13_filtering import (
+from alpha.fins.pipelines.sec_sc13_filtering import (
     SecSc13WorkflowHost as _SecSc13WorkflowHost,
     filter_sc13_by_direction as _filter_sc13_by_direction_impl,
 )
-from dayu.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.processors.registry import build_fins_processor_registry
 from tests.fins.storage_testkit import build_fs_storage_test_context
 
 

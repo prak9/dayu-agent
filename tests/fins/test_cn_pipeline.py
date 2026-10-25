@@ -12,19 +12,19 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.downloaders.hkexnews_downloader import HkexnewsDiscoveryClient
-from dayu.fins.pipelines.cn_download_models import (
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.downloaders.hkexnews_downloader import HkexnewsDiscoveryClient
+from alpha.fins.pipelines.cn_download_models import (
     CnCompanyProfile,
     CnReportCandidate,
     CnReportQuery,
     DownloadedReportAsset,
 )
-from dayu.fins.pipelines.download_events import DownloadEventType
-from dayu.fins.pipelines.upload_filing_events import UploadFilingEventType
-from dayu.fins.pipelines.upload_material_events import UploadMaterialEventType
-from dayu.fins.pipelines.cn_pipeline import CnPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.pipelines.download_events import DownloadEventType
+from alpha.fins.pipelines.upload_filing_events import UploadFilingEventType
+from alpha.fins.pipelines.upload_material_events import UploadMaterialEventType
+from alpha.fins.pipelines.cn_pipeline import CnPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
 
 _PDF_BYTES = b"%PDF-1.7\n" + b"0" * 2048
 _DOCLING_BYTES = b'{"document": "ok"}'

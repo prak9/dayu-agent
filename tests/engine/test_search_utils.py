@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.engine.processors.base import SearchHit
-from dayu.engine.processors.search_utils import (
+from alpha.engine.processors.base import SearchHit
+from alpha.engine.processors.search_utils import (
     dedup_snippets,
     enrich_hits_by_section,
     extract_query_anchored_snippets,
@@ -136,7 +136,7 @@ def test_enrich_hits_by_section_preserves_order_and_page_no() -> None:
 def test_extract_query_anchored_snippets_with_empty_inputs() -> None:
     """验证空输入时返回空列表。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # 空content
     assert extract_query_anchored_snippets("", "query", 100, 2) == []
@@ -155,7 +155,7 @@ def test_extract_query_anchored_snippets_with_empty_inputs() -> None:
 def test_extract_query_anchored_snippets_no_sentence_delimiters() -> None:
     """验证无句子分隔符时回退到字符窗口。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     content = "keyword appears here multiple times keyword again"
     snippets = extract_query_anchored_snippets(content, "keyword", 30, 2)
@@ -168,7 +168,7 @@ def test_extract_query_anchored_snippets_no_sentence_delimiters() -> None:
 def test_extract_query_anchored_snippets_query_not_found() -> None:
     """验证查询词不存在时返回空列表。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     content = "This is some text. Another sentence here."
     snippets = extract_query_anchored_snippets(content, "nonexistent", 100, 2)
@@ -180,7 +180,7 @@ def test_extract_query_anchored_snippets_query_not_found() -> None:
 def test_build_snippet_from_sentence_window_edge_cases() -> None:
     """验证 build_snippet_from_sentence_window 边界情况。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     sentences = ["First sentence.", "Second sentence.", "Third sentence."]
 
@@ -206,7 +206,7 @@ def test_build_snippet_from_sentence_window_edge_cases() -> None:
 def test_enrich_hits_by_section_fallback_to_raw_snippets() -> None:
     """验证当无法从 section_content 提取时回退到原始 snippet。"""
 
-    from dayu.engine.processors.search_utils import enrich_hits_by_section
+    from alpha.engine.processors.search_utils import enrich_hits_by_section
 
     hits_raw = _search_hits([
         {"section_ref": "sec_001", "section_title": "Title", "snippet": "original snippet"},
@@ -228,7 +228,7 @@ def test_enrich_hits_by_section_fallback_to_raw_snippets() -> None:
 def test_enrich_hits_by_section_missing_section_ref() -> None:
     """验证缺少 section_ref 的 hit 会被忽略。"""
 
-    from dayu.engine.processors.search_utils import enrich_hits_by_section
+    from alpha.engine.processors.search_utils import enrich_hits_by_section
 
     hits_raw = _search_hits([
         {"section_title": "Title", "snippet": "snippet"},  # 缺少 section_ref
@@ -249,7 +249,7 @@ def test_enrich_hits_by_section_missing_section_ref() -> None:
 def test_enrich_hits_by_section_without_page_no() -> None:
     """验证缺少有效 page_no 时不包含该字段。"""
 
-    from dayu.engine.processors.search_utils import enrich_hits_by_section
+    from alpha.engine.processors.search_utils import enrich_hits_by_section
 
     hits_raw = _search_hits([
         {"section_ref": "sec_001", "section_title": "Title", "snippet": "keyword"},
@@ -273,7 +273,7 @@ def test_enrich_hits_by_section_without_page_no() -> None:
 def test_normalize_for_dedup_removes_special_chars() -> None:
     """验证 normalize_for_dedup 移除特殊字符用于去重。"""
 
-    from dayu.engine.processors.search_utils import normalize_for_dedup
+    from alpha.engine.processors.search_utils import normalize_for_dedup
 
     text1 = "Re-purchase  Agreement!"
     text2 = "repurchase agreement"
@@ -285,7 +285,7 @@ def test_normalize_for_dedup_removes_special_chars() -> None:
 def test_cap_per_section_with_zero_or_negative_limit() -> None:
     """验证 cap_per_section 的边界情况。"""
 
-    from dayu.engine.processors.search_utils import cap_per_section
+    from alpha.engine.processors.search_utils import cap_per_section
 
     snippets = ["a", "b", "c"]
 
@@ -300,7 +300,7 @@ def test_cap_per_section_with_zero_or_negative_limit() -> None:
 def test_dedup_snippets_empty_after_normalization() -> None:
     """验证规范化后为空的片段被过滤掉。"""
 
-    from dayu.engine.processors.search_utils import dedup_snippets
+    from alpha.engine.processors.search_utils import dedup_snippets
 
     snippets = ["   ", "\t\n", "valid snippet"]
     deduped = dedup_snippets(snippets)
@@ -313,7 +313,7 @@ def test_dedup_snippets_empty_after_normalization() -> None:
 def test_extract_snippets_fallback_when_no_sentences() -> None:
     """验证没有句子分隔符时触发回退逻辑。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # 构造一个只有空白字符的文本，导致无法切分句子，但有 query 匹配
     content = "keyword"  # 没有句子分隔符
@@ -327,7 +327,7 @@ def test_extract_snippets_fallback_when_no_sentences() -> None:
 def test_split_sentence_spans_with_empty_sentences() -> None:
     """验证句子切分时跳过空句子。"""
 
-    from dayu.engine.processors.search_utils import split_sentences
+    from alpha.engine.processors.search_utils import split_sentences
 
     # 连续的标点符号会产生空句子
     text = "。。First sentence。"
@@ -341,7 +341,7 @@ def test_split_sentence_spans_with_empty_sentences() -> None:
 def test_locate_sentence_index_no_match() -> None:
     """验证定位句子索引失败时的行为。"""
 
-    from dayu.engine.processors.search_utils import (
+    from alpha.engine.processors.search_utils import (
         extract_query_anchored_snippets,
     )
 
@@ -358,7 +358,7 @@ def test_locate_sentence_index_no_match() -> None:
 def test_build_snippet_query_lost_in_window() -> None:
     """验证 snippet 构建时 query 丢失的情况。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     # 构造一个场景：query 不在命中句中（模拟分句异常）
     sentences = ["This is first.", "This is second.", "This is third."]
@@ -374,7 +374,7 @@ def test_build_snippet_query_lost_in_window() -> None:
 def test_join_sentence_window_invalid_ranges() -> None:
     """验证 _join_sentence_window 的边界检查。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     sentences = ["First.", "Second.", "Third."]
     
@@ -391,7 +391,7 @@ def test_join_sentence_window_invalid_ranges() -> None:
 def test_truncate_around_query_edge_cases() -> None:
     """验证 _truncate_around_query 的各种边界情况。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # 测试 query 在文本开头
     content = "keyword at start followed by long text " + "A" * 500
@@ -410,7 +410,7 @@ def test_truncate_around_query_edge_cases() -> None:
 def test_dedup_snippets_with_special_chars_normalization() -> None:
     """验证去重时特殊字符的规范化。"""
 
-    from dayu.engine.processors.search_utils import dedup_snippets
+    from alpha.engine.processors.search_utils import dedup_snippets
 
     # 包含各种特殊字符和空白的片段
     snippets = [
@@ -428,7 +428,7 @@ def test_dedup_snippets_with_special_chars_normalization() -> None:
 def test_pick_first_positive_page_no_edge_cases() -> None:
     """验证选择首个有效页码的边界情况。"""
 
-    from dayu.engine.processors.search_utils import enrich_hits_by_section
+    from alpha.engine.processors.search_utils import enrich_hits_by_section
 
     # 测试多个 hit 中只有一个有效页码
     hits_raw = _search_hits([
@@ -454,7 +454,7 @@ def test_pick_first_positive_page_no_edge_cases() -> None:
 def test_fallback_char_window_multiple_matches() -> None:
     """验证字符窗口回退时处理多个匹配。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # 没有句子标点，多次出现 keyword
     content = "keyword here and keyword there and keyword everywhere"
@@ -469,7 +469,7 @@ def test_fallback_char_window_multiple_matches() -> None:
 def test_normalize_whitespace_only_input() -> None:
     """验证只包含空白字符的输入。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # 只有空白字符
     assert extract_query_anchored_snippets("   \n\t  ", "query", 100, 2) == []
@@ -479,7 +479,7 @@ def test_normalize_whitespace_only_input() -> None:
 def test_text_without_any_sentence_endings() -> None:
     """验证完全没有句子结束符的文本。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # 没有任何句子结束符，应该回退到字符窗口
     content = "keyword text without punctuation"
@@ -493,7 +493,7 @@ def test_text_without_any_sentence_endings() -> None:
 def test_query_not_in_matched_sentence() -> None:
     """验证 query 不在匹配句子中时的截断逻辑。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     # 创建场景：sentence_index指向的句子不包含query
     sentences = ["First long sentence without target word。", 
@@ -511,7 +511,7 @@ def test_query_not_in_matched_sentence() -> None:
 def test_sentence_window_expansion_both_sides() -> None:
     """验证句子窗口向两侧扩展的逻辑。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     # 短句子，应该能扩展多个
     sentences = ["A。", "B keyword。", "C。", "D。", "E。"]
@@ -527,7 +527,7 @@ def test_sentence_window_expansion_both_sides() -> None:
 def test_dedup_with_longer_replaces_shorter() -> None:
     """验证去重时更长的片段替换更短的片段。"""
 
-    from dayu.engine.processors.search_utils import dedup_snippets
+    from alpha.engine.processors.search_utils import dedup_snippets
 
     # 第一个片段较长，第二个是其子串
     snippets = [
@@ -545,7 +545,7 @@ def test_dedup_with_longer_replaces_shorter() -> None:
 def test_dedup_with_only_special_chars() -> None:
     """验证只包含特殊字符规范化后为空的情况。"""
 
-    from dayu.engine.processors.search_utils import dedup_snippets
+    from alpha.engine.processors.search_utils import dedup_snippets
 
     snippets = ["!!!###", "@@@$$$", "valid text"]
     deduped = dedup_snippets(snippets)
@@ -559,7 +559,7 @@ def test_dedup_with_only_special_chars() -> None:
 def test_truncate_with_zero_or_negative_max_chars() -> None:
     """验证 max_chars 为 0 或负数时的截断行为。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     sentences = ["Some text。", "More text。"]
     
@@ -574,7 +574,7 @@ def test_truncate_with_zero_or_negative_max_chars() -> None:
 def test_truncate_when_query_is_empty() -> None:
     """验证 query 为空时的截断行为。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     # 构造超长单句，query 为空
     long_sentence = ["A" * 200]
@@ -588,7 +588,7 @@ def test_truncate_when_query_is_empty() -> None:
 def test_truncate_when_query_not_in_text() -> None:
     """验证文本中不包含 query 时的截断行为。"""
 
-    from dayu.engine.processors.search_utils import build_snippet_from_sentence_window
+    from alpha.engine.processors.search_utils import build_snippet_from_sentence_window
 
     # query 完全不存在于文本中
     long_sentence = ["B" * 200]
@@ -602,7 +602,7 @@ def test_truncate_when_query_not_in_text() -> None:
 def test_split_sentences_consecutive_punctuation() -> None:
     """验证连续标点符号产生空句子的情况。"""
 
-    from dayu.engine.processors.search_utils import split_sentences
+    from alpha.engine.processors.search_utils import split_sentences
 
     # 连续标点
     text = "。。。Real content。！？"
@@ -617,7 +617,7 @@ def test_split_sentences_consecutive_punctuation() -> None:
 def test_extract_with_whitespace_only_content() -> None:
     """验证只有空白字符的 content。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # normalized_content 会是空字符串
     snippets = extract_query_anchored_snippets("   \n\n\t\t   ", "query", 100, 2)
@@ -628,7 +628,7 @@ def test_extract_with_whitespace_only_content() -> None:
 def test_extract_with_none_query() -> None:
     """验证 query 为 None 的情况。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # query=None should be handled
     snippets = extract_query_anchored_snippets("some content", None, 100, 2)  # type: ignore
@@ -639,7 +639,7 @@ def test_extract_with_none_query() -> None:
 def test_sentence_window_when_hit_not_in_sentence() -> None:
     """验证命中位置无法定位到句子时的情况。"""
 
-    from dayu.engine.processors.search_utils import extract_query_anchored_snippets
+    from alpha.engine.processors.search_utils import extract_query_anchored_snippets
 
     # 构造一个特殊场景：在句子切分边界附近的匹配
     # 这种情况下 _locate_sentence_index 可能返回 None

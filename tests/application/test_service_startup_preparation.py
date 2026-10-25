@@ -8,12 +8,12 @@ from typing import cast
 
 import pytest
 
-from dayu.execution.options import ExecutionOptions, ResolvedExecutionOptions
-from dayu.fins.service_runtime import DefaultFinsRuntime
-from dayu.host import Host
-from dayu.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
-from dayu.services.startup_preparation import prepare_host_runtime_dependencies
-from dayu.startup.workspace import WorkspaceResources
+from alpha.execution.options import ExecutionOptions, ResolvedExecutionOptions
+from alpha.fins.service_runtime import DefaultFinsRuntime
+from alpha.host import Host
+from alpha.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
+from alpha.services.startup_preparation import prepare_host_runtime_dependencies
+from alpha.startup.workspace import WorkspaceResources
 
 
 @pytest.mark.unit
@@ -37,47 +37,47 @@ def test_prepare_host_runtime_dependencies_runs_unified_startup_recovery(
     recover_calls: list[tuple[Host, str, str]] = []
 
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.resolve_startup_paths",
+        "alpha.services.startup_preparation.resolve_startup_paths",
         lambda **_kwargs: fake_paths,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.ConfigFileResolver",
+        "alpha.services.startup_preparation.ConfigFileResolver",
         lambda _config_root: object(),
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.ConfigLoader",
+        "alpha.services.startup_preparation.ConfigLoader",
         lambda _resolver: SimpleNamespace(load_run_config=lambda: SimpleNamespace()),
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.FilePromptAssetStore",
+        "alpha.services.startup_preparation.FilePromptAssetStore",
         lambda _resolver: object(),
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.WorkspaceResources",
+        "alpha.services.startup_preparation.WorkspaceResources",
         lambda **_kwargs: fake_workspace,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.ConfigLoaderModelCatalog",
+        "alpha.services.startup_preparation.ConfigLoaderModelCatalog",
         lambda _config_loader: fake_model_catalog,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.build_base_execution_options",
+        "alpha.services.startup_preparation.build_base_execution_options",
         lambda **_kwargs: object(),
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.merge_execution_options",
+        "alpha.services.startup_preparation.merge_execution_options",
         lambda **_kwargs: fake_default_execution_options,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.prepare_scene_execution_acceptance_preparer",
+        "alpha.services.startup_preparation.prepare_scene_execution_acceptance_preparer",
         lambda **_kwargs: fake_scene_preparer,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.DefaultFinsRuntime.create",
+        "alpha.services.startup_preparation.DefaultFinsRuntime.create",
         lambda **_kwargs: fake_fins_runtime,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.resolve_host_config",
+        "alpha.services.startup_preparation.resolve_host_config",
         lambda **_kwargs: SimpleNamespace(
             store_path=tmp_path / "host.sqlite3",
             lane_config={"llm_api": 1},
@@ -87,9 +87,9 @@ def test_prepare_host_runtime_dependencies_runs_unified_startup_recovery(
             cancellation_bridge_failure_grace_period_seconds=5.0,
         ),
     )
-    monkeypatch.setattr("dayu.services.startup_preparation.Host", lambda **_kwargs: fake_host)
+    monkeypatch.setattr("alpha.services.startup_preparation.Host", lambda **_kwargs: fake_host)
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.recover_host_startup_state",
+        "alpha.services.startup_preparation.recover_host_startup_state",
         lambda host_admin_service, *, runtime_label, log_module: recover_calls.append(
             (cast(Host, host_admin_service.host), runtime_label, log_module)
         ),
@@ -135,11 +135,11 @@ def test_prepare_host_runtime_dependencies_loads_run_config_once(
     resolve_host_run_configs: list[object] = []
 
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.resolve_startup_paths",
+        "alpha.services.startup_preparation.resolve_startup_paths",
         lambda **_kwargs: fake_paths,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.ConfigFileResolver",
+        "alpha.services.startup_preparation.ConfigFileResolver",
         lambda _config_root: object(),
     )
 
@@ -153,39 +153,39 @@ def test_prepare_host_runtime_dependencies_loads_run_config_once(
             return fake_run_config
 
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.ConfigLoader",
+        "alpha.services.startup_preparation.ConfigLoader",
         lambda _resolver: _FakeConfigLoader(),
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.FilePromptAssetStore",
+        "alpha.services.startup_preparation.FilePromptAssetStore",
         lambda _resolver: object(),
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.WorkspaceResources",
+        "alpha.services.startup_preparation.WorkspaceResources",
         lambda **_kwargs: fake_workspace,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.ConfigLoaderModelCatalog",
+        "alpha.services.startup_preparation.ConfigLoaderModelCatalog",
         lambda _config_loader: fake_model_catalog,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.build_base_execution_options",
+        "alpha.services.startup_preparation.build_base_execution_options",
         lambda **kwargs: build_base_run_configs.append(kwargs["run_config"]) or object(),
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.merge_execution_options",
+        "alpha.services.startup_preparation.merge_execution_options",
         lambda **_kwargs: fake_default_execution_options,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.prepare_scene_execution_acceptance_preparer",
+        "alpha.services.startup_preparation.prepare_scene_execution_acceptance_preparer",
         lambda **_kwargs: fake_scene_preparer,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.DefaultFinsRuntime.create",
+        "alpha.services.startup_preparation.DefaultFinsRuntime.create",
         lambda **_kwargs: fake_fins_runtime,
     )
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.resolve_host_config",
+        "alpha.services.startup_preparation.resolve_host_config",
         lambda **kwargs: resolve_host_run_configs.append(kwargs["run_config"]) or SimpleNamespace(
             store_path=tmp_path / "host.sqlite3",
             lane_config={"llm_api": 1},
@@ -195,9 +195,9 @@ def test_prepare_host_runtime_dependencies_loads_run_config_once(
             cancellation_bridge_failure_grace_period_seconds=5.0,
         ),
     )
-    monkeypatch.setattr("dayu.services.startup_preparation.Host", lambda **_kwargs: fake_host)
+    monkeypatch.setattr("alpha.services.startup_preparation.Host", lambda **_kwargs: fake_host)
     monkeypatch.setattr(
-        "dayu.services.startup_preparation.recover_host_startup_state",
+        "alpha.services.startup_preparation.recover_host_startup_state",
         lambda *_args, **_kwargs: None,
     )
 

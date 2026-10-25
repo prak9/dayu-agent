@@ -2,7 +2,7 @@
 
 PR-2 在 store 事务层完成了 fence token 强一致改造，回归测试覆盖到了
 **线程级双连接**（同一进程内 ``threading.Thread`` 共享 SQLite 文件）。
-真正的"两个 dayu 进程同 workspace 同 pending turn"场景需要等到 PR-5
+真正的"两个 alpha 进程同 workspace 同 pending turn"场景需要等到 PR-5
 落地 advisory lock 之后再补跨进程冒烟，本测试就是这条遗留断言。
 
 测试结构：
@@ -19,7 +19,7 @@ PR-2 在 store 事务层完成了 fence token 强一致改造，回归测试覆�
     必须 no-op，不会抢走 ``B`` 的合法 lease。
 
 不依赖外部 fixture：通过 ``subprocess.run`` 起 ``python -c '<inline>'`` 子
-进程，子进程在自身 ``sys.path`` 里 import 真实 dayu 模块，对同一个
+进程，子进程在自身 ``sys.path`` 里 import 真实 alpha 模块，对同一个
 SQLite 文件做 ``cleanup_stale_resuming``；事件同步走 stdout 行（worker
 干完写一行 ``DONE``）。
 """
@@ -32,9 +32,9 @@ from pathlib import Path
 
 import pytest
 
-from dayu.host.host_store import HostStore
-from dayu.host.lease import LeaseExpiredError
-from dayu.host.pending_turn_store import (
+from alpha.host.host_store import HostStore
+from alpha.host.lease import LeaseExpiredError
+from alpha.host.pending_turn_store import (
     PendingConversationTurnState,
     SQLitePendingConversationTurnStore,
 )
@@ -42,7 +42,7 @@ from dayu.host.pending_turn_store import (
 
 # 用 ``__file__`` 反推项目根而不是 ``Path.cwd()``：CI / 运维从任意目录
 # 直接跑 ``pytest /abs/path/to/tests/...`` 时 cwd 不一定是项目根，子进程
-# inline 脚本必须显式 import dayu，所以把项目根钉在编译期已知的常量上。
+# inline 脚本必须显式 import alpha，所以把项目根钉在编译期已知的常量上。
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -64,8 +64,8 @@ def _build_worker_script(db_path: Path, pending_turn_id: str, expected_updated_a
         f"sys.path.insert(0, {str(_PROJECT_ROOT)!r})\n"
         "from datetime import datetime\n"
         "from pathlib import Path\n"
-        "from dayu.host.host_store import HostStore\n"
-        "from dayu.host.pending_turn_store import SQLitePendingConversationTurnStore\n"
+        "from alpha.host.host_store import HostStore\n"
+        "from alpha.host.pending_turn_store import SQLitePendingConversationTurnStore\n"
         f"host_store = HostStore(Path({str(db_path)!r}))\n"
         "host_store.initialize_schema()\n"
         "store = SQLitePendingConversationTurnStore(host_store)\n"
@@ -109,7 +109,7 @@ def _run_worker(db_path: Path, pending_turn_id: str, expected_updated_at_iso: st
 def test_cleanup_stale_resuming_cross_process_invalidates_lease(tmp_path: Path) -> None:
     """跨进程：主进程持旧 lease，worker 进程 cleanup 后旧 lease 操作必抛 LeaseExpiredError。"""
 
-    db_path = tmp_path / ".host" / "dayu_host.db"
+    db_path = tmp_path / ".host" / "alpha_host.db"
     host_store = HostStore(db_path)
     host_store.initialize_schema()
 
@@ -159,7 +159,7 @@ def test_cleanup_stale_resuming_cross_process_invalidates_lease(tmp_path: Path) 
 def test_cleanup_stale_resuming_cross_process_does_not_steal_fresh_lease(tmp_path: Path) -> None:
     """反向路径：主进程已重新 acquire 拿到新 lease，worker 用旧 stale 时间戳 cleanup 必须 no-op。"""
 
-    db_path = tmp_path / ".host" / "dayu_host.db"
+    db_path = tmp_path / ".host" / "alpha_host.db"
     host_store = HostStore(db_path)
     host_store.initialize_schema()
 

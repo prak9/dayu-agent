@@ -6,11 +6,11 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.contracts.protocols import ToolExecutionContext
-from dayu.engine import ToolRegistry, ConfigError
-from dayu.engine.tool_contracts import ToolTruncateSpec
-from dayu.engine.tool_errors import ToolBusinessError
-from dayu.engine.tool_result import is_tool_success, validate_tool_result_contract
+from alpha.contracts.protocols import ToolExecutionContext
+from alpha.engine import ToolRegistry, ConfigError
+from alpha.engine.tool_contracts import ToolTruncateSpec
+from alpha.engine.tool_errors import ToolBusinessError
+from alpha.engine.tool_result import is_tool_success, validate_tool_result_contract
 from tests.conftest import requires_symlink
 
 
@@ -136,7 +136,7 @@ def test_execute_logs_business_error_with_explicit_url(monkeypatch: pytest.Monke
             url="https://www.21jingji.com/article/demo.html",
         )
 
-    monkeypatch.setattr("dayu.engine.tool_registry.Log.warn", _capture_warn)
+    monkeypatch.setattr("alpha.engine.tool_registry.Log.warn", _capture_warn)
     registry.register(
         "fetch_web_page",
         fetch_tool,

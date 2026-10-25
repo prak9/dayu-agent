@@ -8,10 +8,10 @@ from typing import Mapping, Optional
 import pandas as pd
 import pytest
 
-from dayu.fins.processors import six_k_form_common as six_k_form_common_module
-from dayu.fins.processors import bs_six_k_processor as bs_six_k_processor_module
-from dayu.fins.processors.bs_six_k_processor import BsSixKFormProcessor
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors import six_k_form_common as six_k_form_common_module
+from alpha.fins.processors import bs_six_k_processor as bs_six_k_processor_module
+from alpha.fins.processors.bs_six_k_processor import BsSixKFormProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 def _statement_reason(statement: Mapping[str, object]) -> str | None:
@@ -499,7 +499,7 @@ def test_six_k_processor_matches_generalized_company_names(tmp_path: Path) -> No
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _build_six_k_markers
+    from alpha.fins.processors.six_k_form_common import _build_six_k_markers
 
     # Inc. 后缀
     markers_inc = _build_six_k_markers("About Acme Corp Inc. is a leading company.")
@@ -594,7 +594,7 @@ def test_six_k_about_company_skips_inline_information_phrase() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _build_six_k_markers
+    from alpha.fins.processors.six_k_form_common import _build_six_k_markers
 
     markers = _build_six_k_markers(
         "For more information about SomeTech Group, please visit our website. "
@@ -2339,7 +2339,7 @@ def test_parse_six_k_table_dataframe_returns_none_for_missing_tag() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _parse_six_k_table_dataframe
+    from alpha.fins.processors.six_k_form_common import _parse_six_k_table_dataframe
 
     class _TaglessTable:
         """无 tag 属性的表格对象。"""
@@ -2536,7 +2536,7 @@ def test_looks_like_six_k_about_company_context_with_punctuation_prefix() -> Non
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _looks_like_six_k_about_company_context
+    from alpha.fins.processors.six_k_form_common import _looks_like_six_k_about_company_context
 
     # "Some text.About " → position 为 'A' 的索引 (10)，prefix="Some text." → 末尾 '.'
     assert _looks_like_six_k_about_company_context(
@@ -2571,7 +2571,7 @@ def test_looks_like_six_k_about_company_context_inline_returns_false() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _looks_like_six_k_about_company_context
+    from alpha.fins.processors.six_k_form_common import _looks_like_six_k_about_company_context
 
     # "learn more About " → position 为 'A'，prefix="learn more " → 末尾 'e' 不是标点
     result = _looks_like_six_k_about_company_context(
@@ -2595,7 +2595,7 @@ def test_month_to_quarter_all_quarters() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _month_to_quarter
+    from alpha.fins.processors.six_k_form_common import _month_to_quarter
 
     assert _month_to_quarter(1) == "Q1"
     assert _month_to_quarter(3) == "Q1"
@@ -2621,7 +2621,7 @@ def test_find_first_pattern_after_no_match() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _find_first_pattern_after
+    from alpha.fins.processors.six_k_form_common import _find_first_pattern_after
 
     import re
 
@@ -2647,7 +2647,7 @@ def test_find_first_pattern_after_start_beyond_text() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _find_first_pattern_after
+    from alpha.fins.processors.six_k_form_common import _find_first_pattern_after
 
     import re
 
@@ -2673,7 +2673,7 @@ def test_extract_statement_result_from_ocr_unsupported_type() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import extract_statement_result_from_ocr_pages
+    from alpha.fins.processors.six_k_form_common import extract_statement_result_from_ocr_pages
 
     # equity 不在 _OCR_STATEMENT_TITLE_PATTERNS 中
     result = extract_statement_result_from_ocr_pages(
@@ -2697,7 +2697,7 @@ def test_extract_statement_result_from_ocr_no_parsed_pages_non_income() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import extract_statement_result_from_ocr_pages
+    from alpha.fins.processors.six_k_form_common import extract_statement_result_from_ocr_pages
 
     # cash_flow 在 OCR patterns 中，但页文本不包含任何标题
     result = extract_statement_result_from_ocr_pages(
@@ -2721,7 +2721,7 @@ def test_parse_ocr_numeric_token_empty_after_clean() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _parse_ocr_numeric_token
+    from alpha.fins.processors.six_k_form_common import _parse_ocr_numeric_token
 
     assert _parse_ocr_numeric_token("") is None
     assert _parse_ocr_numeric_token(",,,") is None
@@ -2741,7 +2741,7 @@ def test_parse_ocr_numeric_token_handles_currency_in_parenthesized_negative() ->
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _parse_ocr_numeric_token
+    from alpha.fins.processors.six_k_form_common import _parse_ocr_numeric_token
 
     assert _parse_ocr_numeric_token("($1,234)") == -1234.0
     assert _parse_ocr_numeric_token("(€1,234)") == -1234.0
@@ -2763,7 +2763,7 @@ def test_parse_ocr_numeric_token_returns_none_on_unparseable() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _parse_ocr_numeric_token
+    from alpha.fins.processors.six_k_form_common import _parse_ocr_numeric_token
 
     assert _parse_ocr_numeric_token("abc") is None
     assert _parse_ocr_numeric_token("(abc)") is None
@@ -2784,7 +2784,7 @@ def test_extract_fiscal_period_from_ocr_match_fy() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import (
+    from alpha.fins.processors.six_k_form_common import (
         _OCR_PERIOD_TOKEN_RE,
         _extract_fiscal_period_from_ocr_period_match,
     )
@@ -2809,7 +2809,7 @@ def test_extract_fiscal_period_from_ocr_match_nine_months() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import (
+    from alpha.fins.processors.six_k_form_common import (
         _OCR_PERIOD_TOKEN_RE,
         _extract_fiscal_period_from_ocr_period_match,
     )
@@ -2838,7 +2838,7 @@ def test_extract_fiscal_year_from_ocr_match_no_year() -> None:
 
     import re
 
-    from dayu.fins.processors.six_k_form_common import _extract_fiscal_year_from_ocr_period_match
+    from alpha.fins.processors.six_k_form_common import _extract_fiscal_year_from_ocr_period_match
 
     # 构造包含所有命名组的正则，但文本不含年份
     full_pattern = re.compile(
@@ -2869,7 +2869,7 @@ def test_infer_ocr_fiscal_period_six_months() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
+    from alpha.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
 
     assert _infer_ocr_fiscal_period(
         page_text="For the six months ended June 30, 2024",
@@ -2896,7 +2896,7 @@ def test_infer_ocr_fiscal_period_nine_months() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
+    from alpha.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
 
     assert _infer_ocr_fiscal_period(
         page_text="For the nine months ended September 30, 2024",
@@ -2918,7 +2918,7 @@ def test_infer_ocr_fiscal_period_year_end_dec() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
+    from alpha.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
 
     assert _infer_ocr_fiscal_period(
         page_text="For the year ended December 31, 2024",
@@ -2940,7 +2940,7 @@ def test_infer_ocr_fiscal_period_as_at_quarter_end() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
+    from alpha.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
 
     assert _infer_ocr_fiscal_period(
         page_text="As at March 31, 2024",
@@ -2967,7 +2967,7 @@ def test_infer_ocr_fiscal_period_non_dec_non_quarter_end() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
+    from alpha.fins.processors.six_k_form_common import _infer_ocr_fiscal_period
 
     assert _infer_ocr_fiscal_period(
         page_text="Some random text",
@@ -2989,7 +2989,7 @@ def test_extract_ocr_currency_and_scale_billion() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_ocr_currency_and_scale
+    from alpha.fins.processors.six_k_form_common import _extract_ocr_currency_and_scale
 
     currency, scale = _extract_ocr_currency_and_scale("USD in billions")
     assert currency == "USD"
@@ -3010,7 +3010,7 @@ def test_extract_ocr_currency_and_scale_thousands() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_ocr_currency_and_scale
+    from alpha.fins.processors.six_k_form_common import _extract_ocr_currency_and_scale
 
     currency, scale = _extract_ocr_currency_and_scale("RMB '000")
     assert currency == "RMB"
@@ -3031,7 +3031,7 @@ def test_map_ocr_currency_code_unknown() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _map_ocr_currency_code
+    from alpha.fins.processors.six_k_form_common import _map_ocr_currency_code
 
     assert _map_ocr_currency_code("ZAR") == "ZAR"
 
@@ -3050,7 +3050,7 @@ def test_build_ocr_units_label_only_scale() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _build_ocr_units_label
+    from alpha.fins.processors.six_k_form_common import _build_ocr_units_label
 
     assert _build_ocr_units_label(currency_raw=None, scale="millions") == "millions"
 
@@ -3069,7 +3069,7 @@ def test_build_ocr_units_label_only_currency() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _build_ocr_units_label
+    from alpha.fins.processors.six_k_form_common import _build_ocr_units_label
 
     assert _build_ocr_units_label(currency_raw="USD", scale=None) == "USD"
 
@@ -3088,7 +3088,7 @@ def test_build_ocr_units_label_both_none() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _build_ocr_units_label
+    from alpha.fins.processors.six_k_form_common import _build_ocr_units_label
 
     assert _build_ocr_units_label(currency_raw=None, scale=None) is None
 
@@ -3107,7 +3107,7 @@ def test_dedupe_ocr_statement_rows_removes_duplicates() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _dedupe_ocr_statement_rows
+    from alpha.fins.processors.six_k_form_common import _dedupe_ocr_statement_rows
 
     rows = [
         {"label": "Revenue", "values": [100.0, 200.0]},
@@ -3134,7 +3134,7 @@ def test_extract_income_summary_value_skips_year_range() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_income_summary_value_after_label
+    from alpha.fins.processors.six_k_form_common import _extract_income_summary_value_after_label
 
     # 1900-2100 范围内的数字应被跳过
     page_body = "Revenue 2024 3,500"
@@ -3162,7 +3162,7 @@ def test_extract_income_summary_value_skips_percent() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_income_summary_value_after_label
+    from alpha.fins.processors.six_k_form_common import _extract_income_summary_value_after_label
 
     # "%" 出现在第一个数值之前 → 所有数值都被跳过
     page_body = "Label % 25 1,234"
@@ -3187,7 +3187,7 @@ def test_extract_income_summary_value_no_valid_value() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_income_summary_value_after_label
+    from alpha.fins.processors.six_k_form_common import _extract_income_summary_value_after_label
 
     page_body = "Label - - -"
     result = _extract_income_summary_value_after_label(
@@ -3211,7 +3211,7 @@ def test_extract_ocr_line_item_labels_skips_overlapping() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_ocr_line_item_labels
+    from alpha.fins.processors.six_k_form_common import _extract_ocr_line_item_labels
 
     # "Net income" 包含 "Net"，需要验证重叠跳过逻辑
     labels = _extract_ocr_line_item_labels(
@@ -3236,7 +3236,7 @@ def test_resolve_ocr_period_end_fallback_to_anchor() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _resolve_ocr_period_end
+    from alpha.fins.processors.six_k_form_common import _resolve_ocr_period_end
 
     # fiscal_period=None → 走 anchor 回退
     result = _resolve_ocr_period_end(
@@ -3261,7 +3261,7 @@ def test_group_close_ocr_matches_empty() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _group_close_ocr_matches
+    from alpha.fins.processors.six_k_form_common import _group_close_ocr_matches
 
     assert _group_close_ocr_matches([]) == []
 
@@ -3280,7 +3280,7 @@ def test_build_six_k_markers_report_mode_branch(tmp_path: Path) -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _build_six_k_report_markers
+    from alpha.fins.processors.six_k_form_common import _build_six_k_report_markers
 
     # 构造足够长的文本使 TOC cutoff 被识别
     text = (
@@ -3324,7 +3324,7 @@ def test_find_six_k_marker_match_with_start_at() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _find_six_k_marker_match
+    from alpha.fins.processors.six_k_form_common import _find_six_k_marker_match
 
     import re
 
@@ -3367,7 +3367,7 @@ def test_extract_income_summary_result_no_valid_pages() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_income_summary_result_from_ocr_pages
+    from alpha.fins.processors.six_k_form_common import _extract_income_summary_result_from_ocr_pages
 
     result = _extract_income_summary_result_from_ocr_pages(
         page_texts=["random text without profit & loss title"],
@@ -3389,7 +3389,7 @@ def test_build_income_summary_result_no_period() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _build_income_summary_result_from_title_match
+    from alpha.fins.processors.six_k_form_common import _build_income_summary_result_from_title_match
 
     import re
 
@@ -3417,7 +3417,7 @@ def test_parse_statement_from_ocr_insufficient_periods() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _parse_statement_from_ocr_page
+    from alpha.fins.processors.six_k_form_common import _parse_statement_from_ocr_page
 
     # 只有一个年份 → period_entries < 2 → None
     result = _parse_statement_from_ocr_page(
@@ -3441,7 +3441,7 @@ def test_parse_statement_from_ocr_insufficient_values() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _parse_statement_from_ocr_page
+    from alpha.fins.processors.six_k_form_common import _parse_statement_from_ocr_page
 
     # 有 2 个期间但数值不够
     result = _parse_statement_from_ocr_page(
@@ -3468,7 +3468,7 @@ def test_extract_ocr_period_entries_no_year_matches() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_ocr_period_entries_and_header_end
+    from alpha.fins.processors.six_k_form_common import _extract_ocr_period_entries_and_header_end
 
     entries, header_end = _extract_ocr_period_entries_and_header_end(
         header_text="Random text with no year or period tokens",
@@ -3491,7 +3491,7 @@ def test_extract_ocr_period_entries_single_year_only() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _extract_ocr_period_entries_and_header_end
+    from alpha.fins.processors.six_k_form_common import _extract_ocr_period_entries_and_header_end
 
     entries, _ = _extract_ocr_period_entries_and_header_end(
         header_text="Financial data 2024",
@@ -3515,7 +3515,7 @@ def test_count_pattern_hits_empty_text() -> None:
 
     import re
 
-    from dayu.fins.processors.six_k_form_common import _count_pattern_hits
+    from alpha.fins.processors.six_k_form_common import _count_pattern_hits
 
     patterns = (re.compile(r"test"),)
     assert _count_pattern_hits(statement_patterns=patterns, text="") == 0
@@ -3535,7 +3535,7 @@ def test_normalize_statement_text() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.six_k_form_common import _normalize_statement_text
+    from alpha.fins.processors.six_k_form_common import _normalize_statement_text
 
     assert _normalize_statement_text("  HELLO   World  ") == "hello world"
 

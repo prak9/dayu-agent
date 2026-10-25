@@ -3,9 +3,9 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.engine.exceptions import ConfigError
-from dayu.engine.tool_contracts import ToolTruncateSpec, get_strategy_spec
-from dayu.engine.tools.base import _resolve_enum_values, build_tool_schema, tool
+from alpha.engine.exceptions import ConfigError
+from alpha.engine.tool_contracts import ToolTruncateSpec, get_strategy_spec
+from alpha.engine.tools.base import _resolve_enum_values, build_tool_schema, tool
 
 
 def test_resolve_enum_values_none():

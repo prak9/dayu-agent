@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.host.conversation_store import ConversationTurnRecord
+from alpha.host.conversation_store import ConversationTurnRecord
 
 _FORBIDDEN_TOKENS = (
     "assistant_reasoning",
@@ -23,12 +23,12 @@ _FORBIDDEN_TOKENS = (
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 _GUARDED_FILES = (
-    "dayu/host/conversation_memory.py",
-    "dayu/host/pending_turn_store.py",
-    "dayu/host/prepared_turn.py",
-    "dayu/contracts/agent_execution.py",
-    "dayu/contracts/agent_execution_serialization.py",
-    "dayu/contracts/agent_types.py",
+    "alpha/host/conversation_memory.py",
+    "alpha/host/pending_turn_store.py",
+    "alpha/host/prepared_turn.py",
+    "alpha/contracts/agent_execution.py",
+    "alpha/contracts/agent_execution_serialization.py",
+    "alpha/contracts/agent_types.py",
 )
 
 

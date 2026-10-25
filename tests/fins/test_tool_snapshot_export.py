@@ -9,8 +9,8 @@ from typing import Any, BinaryIO, Optional
 
 import pytest
 
-from dayu.contracts.cancellation import CancelledError
-from dayu.fins.domain.document_models import (
+from alpha.contracts.cancellation import CancelledError
+from alpha.fins.domain.document_models import (
     CompanyMeta,
     DocumentHandle,
     DocumentQuery,
@@ -20,9 +20,9 @@ from dayu.fins.domain.document_models import (
     ProcessedUpdateRequest,
     SourceHandle,
 )
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.storage import FsProcessedDocumentRepository
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.storage import FsProcessedDocumentRepository
+from alpha.fins.storage.local_file_source import LocalFileSource
 from tests.fins.legacy_repository_adapters import (
     export_tool_snapshot_with_legacy_repository as export_tool_snapshot,
 )

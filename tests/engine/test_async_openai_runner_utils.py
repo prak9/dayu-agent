@@ -12,13 +12,13 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.contracts.protocols import ToolExecutionContext
-from dayu.contracts.protocols import ToolExecutor
-from dayu.engine import async_openai_runner as aor
-from dayu.engine.sse_parser import should_log_debug
-from dayu.contracts.cancellation import CancelledError
-from dayu.engine.events import EventType, StreamEvent
+from alpha.contracts.agent_types import AgentMessage
+from alpha.contracts.protocols import ToolExecutionContext
+from alpha.contracts.protocols import ToolExecutor
+from alpha.engine import async_openai_runner as aor
+from alpha.engine.sse_parser import should_log_debug
+from alpha.contracts.cancellation import CancelledError
+from alpha.engine.events import EventType, StreamEvent
 
 if TYPE_CHECKING:
     from aiohttp import ClientResponse
@@ -166,7 +166,7 @@ def test_should_log_sse_debug_throttle(monkeypatch):
     runner.running_config.debug_sse_throttle_sec = 1.0
 
     times = [100.0, 100.5, 101.2]
-    monkeypatch.setattr("dayu.engine.sse_parser.time.monotonic", lambda: times.pop(0))
+    monkeypatch.setattr("alpha.engine.sse_parser.time.monotonic", lambda: times.pop(0))
 
     state = {}
     assert should_log_debug(runner.running_config, state) is True

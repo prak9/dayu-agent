@@ -9,7 +9,7 @@ from typing import cast
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedInfrastructureSpec,
     AcceptedModelSpec,
@@ -19,32 +19,32 @@ from dayu.contracts.agent_execution import (
     ExecutionPermissions,
     ExecutionWebPermissions,
 )
-from dayu.contracts.infrastructure import ModelCatalogProtocol, PromptAssetStoreProtocol
-from dayu.contracts.model_config import ModelConfig, RunnerType
-from dayu.contracts.protocols import PromptToolExecutorProtocol
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
-from dayu.services.contract_preparation import prepare_execution_contract
-from dayu.services.conversation_policy_reader import ConversationPolicyReader
-from dayu.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
-from dayu.services.scene_definition_reader import SceneDefinitionReader
-from dayu.host.agent_builder import build_agent_running_config, build_async_runner
-import dayu.host.scene_preparer as scene_preparer_module
-from dayu.host.scene_preparer import DefaultScenePreparer, PreparedSceneState, _resolve_enabled_toolsets
-from dayu.contracts.agent_execution import AgentCreateArgs
-from dayu.engine.async_agent import AgentRunningConfig
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.contracts.cancellation import CancellationToken
-from dayu.engine.async_openai_runner import AsyncOpenAIRunner
-from dayu.contracts.runtime_config_snapshot import (
+from alpha.contracts.infrastructure import ModelCatalogProtocol, PromptAssetStoreProtocol
+from alpha.contracts.model_config import ModelConfig, RunnerType
+from alpha.contracts.protocols import PromptToolExecutorProtocol
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
+from alpha.services.contract_preparation import prepare_execution_contract
+from alpha.services.conversation_policy_reader import ConversationPolicyReader
+from alpha.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
+from alpha.services.scene_definition_reader import SceneDefinitionReader
+from alpha.host.agent_builder import build_agent_running_config, build_async_runner
+import alpha.host.scene_preparer as scene_preparer_module
+from alpha.host.scene_preparer import DefaultScenePreparer, PreparedSceneState, _resolve_enabled_toolsets
+from alpha.contracts.agent_execution import AgentCreateArgs
+from alpha.engine.async_agent import AgentRunningConfig
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.contracts.cancellation import CancellationToken
+from alpha.engine.async_openai_runner import AsyncOpenAIRunner
+from alpha.contracts.runtime_config_snapshot import (
     AgentRunningConfigSnapshot,
     RunnerRunningConfigSnapshot,
 )
-from dayu.execution.runtime_config import (
+from alpha.execution.runtime_config import (
     AgentRuntimeConfig,
     FallbackMode,
     OpenAIRunnerRuntimeConfig,
 )
-from dayu.execution.options import (
+from alpha.execution.options import (
     apply_model_runner_runtime_overrides,
     ConversationMemorySettings,
     DocToolLimits,
@@ -59,11 +59,11 @@ from dayu.execution.options import (
     resolve_scene_execution_options,
     resolve_web_tools_config_from_toolset_configs,
 )
-from dayu.host.host_execution import HostedRunContext
-from dayu.prompting import SceneConversationDefinition, SceneDefinition, SceneModelDefinition
-from dayu.prompting.prompt_plan import PromptAssemblyPlan
-from dayu.prompting.scene_definition import ToolSelectionMode, ToolSelectionPolicy
-from dayu.startup.workspace import WorkspaceResources
+from alpha.host.host_execution import HostedRunContext
+from alpha.prompting import SceneConversationDefinition, SceneDefinition, SceneModelDefinition
+from alpha.prompting.prompt_plan import PromptAssemblyPlan
+from alpha.prompting.scene_definition import ToolSelectionMode, ToolSelectionPolicy
+from alpha.startup.workspace import WorkspaceResources
 
 
 def _build_accepted_execution_spec(
@@ -162,9 +162,9 @@ class _ConfigLoaderStub:
         """
 
         return {
-            "web": "dayu.engine.toolset_registrars.register_web_toolset",
-            "doc": "dayu.engine.toolset_registrars.register_doc_toolset",
-            "utils": "dayu.engine.toolset_registrars.register_utils_toolset",
+            "web": "alpha.engine.toolset_registrars.register_web_toolset",
+            "doc": "alpha.engine.toolset_registrars.register_doc_toolset",
+            "utils": "alpha.engine.toolset_registrars.register_utils_toolset",
         }
 
     def collect_model_referenced_env_vars(self, model_names: Iterable[str]) -> tuple[str, ...]:
@@ -962,7 +962,7 @@ def test_host_owned_scene_state_includes_model_stream_idle_in_agent_create_args(
     )
     tool_registry = cast(PromptToolExecutorProtocol, ToolRegistry())
     preparer.model_catalog = _ModelCatalogStub(model_config)
-    monkeypatch.setattr("dayu.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
+    monkeypatch.setattr("alpha.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
     monkeypatch.setattr(preparer, "_build_tool_registry", lambda **_kwargs: tool_registry)
     monkeypatch.setattr(preparer._trace_provider, "get_or_create", lambda _settings: "trace-factory")
 
@@ -1037,7 +1037,7 @@ def test_scene_preparer_skips_web_tools_when_provider_off(
     def _record_register_web_tools(*_args, **kwargs) -> None:
         calls.append(dict(kwargs))
 
-    monkeypatch.setattr("dayu.engine.toolset_registrars.register_web_tools", _record_register_web_tools)
+    monkeypatch.setattr("alpha.engine.toolset_registrars.register_web_tools", _record_register_web_tools)
 
     registry = preparer._build_tool_registry(
         scene_definition=SceneDefinition(
@@ -1135,7 +1135,7 @@ async def test_scene_preparer_uses_manifest_conversation_flag_for_custom_scene(
         ),
     )
 
-    monkeypatch.setattr("dayu.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
+    monkeypatch.setattr("alpha.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
     monkeypatch.setattr(
         preparer,
         "_prepare_scene_state_from_contract",
@@ -1214,7 +1214,7 @@ async def test_scene_preparer_rejects_resumable_when_conversation_disabled(
         conversation=SceneConversationDefinition(enabled=False),
     )
 
-    monkeypatch.setattr("dayu.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
+    monkeypatch.setattr("alpha.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
 
     contract = prepare_execution_contract(
         service_name="chat_turn",
@@ -1262,7 +1262,7 @@ async def test_scene_preparer_rejects_resumable_without_session_key(
         conversation=SceneConversationDefinition(enabled=True),
     )
 
-    monkeypatch.setattr("dayu.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
+    monkeypatch.setattr("alpha.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
 
     contract = prepare_execution_contract(
         service_name="chat_turn",
@@ -1328,11 +1328,11 @@ def test_scene_preparer_warns_and_ignores_unknown_prompt_contributions_slots(
     )
 
     monkeypatch.setattr(
-        "dayu.host.scene_preparer.build_prompt_assembly_plan",
+        "alpha.host.scene_preparer.build_prompt_assembly_plan",
         lambda **_kwargs: PromptAssemblyPlan(name="custom_scene", version="v1", fragments=()),
     )
     monkeypatch.setattr(
-        "dayu.host.scene_preparer.Log.warn",
+        "alpha.host.scene_preparer.Log.warn",
         lambda message, **_kwargs: warnings.append(str(message)),
     )
 
@@ -1589,9 +1589,9 @@ async def test_scene_preparer_prepare_restore_and_host_owned_state_helpers(
         ModelCatalogProtocol,
         SimpleNamespace(load_model=lambda _name: {"name": "test-model", "supports_tool_calling": False}),
     )
-    monkeypatch.setattr("dayu.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
+    monkeypatch.setattr("alpha.host.scene_preparer.load_scene_definition", lambda *_args, **_kwargs: scene_definition)
     monkeypatch.setattr(
-        "dayu.host.scene_preparer.build_agent_create_args",
+        "alpha.host.scene_preparer.build_agent_create_args",
         lambda **_kwargs: AgentCreateArgs(
             runner_type="openai_compatible",
             model_name="test-model",
@@ -1723,7 +1723,7 @@ def test_scene_preparer_conversation_runtime_adapter_covers_compaction_paths(
     monkeypatch.setattr(preparer, "_prepare_host_owned_scene_state", lambda **_kwargs: prepared_scene)
     monkeypatch.setattr(preparer, "_compose_system_prompt", lambda **_kwargs: "SYS")
     monkeypatch.setattr(
-        "dayu.host.scene_preparer.build_async_agent",
+        "alpha.host.scene_preparer.build_async_agent",
         lambda **kwargs: kwargs,
     )
 

@@ -1,4 +1,4 @@
-"""dayu.workspace_paths 模块测试。"""
+"""alpha.workspace_paths 模块测试。"""
 
 from __future__ import annotations
 
@@ -6,12 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from dayu.workspace_paths import (
+from alpha.workspace_paths import (
     build_cli_conversation_label_lock_dir,
     build_cli_conversation_label_record_path,
     build_cli_conversation_registry_dir,
     build_conversation_store_dir,
-    build_dayu_root_path,
+    build_alpha_root_path,
     build_host_store_default_path,
     build_interactive_state_dir,
     build_sec_cache_dir,
@@ -24,49 +24,49 @@ from dayu.workspace_paths import (
 pytestmark = pytest.mark.unit
 
 
-class TestBuildDayuRootPath:
-    """build_dayu_root_path 测试。"""
+class TestBuildAlphaRootPath:
+    """build_alpha_root_path 测试。"""
 
-    def test_returns_dot_dayu_under_workspace(self, tmp_path: Path) -> None:
-        """应返回 workspace 下的 .dayu 路径。"""
-        result = build_dayu_root_path(tmp_path)
-        assert result == tmp_path / ".dayu"
+    def test_returns_dot_alpha_under_workspace(self, tmp_path: Path) -> None:
+        """应返回 workspace 下的 .alpha 路径。"""
+        result = build_alpha_root_path(tmp_path)
+        assert result == tmp_path / ".alpha"
 
 
 class TestBuildHostStoreDefaultPath:
     """build_host_store_default_path 测试。"""
 
-    def test_returns_db_under_dayu_host(self, tmp_path: Path) -> None:
-        """应返回 .dayu/host/dayu_host.db 路径。"""
+    def test_returns_db_under_alpha_host(self, tmp_path: Path) -> None:
+        """应返回 .alpha/host/alpha_host.db 路径。"""
         result = build_host_store_default_path(tmp_path)
-        assert result == tmp_path / ".dayu" / "host" / "dayu_host.db"
+        assert result == tmp_path / ".alpha" / "host" / "alpha_host.db"
 
 
 class TestBuildConversationStoreDir:
     """build_conversation_store_dir 测试。"""
 
     def test_returns_session_dir(self, tmp_path: Path) -> None:
-        """应返回 .dayu/session 路径。"""
+        """应返回 .alpha/session 路径。"""
         result = build_conversation_store_dir(tmp_path)
-        assert result == tmp_path / ".dayu" / "session"
+        assert result == tmp_path / ".alpha" / "session"
 
 
 class TestBuildInteractiveStateDir:
     """build_interactive_state_dir 测试。"""
 
     def test_returns_interactive_dir(self, tmp_path: Path) -> None:
-        """应返回 .dayu/interactive 路径。"""
+        """应返回 .alpha/interactive 路径。"""
         result = build_interactive_state_dir(tmp_path)
-        assert result == tmp_path / ".dayu" / "interactive"
+        assert result == tmp_path / ".alpha" / "interactive"
 
 
 class TestBuildCliConversationRegistryDir:
     """build_cli_conversation_registry_dir 测试。"""
 
     def test_returns_cli_conversations_dir(self, tmp_path: Path) -> None:
-        """应返回 .dayu/cli-conversations 路径。"""
+        """应返回 .alpha/cli-conversations 路径。"""
         result = build_cli_conversation_registry_dir(tmp_path)
-        assert result == tmp_path / ".dayu" / "cli-conversations"
+        assert result == tmp_path / ".alpha" / "cli-conversations"
 
 
 class TestBuildCliConversationLabelRecordPath:
@@ -75,7 +75,7 @@ class TestBuildCliConversationLabelRecordPath:
     def test_returns_label_record_path(self, tmp_path: Path) -> None:
         """应返回指定 label 的 json record 路径。"""
         result = build_cli_conversation_label_record_path(tmp_path, "alpha_1")
-        assert result == tmp_path / ".dayu" / "cli-conversations" / "alpha_1.json"
+        assert result == tmp_path / ".alpha" / "cli-conversations" / "alpha_1.json"
 
 
 class TestBuildCliConversationLabelLockDir:
@@ -85,25 +85,25 @@ class TestBuildCliConversationLabelLockDir:
         """应返回指定 label 的锁目录路径。"""
 
         result = build_cli_conversation_label_lock_dir(tmp_path, "alpha_1")
-        assert result == tmp_path / ".dayu" / "cli-conversations" / "locks" / "alpha_1"
+        assert result == tmp_path / ".alpha" / "cli-conversations" / "locks" / "alpha_1"
 
 
 class TestBuildSecCacheDir:
     """build_sec_cache_dir 测试。"""
 
     def test_returns_sec_cache_dir(self, tmp_path: Path) -> None:
-        """应返回 .dayu/sec_cache 路径。"""
+        """应返回 .alpha/sec_cache 路径。"""
         result = build_sec_cache_dir(tmp_path)
-        assert result == tmp_path / ".dayu" / "sec_cache"
+        assert result == tmp_path / ".alpha" / "sec_cache"
 
 
 class TestBuildSecThrottleDir:
     """build_sec_throttle_dir 测试。"""
 
     def test_returns_sec_throttle_dir(self, tmp_path: Path) -> None:
-        """应返回 .dayu/sec_throttle 路径。"""
+        """应返回 .alpha/sec_throttle 路径。"""
         result = build_sec_throttle_dir(tmp_path)
-        assert result == tmp_path / ".dayu" / "sec_throttle"
+        assert result == tmp_path / ".alpha" / "sec_throttle"
 
 
 class TestBuildWechatStateDir:
@@ -112,12 +112,12 @@ class TestBuildWechatStateDir:
     def test_default_label(self, tmp_path: Path) -> None:
         """默认标签应生成 wechat-default 目录。"""
         result = build_wechat_state_dir(tmp_path)
-        assert result == tmp_path / ".dayu" / "wechat-default"
+        assert result == tmp_path / ".alpha" / "wechat-default"
 
     def test_custom_label(self, tmp_path: Path) -> None:
         """自定义标签应生成对应目录。"""
         result = build_wechat_state_dir(tmp_path, label="alice")
-        assert result == tmp_path / ".dayu" / "wechat-alice"
+        assert result == tmp_path / ".alpha" / "wechat-alice"
 
 
 class TestExtractWechatInstanceLabel:
@@ -162,61 +162,61 @@ class TestExtractWechatInstanceLabel:
 class TestListWechatStateDirs:
     """list_wechat_state_dirs 测试。"""
 
-    def test_dayu_root_not_exists_returns_empty(self, tmp_path: Path) -> None:
-        """.dayu 目录不存在时应返回空元组。"""
+    def test_alpha_root_not_exists_returns_empty(self, tmp_path: Path) -> None:
+        """.alpha 目录不存在时应返回空元组。"""
         result = list_wechat_state_dirs(tmp_path)
         assert result == ()
 
-    def test_dayu_root_is_file_returns_empty(self, tmp_path: Path) -> None:
-        """.dayu 是文件而非目录时应返回空元组。"""
-        dayu_file = tmp_path / ".dayu"
-        dayu_file.write_text("not a dir")
+    def test_alpha_root_is_file_returns_empty(self, tmp_path: Path) -> None:
+        """.alpha 是文件而非目录时应返回空元组。"""
+        alpha_file = tmp_path / ".alpha"
+        alpha_file.write_text("not a dir")
         result = list_wechat_state_dirs(tmp_path)
         assert result == ()
 
     def test_skips_non_directory_entries(self, tmp_path: Path) -> None:
         """应跳过非目录的条目。"""
-        dayu_root = tmp_path / ".dayu"
-        dayu_root.mkdir()
+        alpha_root = tmp_path / ".alpha"
+        alpha_root.mkdir()
         # 创建一个文件，名称虽然匹配前缀但不是目录
-        (dayu_root / "wechat-file").write_text("x")
+        (alpha_root / "wechat-file").write_text("x")
         result = list_wechat_state_dirs(tmp_path)
         assert result == ()
 
     def test_skips_dirs_with_invalid_label(self, tmp_path: Path) -> None:
         """应跳过目录名无法提取标签的目录。"""
-        dayu_root = tmp_path / ".dayu"
-        dayu_root.mkdir()
-        (dayu_root / "other-dir").mkdir()
+        alpha_root = tmp_path / ".alpha"
+        alpha_root.mkdir()
+        (alpha_root / "other-dir").mkdir()
         # wechat- 无标签
-        (dayu_root / "wechat-").mkdir()
+        (alpha_root / "wechat-").mkdir()
         result = list_wechat_state_dirs(tmp_path)
         assert result == ()
 
     def test_returns_matching_dirs_sorted(self, tmp_path: Path) -> None:
         """应返回匹配的目录并按名称排序。"""
-        dayu_root = tmp_path / ".dayu"
-        dayu_root.mkdir()
+        alpha_root = tmp_path / ".alpha"
+        alpha_root.mkdir()
         # 乱序创建
-        (dayu_root / "wechat-charlie").mkdir()
-        (dayu_root / "wechat-alice").mkdir()
-        (dayu_root / "wechat-bob").mkdir()
+        (alpha_root / "wechat-charlie").mkdir()
+        (alpha_root / "wechat-alice").mkdir()
+        (alpha_root / "wechat-bob").mkdir()
 
         result = list_wechat_state_dirs(tmp_path)
         assert result == (
-            dayu_root / "wechat-alice",
-            dayu_root / "wechat-bob",
-            dayu_root / "wechat-charlie",
+            alpha_root / "wechat-alice",
+            alpha_root / "wechat-bob",
+            alpha_root / "wechat-charlie",
         )
 
     def test_mixed_entries_filters_correctly(self, tmp_path: Path) -> None:
         """混合目录与文件时应只返回有效 wechat 状态目录。"""
-        dayu_root = tmp_path / ".dayu"
-        dayu_root.mkdir()
-        (dayu_root / "wechat-apple").mkdir()
-        (dayu_root / "random-file").write_text("x")
-        (dayu_root / "other-dir").mkdir()
-        (dayu_root / "wechat-").mkdir()
+        alpha_root = tmp_path / ".alpha"
+        alpha_root.mkdir()
+        (alpha_root / "wechat-apple").mkdir()
+        (alpha_root / "random-file").write_text("x")
+        (alpha_root / "other-dir").mkdir()
+        (alpha_root / "wechat-").mkdir()
 
         result = list_wechat_state_dirs(tmp_path)
-        assert result == (dayu_root / "wechat-apple",)
+        assert result == (alpha_root / "wechat-apple",)

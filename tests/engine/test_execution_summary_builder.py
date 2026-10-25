@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from dayu.services.internal.write_pipeline.execution_summary_builder import ExecutionSummaryBuilder
-from dayu.services.internal.write_pipeline.models import ChapterResult
+from alpha.services.internal.write_pipeline.execution_summary_builder import ExecutionSummaryBuilder
+from alpha.services.internal.write_pipeline.models import ChapterResult
 
 from tests.engine.test_write_pipeline import _build_runner
 

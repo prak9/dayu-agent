@@ -7,7 +7,7 @@ import time
 
 import pytest
 
-from dayu.contracts.cancellation import CancellationToken, CancelledError
+from alpha.contracts.cancellation import CancellationToken, CancelledError
 
 
 class TestBasicBehavior:

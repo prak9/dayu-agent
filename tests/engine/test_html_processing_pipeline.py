@@ -8,10 +8,10 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.engine.processors.html_extraction import extract_main_content
-from dayu.engine.processors.html_markdown import render_html_to_markdown
-from dayu.engine.processors.html_normalization import normalize_html_fragment
-from dayu.engine.processors.html_pipeline import HtmlPipelineStageError, convert_html_to_llm_markdown
+from alpha.engine.processors.html_extraction import extract_main_content
+from alpha.engine.processors.html_markdown import render_html_to_markdown
+from alpha.engine.processors.html_normalization import normalize_html_fragment
+from alpha.engine.processors.html_pipeline import HtmlPipelineStageError, convert_html_to_llm_markdown
 
 
 @pytest.mark.unit
@@ -124,7 +124,7 @@ def test_render_html_to_markdown_falls_back_to_html2text(monkeypatch: pytest.Mon
     """验证 markdownify 失败时会自动回退 html2text。"""
 
     monkeypatch.setattr(
-        "dayu.engine.processors.html_markdown._render_with_markdownify",
+        "alpha.engine.processors.html_markdown._render_with_markdownify",
         lambda html: (_ for _ in ()).throw(RuntimeError("markdownify failed")),
     )
 
@@ -156,8 +156,8 @@ def test_render_html_to_markdown_falls_back_to_html2text(monkeypatch: pytest.Mon
 def test_convert_html_to_llm_markdown_returns_pipeline_metadata(monkeypatch: pytest.MonkeyPatch) -> None:
     """验证四段式编排会返回统一元数据。"""
 
-    monkeypatch.setattr("dayu.engine.processors.html_extraction.extract_with_trafilatura", lambda html, url="": None)
-    monkeypatch.setattr("dayu.engine.processors.html_extraction.extract_with_readability", lambda html, url="": None)
+    monkeypatch.setattr("alpha.engine.processors.html_extraction.extract_with_trafilatura", lambda html, url="": None)
+    monkeypatch.setattr("alpha.engine.processors.html_extraction.extract_with_readability", lambda html, url="": None)
 
     html = """
     <html>
@@ -196,8 +196,8 @@ def test_convert_html_to_llm_markdown_preserves_page_title_when_body_starts_with
         AssertionError: 断言失败时抛出。
     """
 
-    monkeypatch.setattr("dayu.engine.processors.html_extraction.extract_with_trafilatura", lambda html, url="": None)
-    monkeypatch.setattr("dayu.engine.processors.html_extraction.extract_with_readability", lambda html, url="": None)
+    monkeypatch.setattr("alpha.engine.processors.html_extraction.extract_with_trafilatura", lambda html, url="": None)
+    monkeypatch.setattr("alpha.engine.processors.html_extraction.extract_with_readability", lambda html, url="": None)
 
     html = """
     <html>

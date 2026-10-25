@@ -10,13 +10,13 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.contracts.fins import FinsCommandName, FinsEvent, FinsEventType, ProcessResultData
-from dayu.host import event_bus as event_bus_module
-from dayu.host.event_bus import AsyncQueueEventBus
-from dayu.host.protocols import RunRegistryProtocol
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.contracts.run import RunRecord, RunState
-from dayu.log import Log
+from alpha.contracts.fins import FinsCommandName, FinsEvent, FinsEventType, ProcessResultData
+from alpha.host import event_bus as event_bus_module
+from alpha.host.event_bus import AsyncQueueEventBus
+from alpha.host.protocols import RunRegistryProtocol
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.contracts.run import RunRecord, RunState
+from alpha.log import Log
 
 
 def _make_event(event_type: AppEventType = AppEventType.CONTENT_DELTA, payload: str = "hello") -> AppEvent:

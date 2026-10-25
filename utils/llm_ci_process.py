@@ -40,7 +40,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from dayu.fins.storage import FsCompanyMetaRepository
+from alpha.fins.storage import FsCompanyMetaRepository
 
 DEFAULT_BASE = "workspace"
 DEFAULT_CONCURRENCY = 27
@@ -348,7 +348,7 @@ def _split_document_ids_for_job(
 def _group_jobs_by_ticker(jobs: list[ProcessJob]) -> tuple[tuple[ProcessJob, ...], ...]:
     """按 ticker 把作业分组，确保同一 ticker 串行执行。
 
-    `dayu.cli process` 会在 ticker 级使用 batch 事务更新 `portfolio/{ticker}`。
+    `alpha.cli process` 会在 ticker 级使用 batch 事务更新 `portfolio/{ticker}`。
     若同一 ticker 的多个子批次并发执行，提交阶段会互相覆盖 staging/backup，
     典型表现就是 `commit_batch` 失败后回滚，并留下 `processed` 缺口。
 
@@ -374,7 +374,7 @@ def _group_jobs_by_ticker(jobs: list[ProcessJob]) -> tuple[tuple[ProcessJob, ...
 def _count_reported_failed_documents(log_text: str) -> int:
     """从 CLI 日志中统计已报告的失败文档数。
 
-    目前 `dayu.cli process` 即使某些文档处理失败，也可能整体以退出码 `0`
+    目前 `alpha.cli process` 即使某些文档处理失败，也可能整体以退出码 `0`
     返回，因此不能只依赖子进程返回码判断成功。这里直接以 CLI 最终摘要里的
     `- xxx | status=failed | ...` 行作为真源信号。
 
@@ -430,7 +430,7 @@ def _build_process_command(
     command: list[str] = [
         sys.executable,
         "-m",
-        "dayu.cli",
+        "alpha.cli",
         "process",
         "--ci",
         "--overwrite",

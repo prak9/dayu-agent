@@ -11,15 +11,15 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.fins.domain.document_models import (
+from alpha.fins.domain.document_models import (
     CompanyMeta,
     RejectedFilingArtifactUpsertRequest,
     SourceDocumentUpsertRequest,
     SourceFileEntry,
     now_iso8601,
 )
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.sec_6k_rule_diagnostics import (
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.sec_6k_rule_diagnostics import (
     FalsePositive6KSample,
     ProcessProgressUpdate,
     ProcessRunResult,
@@ -29,7 +29,7 @@ from dayu.fins.sec_6k_rule_diagnostics import (
     discover_twenty_f_tickers,
     run_sec_6k_rule_diagnostics,
 )
-from dayu.fins.pipelines.sec_pipeline import SEC_PIPELINE_DOWNLOAD_VERSION
+from alpha.fins.pipelines.sec_pipeline import SEC_PIPELINE_DOWNLOAD_VERSION
 from tests.fins.storage_testkit import FsStorageTestContext, build_fs_storage_test_context
 
 
@@ -592,7 +592,7 @@ async def test_run_sec_6k_rule_diagnostics_writes_outputs(
         )
 
     monkeypatch.setattr(
-        "dayu.fins.sec_6k_rule_diagnostics.score_batch",
+        "alpha.fins.sec_6k_rule_diagnostics.score_batch",
         lambda **kwargs: SimpleNamespace(
             documents=[
                 SimpleNamespace(
@@ -696,7 +696,7 @@ async def test_run_sec_6k_rule_diagnostics_can_limit_target_tickers(
         )
 
     monkeypatch.setattr(
-        "dayu.fins.sec_6k_rule_diagnostics.score_batch",
+        "alpha.fins.sec_6k_rule_diagnostics.score_batch",
         fake_score_batch,
     )
 

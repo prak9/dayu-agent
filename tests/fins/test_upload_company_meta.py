@@ -8,9 +8,9 @@ from typing import Optional
 
 import pytest
 
-from dayu.fins.pipelines import upload_company_meta as module
-from dayu.fins.domain.document_models import CompanyMeta, CompanyMetaInventoryEntry
-from dayu.fins.ticker_normalization import NormalizedTicker
+from alpha.fins.pipelines import upload_company_meta as module
+from alpha.fins.domain.document_models import CompanyMeta, CompanyMetaInventoryEntry
+from alpha.fins.ticker_normalization import NormalizedTicker
 
 
 @dataclass

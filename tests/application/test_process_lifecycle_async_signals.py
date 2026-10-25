@@ -7,7 +7,7 @@ import signal
 
 import pytest
 
-from dayu.process_lifecycle import ProcessShutdownCoordinator, install_async_signal_handlers
+from alpha.process_lifecycle import ProcessShutdownCoordinator, install_async_signal_handlers
 
 
 class _FakeHost:

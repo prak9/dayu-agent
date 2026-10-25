@@ -25,8 +25,8 @@ from typing import Any, AsyncIterator, Dict, Iterable, List
 
 import pytest
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.engine import (
+from alpha.contracts.agent_types import AgentMessage
+from alpha.engine import (
     AsyncAgent,
     EventType,
     content_complete,
@@ -36,7 +36,7 @@ from dayu.engine import (
     tool_call_result,
     tool_calls_batch_done,
 )
-from dayu.engine.events import StreamEvent
+from alpha.engine.events import StreamEvent
 
 
 class _StripDummyRunner:
@@ -146,14 +146,14 @@ async def test_assistant_message_for_next_turn_has_no_thought() -> None:
 
 
 def test_async_agent_source_is_thought_agnostic() -> None:
-    """守护测试：``dayu/engine/async_agent.py`` 源码不应出现 vendor 协议字面量。
+    """守护测试：``alpha/engine/async_agent.py`` 源码不应出现 vendor 协议字面量。
 
     这里禁止的是明确的 vendor 协议 token，而不是任意包含 ``thought``
     子串的英文注释/标识符，避免把无关文字误报成协议泄漏。
     """
 
     project_root = Path(__file__).resolve().parents[2]
-    source_path = project_root / "dayu" / "engine" / "async_agent.py"
+    source_path = project_root / "alpha" / "engine" / "async_agent.py"
     source = source_path.read_text(encoding="utf-8")
     assert re.search(r"<\s*/?\s*thought\b", source, re.IGNORECASE) is None, (
         "AsyncAgent 不应出现 <thought> vendor 标签字面量"

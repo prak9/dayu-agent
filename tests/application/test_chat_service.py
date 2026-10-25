@@ -10,7 +10,7 @@ from typing import Mapping, cast
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedInfrastructureSpec,
     AcceptedModelSpec,
@@ -19,46 +19,46 @@ from dayu.contracts.agent_execution import (
     AgentCreateArgs,
     ExecutionContract,
 )
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext, normalize_execution_delivery_context
-from dayu.contracts.model_config import ModelConfig
-from dayu.contracts.events import AppEventType
-from dayu.contracts.run import RunCancelReason
-from dayu.contracts.session import SessionSource
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
-from dayu.execution.runtime_config import (
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext, normalize_execution_delivery_context
+from alpha.contracts.model_config import ModelConfig
+from alpha.contracts.events import AppEventType
+from alpha.contracts.run import RunCancelReason
+from alpha.contracts.session import SessionSource
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
+from alpha.execution.runtime_config import (
     AgentRuntimeConfig,
     OpenAIRunnerRuntimeConfig,
     build_agent_running_config_snapshot,
     build_runner_running_config_snapshot,
 )
-from dayu.execution.options import ConversationMemorySettings, ExecutionOptions, ResolvedExecutionOptions
-from dayu.execution.options import (
+from alpha.execution.options import ConversationMemorySettings, ExecutionOptions, ResolvedExecutionOptions
+from alpha.execution.options import (
     DocToolLimits,
     FinsToolLimits,
     TraceSettings,
     WebToolsConfig,
 )
-from dayu.host.host import Host
-from dayu.host.conversation_store import ConversationTranscript
-from dayu.host.pending_turn_store import PendingConversationTurnState
-from dayu.host.prepared_turn import (
+from alpha.host.host import Host
+from alpha.host.conversation_store import ConversationTranscript
+from alpha.host.pending_turn_store import PendingConversationTurnState
+from alpha.host.prepared_turn import (
     AcceptedAgentTurnSnapshot,
     PreparedAgentTurnSnapshot,
     PreparedConversationSessionSnapshot,
     serialize_accepted_agent_turn_snapshot,
     serialize_prepared_agent_turn_snapshot,
 )
-from dayu.log import Log
-from dayu.prompting.scene_definition import (
+from alpha.log import Log
+from alpha.prompting.scene_definition import (
     PromptManifestError,
     SceneConversationDefinition,
     SceneDefinition,
     SceneModelDefinition,
 )
-from dayu.services.chat_service import ChatService
-from dayu.services.contracts import ChatResumeRequest, ChatTurnRequest, SessionResolutionPolicy
-from dayu.services.protocols import ChatServiceProtocol
-from dayu.services.scene_execution_acceptance import (
+from alpha.services.chat_service import ChatService
+from alpha.services.contracts import ChatResumeRequest, ChatTurnRequest, SessionResolutionPolicy
+from alpha.services.protocols import ChatServiceProtocol
+from alpha.services.scene_execution_acceptance import (
     AcceptedSceneExecution,
     SceneExecutionAcceptancePreparer,
 )
@@ -440,7 +440,7 @@ def test_stream_turn_outputs_execution_contract(monkeypatch: pytest.MonkeyPatch)
     """验证 ChatService 会直接生成 ExecutionContract。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
 
@@ -476,7 +476,7 @@ def test_stream_turn_persists_delivery_context_in_metadata(monkeypatch: pytest.M
     """验证聊天请求的交付上下文会透传进 ExecutionContract.metadata。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
 
@@ -508,7 +508,7 @@ def test_stream_turn_supports_scene_override(monkeypatch: pytest.MonkeyPatch) ->
     """验证 ChatService 支持请求级 scene 覆盖。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
 
@@ -539,7 +539,7 @@ def test_stream_turn_passes_same_host_session_on_multiple_calls(monkeypatch: pyt
     """验证多次调用会持续复用同一个 Host Session。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
 
@@ -633,7 +633,7 @@ def test_submit_turn_can_ensure_deterministic_session(monkeypatch: pytest.Monkey
     """显式 `ENSURE_DETERMINISTIC` 时应由 Service 幂等获取或创建 session。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
 
@@ -663,7 +663,7 @@ def test_resume_pending_turn_replays_prepared_snapshot(monkeypatch: pytest.Monke
     """验证恢复 pending turn 时会直接重放 Host prepared snapshot。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service(session_source=SessionSource.WECHAT)
@@ -712,7 +712,7 @@ def test_resume_pending_turn_replays_accepted_snapshot_via_prepare(monkeypatch: 
     """验证 accepted snapshot 恢复会走 prepare 路径，而不是丢失原始 accepted 真源。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service(session_source=SessionSource.WECHAT)
@@ -771,7 +771,7 @@ def test_resume_pending_turn_uses_host_owned_prepared_snapshot(
     """
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service(session_source=SessionSource.WECHAT)
@@ -822,7 +822,7 @@ def test_resume_pending_turn_rejects_active_source_run(monkeypatch: pytest.Monke
     """活跃 source run 的 pending turn 不能恢复。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()
@@ -847,7 +847,7 @@ def test_resume_pending_turn_deletes_record_after_max_attempts(monkeypatch: pyte
     """连续执行期恢复失败达到上限后应删除 pending turn，避免卡住同槽位。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()
@@ -886,7 +886,7 @@ def test_resume_pending_turn_rejects_succeeded_source_run(monkeypatch: pytest.Mo
     """source run 已成功完成的 pending turn 在 V1 中不能恢复。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()
@@ -908,7 +908,7 @@ def test_resume_pending_turn_rejects_user_cancelled_source_run(monkeypatch: pyte
     """用户主动取消的 pending turn 不能恢复。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()
@@ -930,7 +930,7 @@ def test_resume_pending_turn_deletes_record_immediately_when_snapshot_is_malform
     """恢复快照损坏属于永久错误，应立即删除 pending turn 而不是消耗 attempt。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()
@@ -960,7 +960,7 @@ def test_resume_pending_turn_allows_timeout_cancelled_source_run(monkeypatch: py
     """timeout 取消的 pending turn 允许恢复。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()
@@ -981,7 +981,7 @@ def test_resume_pending_turn_emits_verbose_logs(monkeypatch: pytest.MonkeyPatch)
     """pending turn 恢复应输出恢复入口与恢复分支的 verbose 日志。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()
@@ -1012,7 +1012,7 @@ def test_resume_pending_turn_rejects_cross_session_resume(monkeypatch: pytest.Mo
     """pending turn 恢复必须校验 session ownership。"""
 
     monkeypatch.setattr(
-        "dayu.services.chat_service.build_base_user_contribution",
+        "alpha.services.chat_service.build_base_user_contribution",
         lambda: "# 用户与运行时上下文\n当前时间：2026年04月03日。",
     )
     service, _resolver = _build_service()

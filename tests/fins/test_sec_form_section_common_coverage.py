@@ -12,9 +12,9 @@ import re
 
 import pytest
 
-from dayu.engine.processors.base import SearchHit, SectionContent, SectionSummary
-from dayu.fins.processors import sec_form_section_common as section_module
-from dayu.fins.processors.sec_form_section_common import (
+from alpha.engine.processors.base import SearchHit, SectionContent, SectionSummary
+from alpha.fins.processors import sec_form_section_common as section_module
+from alpha.fins.processors.sec_form_section_common import (
     _VirtualSectionProcessorMixin,
     _build_child_sections_from_candidates,
     _find_marker_after,
@@ -2308,7 +2308,7 @@ def test_find_anchor_position_fast_path_skips_boundary_regex() -> None:
     normalized_text = text.lower()
 
     with patch(
-        "dayu.fins.processors.sec_form_section_common._find_title_position_with_boundaries",
+        "alpha.fins.processors.sec_form_section_common._find_title_position_with_boundaries",
         side_effect=AssertionError("快速路径不应触发边界正则"),
     ):
         position = _find_anchor_position_in_text(

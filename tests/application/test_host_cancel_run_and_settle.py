@@ -13,10 +13,10 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from dayu.contracts.run import RunCancelReason, RunState
-from dayu.host.host import Host
-from dayu.host.pending_turn_store import InMemoryPendingConversationTurnStore
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.contracts.run import RunCancelReason, RunState
+from alpha.host.host import Host
+from alpha.host.pending_turn_store import InMemoryPendingConversationTurnStore
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 from tests.application.conftest import (
     StubHostExecutor,
     StubRunRegistry,
@@ -24,8 +24,8 @@ from tests.application.conftest import (
 )
 
 if TYPE_CHECKING:
-    from dayu.host.host_execution import HostExecutorProtocol
-    from dayu.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
+    from alpha.host.host_execution import HostExecutorProtocol
+    from alpha.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
 
 
 def _build_host(

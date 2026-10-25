@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pytest
 
-from dayu.contracts.run import (
+from alpha.contracts.run import (
     ACTIVE_STATES,
     TERMINAL_STATES,
     RunCancelReason,

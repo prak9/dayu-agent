@@ -14,7 +14,7 @@ def _ensure_repo_root_on_sys_path() -> None:
 
     直接以 `python utils/sec_6k_rule_diagnostics.py` 运行脚本时，
     Python 只会自动把 `utils/` 目录加入 `sys.path`，此时无法导入同级仓库
-    下的 `dayu` 包。这里把仓库根目录补入模块搜索路径，保证脚本与
+    下的 `alpha` 包。这里把仓库根目录补入模块搜索路径，保证脚本与
     `python -m` 运行方式行为一致。
 
     Args:
@@ -36,7 +36,7 @@ def _ensure_repo_root_on_sys_path() -> None:
 
 _ensure_repo_root_on_sys_path()
 
-from dayu.fins.sec_6k_rule_diagnostics import (
+from alpha.fins.sec_6k_rule_diagnostics import (
     DEFAULT_OUTPUT_DIRNAME,
     ProcessProgressUpdate,
     Sec6KRuleDiagnosticsReport,

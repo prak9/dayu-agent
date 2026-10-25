@@ -11,20 +11,20 @@ from typing import cast
 
 import pytest
 
-from dayu.contracts.events import AppEvent, AppEventType, PublishedRunEventProtocol
-from dayu.contracts.run import RunCancelReason, RunRecord, RunState
-from dayu.contracts.session import SessionRecord, SessionSource, SessionState
-from dayu.host.event_bus import AsyncQueueEventBus
-from dayu.host.host import Host
-from dayu.host.protocols import (
+from alpha.contracts.events import AppEvent, AppEventType, PublishedRunEventProtocol
+from alpha.contracts.run import RunCancelReason, RunRecord, RunState
+from alpha.contracts.session import SessionRecord, SessionSource, SessionState
+from alpha.host.event_bus import AsyncQueueEventBus
+from alpha.host.host import Host
+from alpha.host.protocols import (
     ConversationSessionDigest,
     ConversationSessionTurnExcerpt,
     HostAdminOperationsProtocol,
     LaneStatus,
 )
-from dayu.services.contracts import HostCleanupResult
-from dayu.services.host_admin_service import HostAdminService
-from dayu.services.startup_recovery import recover_host_startup_state
+from alpha.services.contracts import HostCleanupResult
+from alpha.services.host_admin_service import HostAdminService
+from alpha.services.startup_recovery import recover_host_startup_state
 
 
 class _FakeSessionRegistry:
@@ -604,7 +604,7 @@ def test_recover_host_startup_state_logs_cleanup_counts(monkeypatch: pytest.Monk
 
     service, _event_bus = _build_service()
     info_logs: list[str] = []
-    monkeypatch.setattr("dayu.services.startup_recovery.Log.info", lambda message, *, module="APP": info_logs.append(message))
+    monkeypatch.setattr("alpha.services.startup_recovery.Log.info", lambda message, *, module="APP": info_logs.append(message))
 
     result = recover_host_startup_state(
         service,
@@ -623,7 +623,7 @@ def test_recover_host_startup_state_warns_and_continues_on_failure(monkeypatch: 
 
     warnings: list[str] = []
     monkeypatch.setattr(
-        "dayu.services.startup_recovery.Log.warning",
+        "alpha.services.startup_recovery.Log.warning",
         lambda message, *, module="APP": warnings.append(message),
     )
 
@@ -821,12 +821,12 @@ def test_cancel_session_runs_returns_cancelled_ids() -> None:
 def test_close_session_cleans_outbox_and_pending_turns() -> None:
     """close_session 应清理该 session 的 reply outbox 和 pending turns。"""
 
-    from dayu.contracts.reply_outbox import ReplyOutboxSubmitRequest
-    from dayu.host.pending_turn_store import (
+    from alpha.contracts.reply_outbox import ReplyOutboxSubmitRequest
+    from alpha.host.pending_turn_store import (
         InMemoryPendingConversationTurnStore,
         PendingConversationTurnState,
     )
-    from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+    from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 
     pending_store = InMemoryPendingConversationTurnStore()
     outbox_store = InMemoryReplyOutboxStore()
@@ -926,7 +926,7 @@ def test_stream_subscription_events_closes_on_completion() -> None:
             """立即抛出 StopAsyncIteration。"""
             raise StopAsyncIteration
 
-    from dayu.services.host_admin_service import _stream_subscription_events
+    from alpha.services.host_admin_service import _stream_subscription_events
 
     sub = _EmptySubscription()
 
@@ -948,11 +948,11 @@ def test_cleanup_stale_pending_turns_removes_turns_with_terminal_runs() -> None:
     `_reconcile_pending_turn_after_terminal_run`，需要独立的启动清理兜底。
     """
 
-    from dayu.host.pending_turn_store import (
+    from alpha.host.pending_turn_store import (
         InMemoryPendingConversationTurnStore,
         PendingConversationTurnState,
     )
-    from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+    from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 
     pending_store = InMemoryPendingConversationTurnStore()
     outbox_store = InMemoryReplyOutboxStore()
@@ -1049,11 +1049,11 @@ def test_cleanup_stale_pending_turns_retention_keeps_active_source_run() -> None
     from dataclasses import replace
     from datetime import timedelta
 
-    from dayu.host.pending_turn_store import (
+    from alpha.host.pending_turn_store import (
         InMemoryPendingConversationTurnStore,
         PendingConversationTurnState,
     )
-    from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+    from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 
     pending_store = InMemoryPendingConversationTurnStore()
     outbox_store = InMemoryReplyOutboxStore()
@@ -1108,11 +1108,11 @@ def test_cleanup_stale_pending_turns_expires_after_retention() -> None:
     from dataclasses import replace
     from datetime import timedelta
 
-    from dayu.host.pending_turn_store import (
+    from alpha.host.pending_turn_store import (
         InMemoryPendingConversationTurnStore,
         PendingConversationTurnState,
     )
-    from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+    from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 
     pending_store = InMemoryPendingConversationTurnStore()
     outbox_store = InMemoryReplyOutboxStore()
@@ -1217,11 +1217,11 @@ def test_cleanup_stale_pending_turns_retention_respects_resuming_first() -> None
     from dataclasses import replace
     from datetime import timedelta
 
-    from dayu.host.pending_turn_store import (
+    from alpha.host.pending_turn_store import (
         InMemoryPendingConversationTurnStore,
         PendingConversationTurnState,
     )
-    from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+    from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 
     pending_store = InMemoryPendingConversationTurnStore()
     outbox_store = InMemoryReplyOutboxStore()
@@ -1275,11 +1275,11 @@ def test_cleanup_stale_pending_turns_retention_keeps_recent() -> None:
     from dataclasses import replace
     from datetime import timedelta
 
-    from dayu.host.pending_turn_store import (
+    from alpha.host.pending_turn_store import (
         InMemoryPendingConversationTurnStore,
         PendingConversationTurnState,
     )
-    from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+    from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 
     pending_store = InMemoryPendingConversationTurnStore()
     outbox_store = InMemoryReplyOutboxStore()

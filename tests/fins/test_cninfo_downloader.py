@@ -1,4 +1,4 @@
-"""``dayu/fins/downloaders/cninfo_downloader.py`` 单元测试。
+"""``alpha/fins/downloaders/cninfo_downloader.py`` 单元测试。
 
 覆盖：
 
@@ -21,13 +21,13 @@ from urllib.parse import parse_qs
 import httpx
 import pytest
 
-from dayu.fins.downloaders.cninfo_downloader import (
+from alpha.fins.downloaders.cninfo_downloader import (
     CNINFO_QUERY_URL,
     CNINFO_STOCK_JSON_URL,
     CNINFO_STATIC_BASE_URL,
     CninfoDiscoveryClient,
 )
-from dayu.fins.pipelines.cn_download_models import (
+from alpha.fins.pipelines.cn_download_models import (
     CnCompanyProfile,
     CnReportCandidate,
     CnReportQuery,

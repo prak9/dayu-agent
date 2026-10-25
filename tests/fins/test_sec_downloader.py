@@ -12,7 +12,7 @@ from typing import Any, AsyncIterator, BinaryIO, Optional
 import httpx
 import pytest
 
-from dayu.fins.downloaders.sec_downloader import (
+from alpha.fins.downloaders.sec_downloader import (
     BrowseEdgarFiling,
     DownloaderEvent,
     RemoteFileDescriptor,
@@ -36,8 +36,8 @@ from dayu.fins.downloaders.sec_downloader import (
     pick_form_document_files,
     pick_taxonomy_files,
 )
-from dayu.fins.domain.document_models import FileObjectMeta
-from dayu.fins._converters import optional_int
+from alpha.fins.domain.document_models import FileObjectMeta
+from alpha.fins._converters import optional_int
 
 
 class StoreStub:
@@ -836,7 +836,7 @@ def test_hash_file_sha256_and_pick_instance_fallback(tmp_path: Path) -> None:
     file_path = tmp_path / "sample.bin"
     file_path.write_bytes(payload)
 
-    from dayu.fins.downloaders.sec_downloader import hash_file_sha256
+    from alpha.fins.downloaders.sec_downloader import hash_file_sha256
 
     assert hash_file_sha256(file_path) == hashlib.sha256(payload).hexdigest()
 
@@ -1353,7 +1353,7 @@ def test_http_private_methods_retry_and_failure(tmp_path: Path, monkeypatch: pyt
     monkeypatch.setattr(downloader, "_reserve_global_request_slot", lambda min_interval: 0.0)
     # 用 stub 替换 sec_downloader 模块内的 time.monotonic，使 elapsed = 0，
     # 从而 wait = sleep_seconds = 0.2，避免依赖宿主机时钟粒度造成 flaky。
-    import dayu.fins.downloaders.sec_downloader as _sd
+    import alpha.fins.downloaders.sec_downloader as _sd
     monkeypatch.setattr(_sd.time, "monotonic", lambda: 1000.0)
     downloader._last_request_time = _sd.time.monotonic()
     _run(downloader._rate_limit())
@@ -1394,7 +1394,7 @@ def test_try_fetch_index_items_and_helper_paths(tmp_path: Path, monkeypatch: pyt
     assert downloader._build_headers()["Accept-Encoding"] == "gzip, deflate"
     assert optional_int("12") == 12
     assert optional_int("abc") is None
-    from dayu.fins.downloaders.sec_downloader import _safe_header
+    from alpha.fins.downloaders.sec_downloader import _safe_header
 
     assert _safe_header(None, "ETag") is None
     assert _safe_header(httpx.Response(200, headers={"ETag": '"etag"'}), "ETag") == '"etag"'
@@ -1621,7 +1621,7 @@ def test_rate_limit_uses_shared_state_across_instances(
 
     wall_time_values = repeat(1000.0)
     monkeypatch.setattr(asyncio, "sleep", _fake_sleep)
-    monkeypatch.setattr("dayu.fins.downloaders.sec_downloader.time.time", lambda: next(wall_time_values))
+    monkeypatch.setattr("alpha.fins.downloaders.sec_downloader.time.time", lambda: next(wall_time_values))
 
     downloader_a = _create_downloader(tmp_path)
     downloader_b = _create_downloader(tmp_path)

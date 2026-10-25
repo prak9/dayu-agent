@@ -10,9 +10,9 @@ from unittest.mock import Mock
 import pandas as pd
 import pytest
 
-from dayu.engine.processors import docling_processor
-from dayu.engine.processors.docling_processor import DoclingProcessor
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.engine.processors import docling_processor
+from alpha.engine.processors.docling_processor import DoclingProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 @dataclass
@@ -370,7 +370,7 @@ def test_docling_processor_read_section_replaces_tables_with_placeholders(
 
     fake_doc = FakeDocument(linear_items=linear_items, tables=[table_1, table_2])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -444,7 +444,7 @@ def test_docling_processor_read_table_and_search(tmp_path: Path, monkeypatch: py
     ]
     fake_doc = FakeDocument(linear_items=linear_items, tables=[records_table, markdown_table])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -510,7 +510,7 @@ def test_docling_processor_section_render_cache_reused_in_search_and_full_text(
     ]
     fake_doc = FakeDocument(linear_items=linear_items, tables=[table])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -564,7 +564,7 @@ def test_docling_processor_read_table_markdown_export_failure_falls_back_to_data
     ]
     fake_doc = FakeDocument(linear_items=linear_items, tables=[table])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -615,7 +615,7 @@ def test_docling_processor_table_headers_fallback_to_column_headers(
     ]
     fake_doc = FakeDocument(linear_items=linear_items, tables=[table])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -656,7 +656,7 @@ def test_docling_processor_no_section_header_creates_dummy_section(
     ]
     fake_doc = FakeDocument(linear_items=linear_items, tables=[table])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -705,7 +705,7 @@ def test_docling_processor_get_page_content_returns_page_context(
     ]
     fake_doc = FakeDocument(linear_items=linear_items, tables=[table])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -751,7 +751,7 @@ def test_docling_processor_get_page_content_rejects_invalid_page_no(
     json_path.write_text("{}", encoding="utf-8")
     fake_doc = FakeDocument(linear_items=[], tables=[])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 
@@ -787,7 +787,7 @@ def test_docling_processor_get_page_content_skips_invalid_page_range(
     ]
     fake_doc = FakeDocument(linear_items=linear_items, tables=[])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 

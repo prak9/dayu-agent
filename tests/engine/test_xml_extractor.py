@@ -1,5 +1,5 @@
 
-from dayu.engine.xml_extractor import StreamingXMLTagExtractor
+from alpha.engine.xml_extractor import StreamingXMLTagExtractor
 
 
 def test_extractor_basic():

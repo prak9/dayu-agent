@@ -10,13 +10,13 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext
-from dayu.contracts.session import SessionRecord, SessionSource, SessionState
-from dayu.engine.events import EventType, StreamEvent
-from dayu.host.events import build_app_event_from_stream_event
-from dayu.host.startup_preparation import resolve_host_config
-from dayu.services.contracts import SessionResolutionPolicy
-from dayu.services.internal.session_coordinator import ServiceSessionCoordinator
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext
+from alpha.contracts.session import SessionRecord, SessionSource, SessionState
+from alpha.engine.events import EventType, StreamEvent
+from alpha.host.events import build_app_event_from_stream_event
+from alpha.host.startup_preparation import resolve_host_config
+from alpha.services.contracts import SessionResolutionPolicy
+from alpha.services.internal.session_coordinator import ServiceSessionCoordinator
 
 
 def _build_session_record(session_id: str, *, scene_name: str | None = None) -> SessionRecord:
@@ -191,7 +191,7 @@ def test_resolve_host_config_supports_defaults_and_nested_overrides() -> None:
             explicit_lane_config={"writer": 7},
         )
 
-        assert default_config.store_path == (workspace_root / ".dayu/host/dayu_host.db").resolve()
+        assert default_config.store_path == (workspace_root / ".alpha/host/alpha_host.db").resolve()
         assert default_config.pending_turn_resume_max_attempts == 3
         assert default_config.pending_turn_retention_hours == 168
         assert default_config.cancellation_bridge_poll_interval_seconds == 0.5
@@ -215,7 +215,7 @@ def test_resolve_host_config_rejects_legacy_and_invalid_shapes() -> None:
         with pytest.raises(TypeError, match="host_config"):
             resolve_host_config(
                 workspace_root=workspace_root,
-                run_config={"host_store_config": {"path": ".dayu/host/dayu_host.db"}},
+                run_config={"host_store_config": {"path": ".alpha/host/alpha_host.db"}},
             )
         with pytest.raises(TypeError, match="host_config 必须是对象"):
             resolve_host_config(workspace_root=workspace_root, run_config={"host_config": []})

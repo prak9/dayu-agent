@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.cli.workspace_migrations.run_json_market_download_lanes import (
+from alpha.cli.workspace_migrations.run_json_market_download_lanes import (
     migrate_run_json_add_market_download_lanes,
 )
 

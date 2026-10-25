@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.engine import AsyncAgent
-from dayu.engine import (
+from alpha.engine import AsyncAgent
+from alpha.engine import (
     content_complete,
     content_delta,
     done_event,

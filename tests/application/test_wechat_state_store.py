@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from dayu.wechat import state_store as state_store_module
-from dayu.wechat.state_store import (
+from alpha.wechat import state_store as state_store_module
+from alpha.wechat.state_store import (
     FileWeChatStateStore,
     WeChatDaemonState,
     build_wechat_runtime_identity,

@@ -11,8 +11,8 @@ from typing import Any
 
 import pytest
 
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.tools.service import FinsToolService
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.tools.service import FinsToolService
 from tests.fins.storage_testkit import build_fs_storage_test_context
 
 GROUND_TRUTH_BASELINE_RELATIVE = Path("tests/fixtures/fins/ground_truth")

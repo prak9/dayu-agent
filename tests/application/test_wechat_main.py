@@ -13,22 +13,22 @@ from typing import cast
 
 import pytest
 
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot
-from dayu.execution.options import ExecutionOptions, ResolvedExecutionOptions
-from dayu.fins.service_runtime import DefaultFinsRuntime
-from dayu.host import Host
-from dayu.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
-from dayu.services.startup_preparation import PreparedHostRuntimeDependencies
-from dayu.startup.workspace import WorkspaceResources
-from dayu.wechat.service_manager import InstalledServiceDefinition, ServiceSpec, ServiceStatus
-from dayu.wechat.state_store import WeChatDaemonState
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot
+from alpha.execution.options import ExecutionOptions, ResolvedExecutionOptions
+from alpha.fins.service_runtime import DefaultFinsRuntime
+from alpha.host import Host
+from alpha.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
+from alpha.services.startup_preparation import PreparedHostRuntimeDependencies
+from alpha.startup.workspace import WorkspaceResources
+from alpha.wechat.service_manager import InstalledServiceDefinition, ServiceSpec, ServiceStatus
+from alpha.wechat.state_store import WeChatDaemonState
 
-wechat_arg_module = importlib.import_module("dayu.wechat.arg_parsing")
-wechat_main_module = importlib.import_module("dayu.wechat.main")
-wechat_runtime_module = importlib.import_module("dayu.wechat.runtime")
-wechat_login_module = importlib.import_module("dayu.wechat.commands.login")
-wechat_run_module = importlib.import_module("dayu.wechat.commands.run")
-wechat_service_module = importlib.import_module("dayu.wechat.commands.service")
+wechat_arg_module = importlib.import_module("alpha.wechat.arg_parsing")
+wechat_main_module = importlib.import_module("alpha.wechat.main")
+wechat_runtime_module = importlib.import_module("alpha.wechat.runtime")
+wechat_login_module = importlib.import_module("alpha.wechat.commands.login")
+wechat_run_module = importlib.import_module("alpha.wechat.commands.run")
+wechat_service_module = importlib.import_module("alpha.wechat.commands.service")
 
 
 @pytest.mark.unit
@@ -98,11 +98,11 @@ def test_build_execution_options_supports_interactive_like_overrides() -> None:
 
 @pytest.mark.unit
 def test_create_parser_uses_python_module_prog() -> None:
-    """验证顶层 usage 使用 `python -m dayu.wechat`，不暴露 `__main__.py`。"""
+    """验证顶层 usage 使用 `python -m alpha.wechat`，不暴露 `__main__.py`。"""
 
     parser = wechat_arg_module._create_parser()
 
-    assert parser.prog == "python -m dayu.wechat"
+    assert parser.prog == "python -m alpha.wechat"
     assert "__main__.py" not in parser.format_usage()
 
 
@@ -118,7 +118,7 @@ def test_create_parser_missing_command_prints_help_summary(capsys: pytest.Captur
     captured = capsys.readouterr()
 
     assert exc_info.value.code == 2
-    assert "python -m dayu.wechat" in captured.err
+    assert "python -m alpha.wechat" in captured.err
     assert "__main__.py" not in captured.err
     assert "login" in captured.err
     assert "run" in captured.err
@@ -127,12 +127,12 @@ def test_create_parser_missing_command_prints_help_summary(capsys: pytest.Captur
 
 
 @pytest.mark.unit
-def test_resolve_state_dir_defaults_to_workspace_dayu_wechat_default(tmp_path: Path) -> None:
-    """验证默认状态目录为 `<workspace>/.dayu/wechat-default`。"""
+def test_resolve_state_dir_defaults_to_workspace_alpha_wechat_default(tmp_path: Path) -> None:
+    """验证默认状态目录为 `<workspace>/.alpha/wechat-default`。"""
 
     resolved = wechat_arg_module._resolve_state_dir(tmp_path, "default")
 
-    assert resolved == (tmp_path / ".dayu" / "wechat-default").resolve()
+    assert resolved == (tmp_path / ".alpha" / "wechat-default").resolve()
 
 
 @pytest.mark.unit
@@ -329,7 +329,7 @@ def test_build_run_cli_arguments_includes_overrides(tmp_path: Path) -> None:
     context = wechat_arg_module.ResolvedWechatContext(
         workspace_root=tmp_path / "workspace",
         config_root=tmp_path / "workspace" / "config",
-        state_dir=tmp_path / "workspace" / ".dayu" / "wechat-ops",
+        state_dir=tmp_path / "workspace" / ".alpha" / "wechat-ops",
         execution_options=ExecutionOptions(),
         instance_label="ops",
     )
@@ -406,7 +406,7 @@ def test_build_run_cli_arguments_persists_non_default_context_delivery_max_attem
     context = wechat_arg_module.ResolvedWechatContext(
         workspace_root=tmp_path / "workspace",
         config_root=tmp_path / "workspace" / "config",
-        state_dir=tmp_path / "workspace" / ".dayu" / "wechat-ops",
+        state_dir=tmp_path / "workspace" / ".alpha" / "wechat-ops",
         execution_options=ExecutionOptions(),
         delivery_max_attempts=5,
         instance_label="ops",
@@ -445,8 +445,8 @@ def test_service_start_requires_install(monkeypatch: pytest.MonkeyPatch, tmp_pat
 
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="launchd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.plist",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.plist",
         state_dir=tmp_path / ".wechat",
         instance_label="ops",
     )
@@ -484,8 +484,8 @@ def test_service_start_returns_running_when_service_already_loaded(
 
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="launchd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.plist",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.plist",
         state_dir=tmp_path / ".wechat",
         instance_label="ops",
     )
@@ -536,8 +536,8 @@ def test_service_start_launchd_loaded_without_pid_still_calls_start(
 
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="launchd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.plist",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.plist",
         state_dir=tmp_path / ".wechat",
         instance_label="ops",
     )
@@ -588,8 +588,8 @@ def test_service_restart_requires_install(monkeypatch: pytest.MonkeyPatch, tmp_p
 
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="launchd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.plist",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.plist",
         state_dir=tmp_path / ".wechat",
     )
 
@@ -623,8 +623,8 @@ def test_service_restart_restarts_loaded_service(monkeypatch: pytest.MonkeyPatch
 
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="systemd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.service",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.service",
         state_dir=tmp_path / ".wechat",
         instance_label="ops",
     )
@@ -672,15 +672,15 @@ def test_service_install_uses_systemd_backend_on_linux(monkeypatch: pytest.Monke
     context = wechat_arg_module.ResolvedWechatContext(
         workspace_root=tmp_path,
         config_root=tmp_path / "config",
-        state_dir=tmp_path / ".dayu" / "wechat-default",
+        state_dir=tmp_path / ".alpha" / "wechat-default",
         execution_options=ExecutionOptions(),
     )
     fake_spec = ServiceSpec(
         backend="systemd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.service",
         working_directory=tmp_path,
-        program_arguments=("/usr/bin/python3", "-m", "dayu.wechat", "run"),
+        program_arguments=("/usr/bin/python3", "-m", "alpha.wechat", "run"),
     )
     printed: list[str] = []
 
@@ -718,8 +718,8 @@ def test_service_status_prints_launchd_log_paths(monkeypatch: pytest.MonkeyPatch
 
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="launchd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.plist",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.plist",
         state_dir=tmp_path / ".wechat",
     )
     printed: list[str] = []
@@ -761,8 +761,8 @@ def test_service_status_prints_systemd_log_command(monkeypatch: pytest.MonkeyPat
 
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="systemd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.service",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.service",
         state_dir=tmp_path / ".wechat",
     )
     printed: list[str] = []
@@ -795,7 +795,7 @@ def test_service_status_prints_systemd_log_command(monkeypatch: pytest.MonkeyPat
 
     assert wechat_service_module._run_service_status_command(args) == 0
     assert "log_backend: journal" in printed
-    assert "log_follow_command: journalctl --user -u com.dayu.wechat.test.service -f" in printed
+    assert "log_follow_command: journalctl --user -u com.alpha.wechat.test.service -f" in printed
 
 
 @pytest.mark.unit
@@ -837,7 +837,7 @@ def test_service_list_only_prints_installed_instances(monkeypatch: pytest.Monkey
                 program_arguments=(
                     "/usr/bin/python3",
                     "-m",
-                    "dayu.wechat",
+                    "alpha.wechat",
                     "run",
                     "--base",
                     str(tmp_path),
@@ -852,7 +852,7 @@ def test_service_list_only_prints_installed_instances(monkeypatch: pytest.Monkey
                 program_arguments=(
                     "/usr/bin/python3",
                     "-m",
-                    "dayu.wechat",
+                    "alpha.wechat",
                     "run",
                     "--base",
                     str(tmp_path),
@@ -867,7 +867,7 @@ def test_service_list_only_prints_installed_instances(monkeypatch: pytest.Monkey
                 program_arguments=(
                     "/usr/bin/python3",
                     "-m",
-                    "dayu.wechat",
+                    "alpha.wechat",
                     "run",
                     "--base",
                     str(tmp_path / "other"),
@@ -879,7 +879,7 @@ def test_service_list_only_prints_installed_instances(monkeypatch: pytest.Monkey
                 backend="launchd",
                 label="svc-malformed",
                 definition_path=tmp_path / "svc-malformed.plist",
-                program_arguments=("/usr/bin/python3", "-m", "dayu.wechat", "login"),
+                program_arguments=("/usr/bin/python3", "-m", "alpha.wechat", "login"),
             ),
             InstalledServiceDefinition(
                 backend="launchd",
@@ -888,7 +888,7 @@ def test_service_list_only_prints_installed_instances(monkeypatch: pytest.Monkey
                 program_arguments=(
                     "/usr/bin/python3",
                     "-m",
-                    "dayu.wechat",
+                    "alpha.wechat",
                     "run",
                     "--base",
                     str(tmp_path),
@@ -980,7 +980,7 @@ def test_wechat_main_helper_functions_cover_noop_services_context_and_daemon_cre
 
     assert context.workspace_root == tmp_path.resolve()
     assert context.config_root == (tmp_path / "config").resolve()
-    assert context.state_dir == (tmp_path / ".dayu" / "wechat-default").resolve()
+    assert context.state_dir == (tmp_path / ".alpha" / "wechat-default").resolve()
     assert context.instance_label == "default"
     assert daemon_config.allow_interactive_relogin is False
     assert daemon_config.typing_interval_sec == pytest.approx(2.5)
@@ -1032,7 +1032,7 @@ def test_prepare_wechat_host_dependencies_runs_unified_startup_recovery(
     context = wechat_arg_module.ResolvedWechatContext(
         workspace_root=tmp_path,
         config_root=tmp_path / "config",
-        state_dir=tmp_path / ".dayu" / "wechat-default",
+        state_dir=tmp_path / ".alpha" / "wechat-default",
         execution_options=ExecutionOptions(),
     )
     fake_workspace = cast(WorkspaceResources, object())
@@ -1102,7 +1102,7 @@ def test_wechat_main_helper_functions_cover_env_identity_parsing_and_signal_clea
     }.get(name))
     monkeypatch.setattr(wechat_runtime_module, "detect_service_backend", lambda: "launchd")
     monkeypatch.setattr(wechat_runtime_module, "list_installed_service_definitions", lambda _backend: ())
-    monkeypatch.setattr(wechat_runtime_module, "build_service_label", lambda _state_dir: "com.dayu.wechat.test")
+    monkeypatch.setattr(wechat_runtime_module, "build_service_label", lambda _state_dir: "com.alpha.wechat.test")
     monkeypatch.setattr(
         wechat_runtime_module,
         "resolve_service_definition_path",
@@ -1115,9 +1115,9 @@ def test_wechat_main_helper_functions_cover_env_identity_parsing_and_signal_clea
 
     assert captured_environment == {"MIMO_API_KEY": "secret-1"}
     assert identity.instance_label == "default"
-    assert identity.label == "com.dayu.wechat.test"
-    assert identity.definition_path == (tmp_path / "com.dayu.wechat.test.launchd")
-    from dayu.execution.cli_execution_options import parse_limits_override, parse_temperature_argument
+    assert identity.label == "com.alpha.wechat.test"
+    assert identity.definition_path == (tmp_path / "com.alpha.wechat.test.launchd")
+    from alpha.execution.cli_execution_options import parse_limits_override, parse_temperature_argument
     with pytest.raises(SystemExit, match="2"):
         parse_limits_override("{bad json}", field_name="--doc-limits-json")
     with pytest.raises(SystemExit, match="2"):
@@ -1142,7 +1142,7 @@ def test_resolve_service_identity_prefers_installed_definition_label(
 
     parser = wechat_arg_module._create_parser()
     args = parser.parse_args(["service", "uninstall", "--base", str(tmp_path)])
-    expected_state_dir = (tmp_path / ".dayu" / "wechat-default").resolve()
+    expected_state_dir = (tmp_path / ".alpha" / "wechat-default").resolve()
 
     monkeypatch.setattr(wechat_runtime_module, "detect_service_backend", lambda: "launchd")
     monkeypatch.setattr(
@@ -1151,12 +1151,12 @@ def test_resolve_service_identity_prefers_installed_definition_label(
         lambda _backend: (
             InstalledServiceDefinition(
                 backend="launchd",
-                label="com.dayu.wechat.legacy-default",
+                label="com.alpha.wechat.legacy-default",
                 definition_path=tmp_path / "legacy-default.plist",
                 program_arguments=(
                     "/usr/bin/python3",
                     "-m",
-                    "dayu.wechat",
+                    "alpha.wechat",
                     "run",
                     "--base",
                     str(tmp_path),
@@ -1164,13 +1164,13 @@ def test_resolve_service_identity_prefers_installed_definition_label(
             ),
         ),
     )
-    monkeypatch.setattr(wechat_runtime_module, "build_service_label", lambda _state_dir: "com.dayu.wechat.recomputed")
+    monkeypatch.setattr(wechat_runtime_module, "build_service_label", lambda _state_dir: "com.alpha.wechat.recomputed")
 
     identity = wechat_runtime_module._resolve_service_identity(args)
 
     assert identity.instance_label == "default"
     assert identity.state_dir == expected_state_dir
-    assert identity.label == "com.dayu.wechat.legacy-default"
+    assert identity.label == "com.alpha.wechat.legacy-default"
     assert identity.definition_path == (tmp_path / "legacy-default.plist")
 
 
@@ -1186,8 +1186,8 @@ def test_wechat_main_helper_functions_cover_service_dispatch_and_log_levels(
     uninstall_args = parser.parse_args(["service", "uninstall", "--base", str(tmp_path)])
     identity = wechat_runtime_module.ResolvedWechatServiceIdentity(
         backend="launchd",
-        label="com.dayu.wechat.test",
-        definition_path=tmp_path / "com.dayu.wechat.test.plist",
+        label="com.alpha.wechat.test",
+        definition_path=tmp_path / "com.alpha.wechat.test.plist",
         state_dir=tmp_path / ".wechat",
     )
     printed: list[str] = []
@@ -1224,9 +1224,9 @@ def test_wechat_main_helper_functions_cover_service_dispatch_and_log_levels(
     with pytest.raises(ValueError, match="未知 service 子命令"):
         wechat_service_module.run_service_command(SimpleNamespace(service_command="bad"))
 
-    monkeypatch.setattr("dayu.wechat.commands.login.run_login_command", lambda _args: 21)
-    monkeypatch.setattr("dayu.wechat.commands.run.run_run_command", lambda _args: 22)
-    monkeypatch.setattr("dayu.wechat.commands.service.run_service_command", lambda _args: 23)
+    monkeypatch.setattr("alpha.wechat.commands.login.run_login_command", lambda _args: 21)
+    monkeypatch.setattr("alpha.wechat.commands.run.run_run_command", lambda _args: 22)
+    monkeypatch.setattr("alpha.wechat.commands.service.run_service_command", lambda _args: 23)
 
     assert wechat_main_module._dispatch_command(SimpleNamespace(command="login")) == 21
     assert wechat_main_module._dispatch_command(SimpleNamespace(command="run")) == 22

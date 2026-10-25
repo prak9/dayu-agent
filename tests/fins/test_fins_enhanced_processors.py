@@ -9,11 +9,11 @@ from typing import Any, Optional
 import pandas as pd
 import pytest
 
-from dayu.fins.processors.fins_bs_processor import FinsBSProcessor
-from dayu.fins.processors.fins_docling_processor import FinsDoclingProcessor
-from dayu.fins.processors.fins_markdown_processor import FinsMarkdownProcessor
-from dayu.fins.processors.sec_html_rules import strip_edgar_sgml_envelope
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors.fins_bs_processor import FinsBSProcessor
+from alpha.fins.processors.fins_docling_processor import FinsDoclingProcessor
+from alpha.fins.processors.fins_markdown_processor import FinsMarkdownProcessor
+from alpha.fins.processors.sec_html_rules import strip_edgar_sgml_envelope
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 def _make_source(path: Path, *, media_type: str) -> LocalFileSource:
@@ -458,7 +458,7 @@ def test_fins_docling_processor_relabels_financial_tables(
     ]
     fake_doc = _FakeDocument(linear_items=linear_items, tables=[table])
     monkeypatch.setattr(
-        "dayu.engine.processors.docling_processor._load_docling_document",
+        "alpha.engine.processors.docling_processor._load_docling_document",
         lambda _: fake_doc,
     )
 

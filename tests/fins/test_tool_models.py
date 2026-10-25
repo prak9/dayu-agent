@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.fins.domain.tool_models import (
+from alpha.fins.domain.tool_models import (
     Citation,
     NumericContext,
     SectionSemantic,

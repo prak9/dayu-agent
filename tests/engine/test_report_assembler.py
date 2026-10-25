@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from dayu.services.internal.write_pipeline.models import ChapterResult
-from dayu.services.internal.write_pipeline.report_assembler import ReportAssembler
-from dayu.services.internal.write_pipeline.template_parser import parse_template_layout
+from alpha.services.internal.write_pipeline.models import ChapterResult
+from alpha.services.internal.write_pipeline.report_assembler import ReportAssembler
+from alpha.services.internal.write_pipeline.template_parser import parse_template_layout
 
 from tests.engine.test_write_pipeline import _build_runner
 

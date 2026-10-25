@@ -5,7 +5,7 @@ log_dir="./workspace/tool_optimize/new_round/log/${TICKER}"
 draft_dir="./workspace/tool_optimize/new_round/draft/${TICKER}"
 mkdir -p "$log_dir"
 mkdir -p "$draft_dir"
-python -m dayu.cli write \
+python -m alpha.cli write \
   --ticker "$TICKER" \
   --enable-tool-trace \
   --tool-trace-dir "$log_dir" \

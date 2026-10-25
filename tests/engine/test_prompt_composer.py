@@ -7,7 +7,7 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.prompting import (
+from alpha.prompting import (
     PromptManifestError,
     PromptToolSnapshot,
     PromptComposeContext,
@@ -15,10 +15,10 @@ from dayu.prompting import (
     build_prompt_assembly_plan,
     load_scene_definition,
 )
-from dayu.prompting.prompt_plan import PromptAssemblyPlan, PromptFragmentPlan
-from dayu.prompting.scene_definition import ToolSelectionMode, ToolSelectionPolicy, parse_scene_definition
-from dayu.startup.config_file_resolver import ConfigFileResolver
-from dayu.startup.prompt_assets import FilePromptAssetStore
+from alpha.prompting.prompt_plan import PromptAssemblyPlan, PromptFragmentPlan
+from alpha.prompting.scene_definition import ToolSelectionMode, ToolSelectionPolicy, parse_scene_definition
+from alpha.startup.config_file_resolver import ConfigFileResolver
+from alpha.startup.prompt_assets import FilePromptAssetStore
 
 _EXPECTED_THINKING_ALLOWED_NAMES: tuple[str, ...] = (
     "mimo-v2.5-pro-thinking",
@@ -596,14 +596,14 @@ def test_prompt_compose_context_select_and_has_any_cover_empty_values() -> None:
 
   context = PromptComposeContext(
     values={
-      "title": " Dayu ",
+      "title": " Alpha ",
       "empty_text": "   ",
       "none_value": None,
     }
   )
 
   assert context.select(()) == context.values
-  assert context.select(("title", "missing")) == {"title": " Dayu "}
+  assert context.select(("title", "missing")) == {"title": " Alpha "}
   assert context.has_any(()) is True
   assert context.has_any(("missing", "empty_text", "none_value")) is False
   assert context.has_any(("missing", "title")) is True

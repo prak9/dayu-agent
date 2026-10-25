@@ -14,36 +14,36 @@ from typing import Any, Callable, Sequence, cast
 
 import pytest
 
-from dayu.services.internal.write_pipeline import artifact_store as artifact_store_module
-from dayu.services.internal.write_pipeline import audit_rules as audit_rules_module
-from dayu.contracts.agent_execution import (
+from alpha.services.internal.write_pipeline import artifact_store as artifact_store_module
+from alpha.services.internal.write_pipeline import audit_rules as audit_rules_module
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedInfrastructureSpec,
     AcceptedModelSpec,
     AcceptedRuntimeSpec,
     AcceptedToolConfigSpec,
 )
-from dayu.contracts.host_execution import ConcurrencyAcquirePolicy
-from dayu.contracts.cancellation import CancelledError
-from dayu.contracts.events import AppEvent, AppEventType, AppResult
-from dayu.contracts.infrastructure import WorkspaceResourcesProtocol
-from dayu.contracts.model_config import ModelConfig
-from dayu.contracts.prompt_assets import SceneManifestAsset, TaskPromptContractAsset
-from dayu.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
-from dayu.execution.options import (
+from alpha.contracts.host_execution import ConcurrencyAcquirePolicy
+from alpha.contracts.cancellation import CancelledError
+from alpha.contracts.events import AppEvent, AppEventType, AppResult
+from alpha.contracts.infrastructure import WorkspaceResourcesProtocol
+from alpha.contracts.model_config import ModelConfig
+from alpha.contracts.prompt_assets import SceneManifestAsset, TaskPromptContractAsset
+from alpha.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
+from alpha.execution.options import (
     ConversationMemorySettings,
     ExecutionOptions,
     ResolvedExecutionOptions,
     TraceSettings,
 )
-from dayu.execution.runtime_config import AgentRuntimeConfig, OpenAIRunnerRuntimeConfig
-from dayu.host.host_execution import HostExecutorProtocol
-from dayu.host.protocols import HostGovernanceProtocol, LaneStatus
-from dayu.log import Log
-from dayu.prompting.scene_definition import load_scene_definition
-from dayu.services.internal.write_pipeline.chapter_contracts import ChapterContract, ItemRule, PreferredLens
-from dayu.services.internal.write_pipeline.audit_evidence_rewriter import (
+from alpha.execution.runtime_config import AgentRuntimeConfig, OpenAIRunnerRuntimeConfig
+from alpha.host.host_execution import HostExecutorProtocol
+from alpha.host.protocols import HostGovernanceProtocol, LaneStatus
+from alpha.log import Log
+from alpha.prompting.scene_definition import load_scene_definition
+from alpha.services.internal.write_pipeline.chapter_contracts import ChapterContract, ItemRule, PreferredLens
+from alpha.services.internal.write_pipeline.audit_evidence_rewriter import (
     _build_anchor_rewrite_evidence_lines,
     _build_evidence_prefix_from_existing_lines,
     _extract_anchor_locator_from_hint,
@@ -55,7 +55,7 @@ from dayu.services.internal.write_pipeline.audit_evidence_rewriter import (
     _rewrite_financial_statement_evidence_line,
     _validate_anchor_rewrite_postconditions,
 )
-from dayu.services.internal.write_pipeline.audit_formatting import (
+from alpha.services.internal.write_pipeline.audit_formatting import (
     _build_current_visible_headings_block,
     _collect_all_evidence_items,
     _extract_evidence_section_block,
@@ -77,7 +77,7 @@ from dayu.services.internal.write_pipeline.audit_formatting import (
     _strip_evidence_section,
     _strip_generated_parenthetical_summary,
 )
-from dayu.services.internal.write_pipeline.audit_rules import (
+from alpha.services.internal.write_pipeline.audit_rules import (
     ConfirmOutputError,
     RepairOutputError,
     _collect_confirmable_evidence_violations,
@@ -88,11 +88,11 @@ from dayu.services.internal.write_pipeline.audit_rules import (
     _recompute_audit_result,
     _run_programmatic_audits,
 )
-from dayu.services.internal.write_pipeline.artifact_store import (
+from alpha.services.internal.write_pipeline.artifact_store import (
     _read_manifest_from_dir,
 )
-from dayu.services.internal.write_pipeline.chapter_execution_coordinator import build_process_state_template
-from dayu.services.internal.write_pipeline.pipeline import (
+from alpha.services.internal.write_pipeline.chapter_execution_coordinator import build_process_state_template
+from alpha.services.internal.write_pipeline.pipeline import (
     ChapterExecutionState,
     WritePipelineRunner,
     _build_middle_tasks,
@@ -102,31 +102,31 @@ from dayu.services.internal.write_pipeline.pipeline import (
     print_write_report,
     run_write_pipeline,
 )
-from dayu.services.internal.write_pipeline.prompt_builder import (
+from alpha.services.internal.write_pipeline.prompt_builder import (
     _build_prior_decision_tasks,
 )
-from dayu.services.internal.write_pipeline.repair_executor import (
+from alpha.services.internal.write_pipeline.repair_executor import (
     _apply_repair_plan,
     _apply_repair_plan_with_details,
     _parse_repair_plan,
 )
-from dayu.services.internal.write_pipeline.scene_contract_preparer import (
+from alpha.services.internal.write_pipeline.scene_contract_preparer import (
     SceneContractPreparer,
     SceneAgentCreationError,
 )
-from dayu.services.conversation_policy_reader import ConversationPolicyReader
-from dayu.services.scene_definition_reader import SceneDefinitionReader
-from dayu.services.scene_execution_acceptance import AcceptedSceneExecution, SceneExecutionAcceptancePreparer
-from dayu.services.internal.write_pipeline.scene_executor import (
+from alpha.services.conversation_policy_reader import ConversationPolicyReader
+from alpha.services.scene_definition_reader import SceneDefinitionReader
+from alpha.services.scene_execution_acceptance import AcceptedSceneExecution, SceneExecutionAcceptancePreparer
+from alpha.services.internal.write_pipeline.scene_executor import (
     _LLM_RETRY_DELAY_SECONDS,
     _LLM_RETRY_LIMIT,
 )
-from dayu.services.internal.write_pipeline.company_facets import (
+from alpha.services.internal.write_pipeline.company_facets import (
     filter_chapter_contract_by_facets,
     filter_item_rules_by_facets,
     parse_company_facets,
 )
-from dayu.services.internal.write_pipeline.enums import (
+from alpha.services.internal.write_pipeline.enums import (
     AuditCategory,
     AuditRuleCode,
     EvidenceConfirmationStatus,
@@ -136,7 +136,7 @@ from dayu.services.internal.write_pipeline.enums import (
     build_audit_scope_rules_payload,
     normalize_audit_rule_code,
 )
-from dayu.services.internal.write_pipeline.models import (
+from alpha.services.internal.write_pipeline.models import (
     AuditDecision,
     ChapterResult,
     ChapterTask,
@@ -152,7 +152,7 @@ from dayu.services.internal.write_pipeline.models import (
     Violation,
     WriteRunConfig,
 )
-from dayu.services.internal.write_pipeline.template_parser import TemplateLayout, parse_template_layout
+from alpha.services.internal.write_pipeline.template_parser import TemplateLayout, parse_template_layout
 
 
 def _build_toolset_configs(
@@ -2085,7 +2085,7 @@ def test_run_write_pipeline_wrapper_and_print_write_report_cover_entrypoints(
         def run(self) -> int:
             return 7
 
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.WritePipelineRunner", _FakeRunner)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.WritePipelineRunner", _FakeRunner)
 
     exit_code = run_write_pipeline(
         workspace=_build_test_workspace_resources(tmp_path),
@@ -2217,9 +2217,9 @@ def test_run_allows_template_without_source_chapter(
     monkeypatch.setattr(runner._store, "_persist_chapter_artifacts", lambda _result: None)
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
     monkeypatch.setattr(runner._store, "_persist_sources_json", lambda _entries: (_ for _ in ()).throw(AssertionError("不应生成来源清单 JSON")))
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.warn", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.warn", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -2595,7 +2595,7 @@ def test_run_overview_prompt_retries_and_raises_runtime_error(
         _make_app_result(errors=[{"error": "boom-2"}]),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.scene_executor.time.sleep", lambda _seconds: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.scene_executor.time.sleep", lambda _seconds: None)
 
     with pytest.raises(RuntimeError, match="第0章概览 Agent 执行失败"):
         runner._prompt_runner.run_overview_prompt("prompt")
@@ -2704,8 +2704,8 @@ def test_run_single_chapter_retries_and_passes(monkeypatch: pytest.MonkeyPatch, 
         ]
     )
 
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda message, **_kwargs: info_logs.append(str(message)))
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.warn", lambda message, **_kwargs: warn_logs.append(str(message)))
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda message, **_kwargs: info_logs.append(str(message)))
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.warn", lambda message, **_kwargs: warn_logs.append(str(message)))
     monkeypatch.setattr(runner._prompt_runner, "run_write_prompt", write_sequence)
     monkeypatch.setattr(runner._prompt_runner, "run_repair_prompt", repair_sequence)
     monkeypatch.setattr(runner._chapter_audit_coordinator, "_audit_chapter", audit_sequence)
@@ -4148,8 +4148,8 @@ def test_resume_skips_overview_when_already_passed(
     monkeypatch.setattr(runner._store, "_persist_chapter_artifacts", lambda result: None)
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
     monkeypatch.setattr(runner._store, "_persist_sources_json", lambda _: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     # 预置 manifest，首章已通过（使用与 runner 一致的真实 signature）
     manifest_path = runner._manifest_path
@@ -4334,8 +4334,8 @@ def test_full_run_executes_decision_chapter_as_dedicated_post_pass(
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
     monkeypatch.setattr(runner._store, "_persist_sources_json", lambda _entries: None)
     monkeypatch.setattr(runner._report_assembler, "assemble_report", lambda *_a, **_kw: "# report")
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4425,9 +4425,9 @@ def test_full_run_waits_for_all_middle_tasks_before_decision(
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
     monkeypatch.setattr(runner._store, "_persist_sources_json", lambda _entries: None)
     monkeypatch.setattr(runner._report_assembler, "assemble_report", lambda *_a, **_kw: "# report")
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
 
     run_thread = threading.Thread(target=_run_pipeline)
     run_thread.start()
@@ -4482,8 +4482,8 @@ def test_full_run_decision_requires_all_prior_business_chapters_passed(
     monkeypatch.setattr(runner, "_run_single_chapter", _fake_run_single_chapter)
     monkeypatch.setattr(runner._store, "_persist_chapter_artifacts", lambda _result: None)
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4532,8 +4532,8 @@ def test_full_run_overview_requires_chapters_one_to_ten_passed(
     monkeypatch.setattr(runner, "_run_single_chapter", _fake_run_single_chapter)
     monkeypatch.setattr(runner._store, "_persist_chapter_artifacts", lambda _result: None)
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4593,8 +4593,8 @@ def test_full_run_force_allows_decision_and_overview_without_audit_gate(
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
     monkeypatch.setattr(runner._store, "_persist_sources_json", lambda _entries: None)
     monkeypatch.setattr(runner._report_assembler, "assemble_report", lambda *_a, **_kw: "# report")
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4695,8 +4695,8 @@ def test_single_chapter_decision_requires_existing_prior_passed_artifacts(
     monkeypatch.setattr(runner._preparer, "_create_audit_agent", lambda: object())
     monkeypatch.setattr(runner._preparer, "_create_confirm_agent", lambda: object())
     monkeypatch.setattr(runner, "_run_single_chapter", lambda **_kwargs: called.append("run"))
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4754,8 +4754,8 @@ def test_single_chapter_decision_force_bypasses_prior_artifact_gate(
     monkeypatch.setattr(runner, "_run_single_chapter", _fake_run_single_chapter)
     monkeypatch.setattr(runner._store, "_persist_chapter_artifacts", lambda _result: None)
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4807,8 +4807,8 @@ def test_single_chapter_overview_requires_existing_prior_passed_artifacts(
 
     called: list[str] = []
     monkeypatch.setattr(runner, "_run_single_chapter", lambda **_kwargs: called.append("run"))
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4872,8 +4872,8 @@ def test_single_chapter_overview_force_bypasses_prior_artifact_gate(
     monkeypatch.setattr(runner, "_run_single_chapter", _fake_run_single_chapter)
     monkeypatch.setattr(runner._store, "_persist_chapter_artifacts", lambda _result: None)
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -4938,9 +4938,9 @@ def test_full_run_resume_reuses_manifest_when_force_flag_changes(
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
     monkeypatch.setattr(runner._store, "_persist_sources_json", lambda _entries: None)
     monkeypatch.setattr(runner._report_assembler, "assemble_report", lambda *_a, **_kw: "# report")
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.warn", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.warn", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -5005,9 +5005,9 @@ def test_full_run_resume_reuses_manifest_when_fast_flag_changes(
     monkeypatch.setattr(runner._store, "_persist_manifest", lambda **_: None)
     monkeypatch.setattr(runner._store, "_persist_sources_json", lambda _entries: None)
     monkeypatch.setattr(runner._report_assembler, "assemble_report", lambda *_a, **_kw: "# report")
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.Log.warn", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.info", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.error", lambda *_a, **_kw: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.Log.warn", lambda *_a, **_kw: None)
 
     exit_code = runner.run()
 
@@ -5032,7 +5032,7 @@ def test_persist_manifest_uses_atomic_write(monkeypatch: pytest.MonkeyPatch, tmp
 
     runner = _build_runner(tmp_path)
     recorder = _AtomicWriteRecorder()
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.artifact_store._atomic_write_text", recorder)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.artifact_store._atomic_write_text", recorder)
 
     manifest = RunManifest(
         version="write_manifest_v1",
@@ -5314,7 +5314,7 @@ def test_read_manifest_from_dir_uses_manifest_lock(monkeypatch: pytest.MonkeyPat
         finally:
             events.append("exit")
 
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.artifact_store._manifest_file_lock", _record_lock)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.artifact_store._manifest_file_lock", _record_lock)
 
     loaded = _read_manifest_from_dir(output_dir)
 
@@ -6537,7 +6537,7 @@ def test_run_write_prompt_retries_on_llm_error(
         _make_app_result(content="```markdown\n成功的输出\n```"),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
 
     result = runner._prompt_runner.run_write_prompt("测试 prompt")
 
@@ -6556,7 +6556,7 @@ def test_run_write_prompt_raises_after_retry_exhausted(
         _make_app_result(errors=[{"error": "fail-2"}]),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
 
     with pytest.raises(RuntimeError, match="写作 Agent 执行失败"):
         runner._prompt_runner.run_write_prompt("测试 prompt")
@@ -6657,7 +6657,7 @@ def test_scene_prompt_runner_high_level_methods_retry_on_llm_error(
     ])
 
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
     monkeypatch.setattr(
         runner._prompt_runner._preparer,
         "get_company_facet_catalog",
@@ -6689,7 +6689,7 @@ def test_chapter_audit_coordinator_audit_chapter_retries_on_llm_error(
         _make_app_result(content=audit_json),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
     monkeypatch.setattr(runner._prompter, "_render_task_prompt", lambda **_kw: "fake audit prompt")
 
     result = runner._chapter_audit_coordinator._audit_chapter("## Test\n\n内容", company_name="TestCo")
@@ -6709,7 +6709,7 @@ def test_chapter_audit_coordinator_audit_chapter_raises_after_retry_exhausted(
         _make_app_result(errors=[{"error": "audit-fail-2"}]),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.scene_executor.time.sleep", lambda _: None)
     monkeypatch.setattr(runner._prompter, "_render_task_prompt", lambda **_kw: "fake audit prompt")
 
     with pytest.raises(RuntimeError, match="审计 Agent 执行失败"):
@@ -6779,7 +6779,7 @@ def test_run_confirm_prompt_retries_on_llm_error(
         _make_app_result(content=confirm_json),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
 
     result = runner._prompt_runner.run_confirm_prompt("测试 confirm prompt")
 
@@ -6796,7 +6796,7 @@ def test_run_confirm_prompt_does_not_retry_when_cancelled(
     runner = _build_runner(tmp_path)
     fake_agent = _FakeCancelledPromptAgent(cancel_reason="测试取消")
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
 
     with pytest.raises(CancelledError, match="写作 Agent 执行被取消: 测试取消"):
         runner._prompt_runner.run_confirm_prompt("测试 confirm prompt")
@@ -6816,7 +6816,7 @@ def test_run_confirm_prompt_raises_confirm_output_error_after_parse_retry_exhaus
         _make_app_result(content="非法 JSON 第二次"),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
 
     with pytest.raises(ConfirmOutputError):
         runner._prompt_runner.run_confirm_prompt("测试 confirm prompt")
@@ -7694,7 +7694,7 @@ def test_maybe_rewrite_evidence_anchors_rolls_back_when_post_validation_fails(
         raw='{"pass": false}',
     )
     monkeypatch.setattr(
-        "dayu.services.internal.write_pipeline.audit_evidence_rewriter._run_programmatic_audits",
+        "alpha.services.internal.write_pipeline.audit_evidence_rewriter._run_programmatic_audits",
         lambda *_args, **_kwargs: failing_decision,
     )
     process_state = build_process_state_template()
@@ -7774,7 +7774,7 @@ def test_maybe_rewrite_evidence_anchors_rebuilds_dropped_followup_when_validatio
         raw='{"pass": false}',
     )
     monkeypatch.setattr(
-        "dayu.services.internal.write_pipeline.audit_evidence_rewriter._run_programmatic_audits",
+        "alpha.services.internal.write_pipeline.audit_evidence_rewriter._run_programmatic_audits",
         lambda *_args, **_kwargs: failing_decision,
     )
     process_state = build_process_state_template()
@@ -8295,7 +8295,7 @@ def test_run_repair_prompt_retries_on_llm_error(
         _make_app_result(content=valid_repair_json),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
 
     plan, raw = runner._prompt_runner.run_repair_prompt("测试 repair prompt")
 
@@ -8314,7 +8314,7 @@ def test_run_repair_prompt_does_not_retry_when_cancelled(
     runner = _build_runner(tmp_path)
     fake_agent = _FakeCancelledPromptAgent(cancel_reason="测试取消")
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
 
     with pytest.raises(CancelledError, match="写作 Agent 执行被取消: 测试取消"):
         runner._prompt_runner.run_repair_prompt("测试 repair prompt")
@@ -8349,7 +8349,7 @@ def test_run_middle_tasks_in_parallel_stops_dispatching_after_scene_creation_err
 ) -> None:
     """验证中间章节批次遇到 Agent 创建失败后不会继续派发后续任务。"""
 
-    from dayu.services.internal.write_pipeline import pipeline as pipeline_module  # noqa: F401
+    from alpha.services.internal.write_pipeline import pipeline as pipeline_module  # noqa: F401
 
     runner = _build_runner(tmp_path)
     monkeypatch.setattr(runner, "_resolve_middle_worker_limit", lambda: 2)
@@ -8608,7 +8608,7 @@ def test_run_repair_prompt_retries_on_json_parse_failure(
         _make_app_result(content=valid_repair_json),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
 
     plan, raw = runner._prompt_runner.run_repair_prompt("测试 repair prompt")
 
@@ -8630,7 +8630,7 @@ def test_run_repair_prompt_raises_repair_output_error_after_parse_retry_exhauste
         _make_app_result(content="非法 JSON 第二次"),
     ])
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", fake_agent)
-    monkeypatch.setattr("dayu.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
+    monkeypatch.setattr("alpha.services.internal.write_pipeline.pipeline.time.sleep", lambda _: None)
 
     with pytest.raises(RepairOutputError):
         runner._prompt_runner.run_repair_prompt("测试 repair prompt")
@@ -9039,7 +9039,7 @@ def test_normalize_evidence_line_no_dash_prefix() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.services.internal.write_pipeline.audit_formatting import _normalize_evidence_line
+    from alpha.services.internal.write_pipeline.audit_formatting import _normalize_evidence_line
 
     assert _normalize_evidence_line("不是 evidence 行") == "不是 evidence 行"
 

@@ -14,8 +14,8 @@ from typing import TypedDict
 
 import pytest
 
-import dayu.fins.storage._fs_storage_infra as fs_storage_infra_module
-from dayu.fins.storage.fs_company_meta_repository import FsCompanyMetaRepository
+import alpha.fins.storage._fs_storage_infra as fs_storage_infra_module
+from alpha.fins.storage.fs_company_meta_repository import FsCompanyMetaRepository
 from tests.conftest import requires_symlink
 from tests.fins.storage_testkit import build_fs_storage_test_context
 
@@ -86,7 +86,7 @@ def _build_lock_holder_script() -> str:
         import time
         from pathlib import Path
 
-        from dayu.fins.storage._fs_repository_factory import build_fs_repository_set
+        from alpha.fins.storage._fs_repository_factory import build_fs_repository_set
 
         workspace_root = Path(sys.argv[1])
         ticker = sys.argv[2]
@@ -237,15 +237,15 @@ def _stop_lock_holder(process: subprocess.Popen[str], release_path: Path) -> Non
 
 
 @pytest.mark.unit
-def test_batch_paths_move_under_dayu_root(tmp_path: Path) -> None:
-    """验证 batch 与 backup 目录已迁移到 `.dayu/` 下。"""
+def test_batch_paths_move_under_alpha_root(tmp_path: Path) -> None:
+    """验证 batch 与 backup 目录已迁移到 `.alpha/` 下。"""
 
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    assert core.dayu_root == tmp_path / ".dayu"
-    assert core.batch_root == tmp_path / ".dayu" / "repo_batches"
-    assert core.backup_root == tmp_path / ".dayu" / "repo_backups"
+    assert core.alpha_root == tmp_path / ".alpha"
+    assert core.batch_root == tmp_path / ".alpha" / "repo_batches"
+    assert core.backup_root == tmp_path / ".alpha" / "repo_backups"
 
 
 @pytest.mark.unit
@@ -619,7 +619,7 @@ def test_fins_batch_lock_uses_msvcrt_when_fcntl_unavailable(
     monkeypatch.setattr(fs_storage_infra_module.file_lock_module, "_FCNTL", None)
     monkeypatch.setattr(fs_storage_infra_module.file_lock_module, "_MSVCRT", fake_msvcrt)
     fake_msvcrt.calls.clear()
-    stream = core._open_and_lock_stream(tmp_path / ".dayu" / "batch_locks" / "AAPL.lock", blocking=False)
+    stream = core._open_and_lock_stream(tmp_path / ".alpha" / "batch_locks" / "AAPL.lock", blocking=False)
     try:
         assert fake_msvcrt.calls == [(fake_msvcrt.LK_NBLCK, 1)]
     finally:
@@ -691,7 +691,7 @@ def test_recovery_lock_retries_until_windows_lock_is_available(
 def test_parse_backup_directory_name_rejects_invalid_names() -> None:
     """验证 _parse_backup_directory_name 对不合法名称返回 None。"""
 
-    from dayu.fins.storage._fs_storage_infra import _parse_backup_directory_name
+    from alpha.fins.storage._fs_storage_infra import _parse_backup_directory_name
 
     # 无分隔符
     assert _parse_backup_directory_name("no_separator") is None
@@ -725,17 +725,17 @@ def test_commit_batch_rejects_invalid_token(tmp_path: Path) -> None:
     core = context.core
 
     # 未开启任何 batch 时提交
-    from dayu.fins.domain.document_models import BatchToken, now_iso8601
+    from alpha.fins.domain.document_models import BatchToken, now_iso8601
 
     fake_token = BatchToken(
         token_id="fake-id",
         ticker="AAPL",
         target_ticker_dir=tmp_path / "portfolio" / "AAPL",
-        staging_root_dir=tmp_path / ".dayu" / "repo_batches" / "fake-id",
-        staging_ticker_dir=tmp_path / ".dayu" / "repo_batches" / "fake-id" / "AAPL",
-        backup_dir=tmp_path / ".dayu" / "repo_backups" / "AAPL.bak.fake-id",
-        journal_path=tmp_path / ".dayu" / "repo_batches" / "fake-id" / "transaction.json",
-        ticker_lock_path=tmp_path / ".dayu" / "batch_locks" / "AAPL.lock",
+        staging_root_dir=tmp_path / ".alpha" / "repo_batches" / "fake-id",
+        staging_ticker_dir=tmp_path / ".alpha" / "repo_batches" / "fake-id" / "AAPL",
+        backup_dir=tmp_path / ".alpha" / "repo_backups" / "AAPL.bak.fake-id",
+        journal_path=tmp_path / ".alpha" / "repo_batches" / "fake-id" / "transaction.json",
+        ticker_lock_path=tmp_path / ".alpha" / "batch_locks" / "AAPL.lock",
         created_at=now_iso8601(),
     )
     with pytest.raises(ValueError, match="无效的 batch token"):
@@ -757,17 +757,17 @@ def test_rollback_batch_rejects_invalid_token(tmp_path: Path) -> None:
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import BatchToken, now_iso8601
+    from alpha.fins.domain.document_models import BatchToken, now_iso8601
 
     fake_token = BatchToken(
         token_id="fake-id",
         ticker="AAPL",
         target_ticker_dir=tmp_path / "portfolio" / "AAPL",
-        staging_root_dir=tmp_path / ".dayu" / "repo_batches" / "fake-id",
-        staging_ticker_dir=tmp_path / ".dayu" / "repo_batches" / "fake-id" / "AAPL",
-        backup_dir=tmp_path / ".dayu" / "repo_backups" / "AAPL.bak.fake-id",
-        journal_path=tmp_path / ".dayu" / "repo_batches" / "fake-id" / "transaction.json",
-        ticker_lock_path=tmp_path / ".dayu" / "batch_locks" / "AAPL.lock",
+        staging_root_dir=tmp_path / ".alpha" / "repo_batches" / "fake-id",
+        staging_ticker_dir=tmp_path / ".alpha" / "repo_batches" / "fake-id" / "AAPL",
+        backup_dir=tmp_path / ".alpha" / "repo_backups" / "AAPL.bak.fake-id",
+        journal_path=tmp_path / ".alpha" / "repo_batches" / "fake-id" / "transaction.json",
+        ticker_lock_path=tmp_path / ".alpha" / "batch_locks" / "AAPL.lock",
         created_at=now_iso8601(),
     )
     with pytest.raises(ValueError, match="无效的 batch token"):
@@ -804,7 +804,7 @@ def test_handle_dir_path_with_processed_handle(tmp_path: Path) -> None:
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import ProcessedHandle
+    from alpha.fins.domain.document_models import ProcessedHandle
 
     handle = ProcessedHandle(ticker="AAPL", document_id="doc_1")
     path = core._handle_dir_path(handle)
@@ -818,7 +818,7 @@ def test_build_store_key_with_processed_handle(tmp_path: Path) -> None:
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import ProcessedHandle
+    from alpha.fins.domain.document_models import ProcessedHandle
 
     handle = ProcessedHandle(ticker="AAPL", document_id="doc_1")
     key = core._build_store_key(handle, "output.json")
@@ -832,7 +832,7 @@ def test_build_store_key_with_source_handle(tmp_path: Path) -> None:
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import SourceHandle
+    from alpha.fins.domain.document_models import SourceHandle
 
     handle = SourceHandle(ticker="AAPL", document_id="fil_1", source_kind="filing")
     key = core._build_store_key(handle, "main.html")
@@ -846,7 +846,7 @@ def test_get_handle_meta_raises_when_meta_missing(tmp_path: Path) -> None:
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import SourceHandle
+    from alpha.fins.domain.document_models import SourceHandle
 
     handle = SourceHandle(ticker="AAPL", document_id="nonexistent", source_kind="filing")
     with pytest.raises(FileNotFoundError, match="meta.json 不存在"):
@@ -860,7 +860,7 @@ def test_get_handle_meta_with_processed_handle(tmp_path: Path) -> None:
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import ProcessedHandle
+    from alpha.fins.domain.document_models import ProcessedHandle
 
     handle = ProcessedHandle(ticker="AAPL", document_id="nonexistent_proc")
     with pytest.raises(FileNotFoundError, match="meta.json 不存在"):
@@ -874,7 +874,7 @@ def test_resolve_handle_child_path_rejects_dotdot(tmp_path: Path) -> None:
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import ProcessedHandle
+    from alpha.fins.domain.document_models import ProcessedHandle
 
     handle = ProcessedHandle(ticker="AAPL", document_id="doc_1")
     with pytest.raises(ValueError, match="条目名称非法"):
@@ -889,7 +889,7 @@ def test_resolve_handle_child_path_boundary_check_via_symlink(tmp_path: Path) ->
     context = build_fs_storage_test_context(tmp_path)
     core = context.core
 
-    from dayu.fins.domain.document_models import ProcessedHandle
+    from alpha.fins.domain.document_models import ProcessedHandle
 
     # 先确保 handle 目录存在
     handle = ProcessedHandle(ticker="AAPL", document_id="doc_1")
@@ -933,9 +933,9 @@ def test_ticker_dir_for_read_without_active_batch(tmp_path: Path) -> None:
 
 @pytest.mark.unit
 def test_should_manage_batch_state_returns_false_when_nothing_exists(tmp_path: Path) -> None:
-    """验证 _should_manage_batch_state 在无 .dayu 目录且 create_directories=False 时返回 False。"""
+    """验证 _should_manage_batch_state 在无 .alpha 目录且 create_directories=False 时返回 False。"""
 
-    from dayu.fins.storage._fs_storage_infra import _FsStorageInfra
+    from alpha.fins.storage._fs_storage_infra import _FsStorageInfra
 
     infra = _FsStorageInfra(tmp_path, create_directories=False)
     assert infra._should_manage_batch_state() is False
@@ -945,7 +945,7 @@ def test_should_manage_batch_state_returns_false_when_nothing_exists(tmp_path: P
 def test_build_file_store_uses_provided_store(tmp_path: Path) -> None:
     """验证 _build_file_store 在已注入 file_store 时直接返回。"""
 
-    from dayu.fins.storage.local_file_store import LocalFileStore
+    from alpha.fins.storage.local_file_store import LocalFileStore
 
     store = LocalFileStore(root=tmp_path, scheme="local")
     context = build_fs_storage_test_context(tmp_path)
@@ -1097,7 +1097,7 @@ def test_remove_manifest_item(tmp_path: Path) -> None:
 
     # 先创建一个 manifest
     manifest_path = core._filing_manifest_path("AAPL")
-    from dayu.fins.storage._fs_storage_utils import _write_json
+    from alpha.fins.storage._fs_storage_utils import _write_json
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     _write_json(manifest_path, {
         "ticker": "AAPL",
@@ -1109,7 +1109,7 @@ def test_remove_manifest_item(tmp_path: Path) -> None:
     })
 
     core._remove_manifest_item(manifest_path, "AAPL", "fil_1")
-    from dayu.fins.storage._fs_storage_utils import _read_json_object
+    from alpha.fins.storage._fs_storage_utils import _read_json_object
     result = _read_json_object(manifest_path)
     assert [d["document_id"] for d in result["documents"]] == ["fil_2"]
 
@@ -1122,7 +1122,7 @@ def test_remove_manifest_items(tmp_path: Path) -> None:
     core = context.core
 
     manifest_path = core._filing_manifest_path("AAPL")
-    from dayu.fins.storage._fs_storage_utils import _write_json
+    from alpha.fins.storage._fs_storage_utils import _write_json
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     _write_json(manifest_path, {
         "ticker": "AAPL",
@@ -1135,7 +1135,7 @@ def test_remove_manifest_items(tmp_path: Path) -> None:
     })
 
     core._remove_manifest_items(manifest_path, "AAPL", ["fil_1", "fil_3"])
-    from dayu.fins.storage._fs_storage_utils import _read_json_object
+    from alpha.fins.storage._fs_storage_utils import _read_json_object
     result = _read_json_object(manifest_path)
     assert [d["document_id"] for d in result["documents"]] == ["fil_2"]
 

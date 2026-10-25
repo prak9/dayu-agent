@@ -8,13 +8,13 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.host._coercion import _coerce_string_tuple
-from dayu.host.conversation_session_archive import (
+from alpha.host._coercion import _coerce_string_tuple
+from alpha.host.conversation_session_archive import (
     ConversationHistoryArchive,
     ConversationHistoryTurnRecord,
     ConversationSessionArchive,
 )
-from dayu.host.conversation_store import (
+from alpha.host.conversation_store import (
     ConversationEpisodeSummary,
     ConversationPinnedState,
     ConversationToolUseSummary,
@@ -22,7 +22,7 @@ from dayu.host.conversation_store import (
     ConversationTurnRecord,
     FileConversationSessionArchiveStore,
 )
-from dayu.log import Log
+from alpha.log import Log
 
 
 def _make_archive_with_one_turn(session_id: str) -> ConversationSessionArchive:
@@ -151,7 +151,7 @@ def test_archive_store_load_legacy_schema_raises(tmp_path: Path) -> None:
     )
 
     store = FileConversationSessionArchiveStore(target_dir)
-    with pytest.raises(RuntimeError, match="dayu-cli init"):
+    with pytest.raises(RuntimeError, match="alpha init"):
         store.load("sess_legacy")
 
 
@@ -281,7 +281,7 @@ def test_archive_store_append_turn_reconciles_with_live(tmp_path: Path) -> None:
 def test_archive_store_append_turn_raises_when_live_missing(tmp_path: Path) -> None:
     """live archive 缺失时 append_turn 显式抛错而非自动 create_empty。"""
 
-    from dayu.host.conversation_session_archive import ConversationArchiveMissingError
+    from alpha.host.conversation_session_archive import ConversationArchiveMissingError
 
     store = FileConversationSessionArchiveStore(tmp_path / "conversations")
     new_turn = ConversationTurnRecord(
@@ -323,7 +323,7 @@ def test_archive_save_failure_keeps_old_file_intact(
 ) -> None:
     """模拟原子写失败时旧文件保持完整。"""
 
-    from dayu.host import conversation_store as cs
+    from alpha.host import conversation_store as cs
 
     store = FileConversationSessionArchiveStore(tmp_path / "conversations")
     base = _make_archive_with_one_turn("sess_keep")

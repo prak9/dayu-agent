@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from dayu.engine.processors.docling_processor import DoclingProcessor
-from dayu.fins.pipelines.docling_upload_service import _convert_bytes_with_docling
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.engine.processors.docling_processor import DoclingProcessor
+from alpha.fins.pipelines.docling_upload_service import _convert_bytes_with_docling
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 pytestmark = pytest.mark.integration
 
@@ -31,7 +31,7 @@ def _fixture_pdf_path() -> Path:
         Path(__file__).resolve().parents[1]
         / "fixtures"
         / "docling"
-        / "dayu_docling_integration_fixture.pdf"
+        / "alpha_docling_integration_fixture.pdf"
     )
     if not fixture_path.exists():
         raise FileNotFoundError(f"Docling PDF fixture 不存在: {fixture_path}")
@@ -54,7 +54,7 @@ def real_docling_json_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """
 
     output_dir = tmp_path_factory.mktemp("docling_processor_integration")
-    docling_json_path = output_dir / "dayu_docling_integration_fixture_docling.json"
+    docling_json_path = output_dir / "alpha_docling_integration_fixture_docling.json"
     fixture_path = _fixture_pdf_path()
     docling_payload = _convert_bytes_with_docling(fixture_path.read_bytes(), fixture_path.name)
     docling_json_path.write_text(

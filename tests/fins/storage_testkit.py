@@ -6,14 +6,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from dayu.fins.storage import (
+from alpha.fins.storage import (
     FsCompanyMetaRepository,
     FsDocumentBlobRepository,
     FsFilingMaintenanceRepository,
     FsProcessedDocumentRepository,
     FsSourceDocumentRepository,
 )
-from dayu.fins.storage._fs_repository_factory import build_fs_repository_set
+from alpha.fins.storage._fs_repository_factory import build_fs_repository_set
 
 
 @dataclass(frozen=True)

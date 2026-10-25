@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from dayu.prompt_template_rendering import replace_template_variables
-from dayu.prompting.prompt_renderer import load_prompt
-from dayu.prompting.prompt_renderer import (
+from alpha.prompt_template_rendering import replace_template_variables
+from alpha.prompting.prompt_renderer import load_prompt
+from alpha.prompting.prompt_renderer import (
     PromptParseError,
     parse_when_tag_blocks,
     parse_when_tool_blocks,

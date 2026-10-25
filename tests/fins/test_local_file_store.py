@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.storage.local_file_store import LocalFileStore
+from alpha.fins.storage.local_file_store import LocalFileStore
 
 
 class FailingStream(BytesIO):

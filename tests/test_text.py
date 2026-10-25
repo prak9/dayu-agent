@@ -1,10 +1,10 @@
-"""dayu.text 跨层文本工具测试。"""
+"""alpha.text 跨层文本工具测试。"""
 
 from __future__ import annotations
 
 import pytest
 
-from dayu.text import strip_markdown_fence
+from alpha.text import strip_markdown_fence
 
 
 @pytest.mark.unit

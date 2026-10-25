@@ -6,8 +6,8 @@ from typing import Any
 
 import pytest
 
-from dayu.fins.processors import sec_report_form_common as module
-from dayu.fins.processors import sec_table_extraction as sec_table_module
+from alpha.fins.processors import sec_report_form_common as module
+from alpha.fins.processors import sec_table_extraction as sec_table_module
 
 
 def _make_processor_instance() -> module._BaseSecReportFormProcessor:

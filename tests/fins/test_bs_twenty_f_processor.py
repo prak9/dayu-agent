@@ -18,12 +18,12 @@ from unittest.mock import patch
 
 import pytest
 
-from dayu.fins.processors import bs_twenty_f_processor as bs_twenty_f_processor_module
-from dayu.fins.processors.bs_twenty_f_processor import (
+from alpha.fins.processors import bs_twenty_f_processor as bs_twenty_f_processor_module
+from alpha.fins.processors.bs_twenty_f_processor import (
     BsTwentyFFormProcessor,
     _has_risky_twenty_f_section_profile,
 )
-from dayu.fins.processors.twenty_f_form_common import (
+from alpha.fins.processors.twenty_f_form_common import (
     _enforce_marker_position_monotonicity,
     _enforce_twenty_f_key_item_priority_monotonicity,
     _extract_twenty_f_cross_reference_guide_snippets,
@@ -40,15 +40,15 @@ from dayu.fins.processors.twenty_f_form_common import (
     _repair_twenty_f_item_5_with_subheading_fallback,
     _repair_twenty_f_key_items_with_heading_fallback,
 )
-from dayu.fins.processors.twenty_f_processor import TwentyFFormProcessor
-from dayu.fins.processors.twenty_f_form_common import (
+from alpha.fins.processors.twenty_f_processor import TwentyFFormProcessor
+from alpha.fins.processors.twenty_f_form_common import (
     _build_item_title,
     _build_twenty_f_markers,
     _find_twenty_f_key_heading_positions,
     _TWENTY_F_ITEM_DESCRIPTIONS,
     _TWENTY_F_ITEM_PART_MAP,
 )
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 def _make_source(path: Path, *, media_type: Optional[str] = "text/html") -> LocalFileSource:
@@ -271,7 +271,7 @@ class TestBuildItemTitle:
             AssertionError: 断言失败时抛出。
         """
 
-        from dayu.fins.processors.twenty_f_form_common import _TWENTY_F_ITEM_ORDER
+        from alpha.fins.processors.twenty_f_form_common import _TWENTY_F_ITEM_ORDER
 
         for token in _TWENTY_F_ITEM_ORDER:
             assert token in _TWENTY_F_ITEM_PART_MAP, f"Item {token} 缺少 Part 映射"
@@ -1839,15 +1839,15 @@ class TestBuildTwentyFMarkers:
         full_text = "x" * 2000
 
         monkeypatch.setattr(
-            "dayu.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_positions",
+            "alpha.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_positions",
             lambda text: {"3": 30, "4": 100, "5": 5, "18": 1040},
         )
         monkeypatch.setattr(
-            "dayu.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_position_after",
+            "alpha.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_position_after",
             lambda *, full_text, token, start_at: 400 if token == "5" else None,
         )
         monkeypatch.setattr(
-            "dayu.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
+            "alpha.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
             lambda text, position: position in {500, 560},
         )
 
@@ -2484,7 +2484,7 @@ def test_enforce_marker_position_monotonicity_drops_trailing_contaminated_marker
     ]
 
     with patch(
-        "dayu.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
+        "alpha.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
         side_effect=lambda full_text, position: position == contaminated_item2_pos,
     ):
         normalized = _enforce_marker_position_monotonicity(
@@ -2533,7 +2533,7 @@ def test_enforce_marker_position_monotonicity_drops_multiple_trailing_contaminat
     ]
 
     with patch(
-        "dayu.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
+        "alpha.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
         side_effect=lambda full_text, position: position in {contaminated_item1_pos, contaminated_item2_pos},
     ):
         normalized = _enforce_marker_position_monotonicity(
@@ -2628,7 +2628,7 @@ def test_enforce_marker_position_monotonicity_keeps_replacement_item18_when_orig
     replacement_item18_pos = text.index("Consolidated financial statements of Example Corp.")
 
     with patch(
-        "dayu.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
+        "alpha.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
         side_effect=lambda full_text, position: position == original_item18_pos,
     ):
         normalized = _enforce_marker_position_monotonicity(
@@ -2671,20 +2671,20 @@ def test_key_heading_fallback_keeps_item18_replacement_before_late_item5_when_or
     ]
 
     with patch(
-        "dayu.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_positions",
+        "alpha.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_positions",
         return_value={
             "3": text.index("Item 3. Key Information"),
             "5": text.index("Item 5. Operating and Financial Review and Prospects"),
             "18": replacement_item18_pos,
         },
     ), patch(
-        "dayu.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_position_after",
+        "alpha.fins.processors.twenty_f_form_common._find_twenty_f_key_heading_position_after",
         return_value=None,
     ), patch(
-        "dayu.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
+        "alpha.fins.processors.twenty_f_form_common._is_twenty_f_marker_contaminated",
         side_effect=lambda full_text, position: position == 5,
     ), patch(
-        "dayu.fins.processors.twenty_f_form_common._looks_like_twenty_f_front_matter_marker",
+        "alpha.fins.processors.twenty_f_form_common._looks_like_twenty_f_front_matter_marker",
         side_effect=lambda full_text, position: position == 5,
     ):
         repaired = _repair_twenty_f_key_items_with_heading_fallback(text, item_markers)
@@ -2910,7 +2910,7 @@ def test_bs_twenty_f_processor_prefers_source_text_when_base_text_is_flattened(
     )
     flattened_text = ("Annual report detailed discussion. " * 40) + "SIGNATURE"
     monkeypatch.setattr(
-        "dayu.fins.processors.bs_report_form_common._BaseBsReportFormProcessor._collect_document_text",
+        "alpha.fins.processors.bs_report_form_common._BaseBsReportFormProcessor._collect_document_text",
         lambda self: flattened_text,
     )
 
@@ -2953,7 +2953,7 @@ def test_bs_twenty_f_processor_keeps_bs_text_when_minimum_item_quality_is_alread
 
     source_text = _make_twenty_f_body_text(["1", "3", "4", "5", "8", "11", "18", "19"])
     monkeypatch.setattr(
-        "dayu.fins.processors.bs_twenty_f_processor._extract_source_text_preserving_lines",
+        "alpha.fins.processors.bs_twenty_f_processor._extract_source_text_preserving_lines",
         lambda source: source_text,
     )
 
@@ -3016,7 +3016,7 @@ def test_bs_twenty_f_processor_reuses_marker_cache_for_same_full_text(
         return original_build_markers(full_text)
 
     monkeypatch.setattr(
-        "dayu.fins.processors.bs_twenty_f_processor._build_twenty_f_markers",
+        "alpha.fins.processors.bs_twenty_f_processor._build_twenty_f_markers",
         _counted_build_twenty_f_markers,
     )
 
@@ -3075,11 +3075,11 @@ def test_bs_twenty_f_processor_prefers_dom_text_without_stripping_node_boundarie
         "Item 18. Financial Statements Item 19. Exhibits SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.bs_report_form_common._BaseBsReportFormProcessor._collect_document_text",
+        "alpha.fins.processors.bs_report_form_common._BaseBsReportFormProcessor._collect_document_text",
         lambda self: flattened_text,
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.bs_twenty_f_processor._extract_source_text_preserving_lines",
+        "alpha.fins.processors.bs_twenty_f_processor._extract_source_text_preserving_lines",
         lambda source: flattened_text,
     )
 
@@ -3237,7 +3237,7 @@ def test_non_item18_heading_research_skips_item18_body_whitelist(
         raise AssertionError("non-Item 18 research should not call Item 18 body whitelist")
 
     monkeypatch.setattr(
-        "dayu.fins.processors.twenty_f_form_common._looks_like_twenty_f_item18_heading_with_body",
+        "alpha.fins.processors.twenty_f_form_common._looks_like_twenty_f_item18_heading_with_body",
         _forbidden,
     )
 
@@ -3277,7 +3277,7 @@ def test_plain_financial_statements_match_skips_item18_body_whitelist_without_lo
         raise AssertionError("plain financial statements match should not call Item 18 body whitelist")
 
     monkeypatch.setattr(
-        "dayu.fins.processors.twenty_f_form_common._looks_like_twenty_f_item18_heading_with_body",
+        "alpha.fins.processors.twenty_f_form_common._looks_like_twenty_f_item18_heading_with_body",
         _forbidden,
     )
 
@@ -3313,7 +3313,7 @@ def test_reference_guide_marker_skips_item18_body_whitelist_without_local_item18
         raise AssertionError("reference guide probe should skip Item 18 body whitelist")
 
     monkeypatch.setattr(
-        "dayu.fins.processors.twenty_f_form_common._looks_like_twenty_f_item18_heading_with_body",
+        "alpha.fins.processors.twenty_f_form_common._looks_like_twenty_f_item18_heading_with_body",
         _forbidden,
     )
 
@@ -3344,7 +3344,7 @@ def test_item18_body_check_short_circuits_when_local_probe_misses() -> None:
     position = text.index("Financial Statements")
 
     with patch(
-        "dayu.fins.processors.twenty_f_form_common._extract_twenty_f_line_bounds",
+        "alpha.fins.processors.twenty_f_form_common._extract_twenty_f_line_bounds",
         side_effect=AssertionError("非 Item 18 候选不应进入逐行边界扫描"),
     ):
         assert _looks_like_twenty_f_item18_heading_with_body(text, position) is False
@@ -3396,7 +3396,7 @@ def test_locator_heading_search_skips_guide_check_for_non_standalone_match() -> 
     )
 
     with patch(
-        "dayu.fins.processors.twenty_f_form_common._looks_like_twenty_f_reference_guide_marker",
+        "alpha.fins.processors.twenty_f_form_common._looks_like_twenty_f_reference_guide_marker",
         side_effect=AssertionError("正文句内命中应先被 standalone 过滤，避免进入 guide 判定"),
     ):
         assert _find_twenty_f_key_heading_position_after(
@@ -3776,7 +3776,7 @@ class TestSecRulesConsistency:
             AssertionError: 断言失败时抛出。
         """
 
-        from dayu.fins.processors.twenty_f_form_common import _TWENTY_F_ITEM_ORDER
+        from alpha.fins.processors.twenty_f_form_common import _TWENTY_F_ITEM_ORDER
 
         for token in _TWENTY_F_ITEM_ORDER:
             assert token in _TWENTY_F_ITEM_PART_MAP, (

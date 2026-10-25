@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.cli.workspace_migrations.run_json_write_chapter_lane import (
+from alpha.cli.workspace_migrations.run_json_write_chapter_lane import (
     migrate_run_json_add_write_chapter_lane,
 )
 

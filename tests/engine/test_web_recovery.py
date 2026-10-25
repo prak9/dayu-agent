@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.engine.tools.web_recovery import (
+from alpha.engine.tools.web_recovery import (
     RECOVERY_CONTRACT_VERSION,
     ALLOWED_NEXT_ACTIONS,
     ALLOWED_REASONS,

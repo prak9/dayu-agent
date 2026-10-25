@@ -1,4 +1,4 @@
-"""``dayu.cli.commands.fins`` 财报命令构建与执行测试。"""
+"""``alpha.cli.commands.fins`` 财报命令构建与执行测试。"""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dayu.cli.commands.fins import (
+from alpha.cli.commands.fins import (
     _build_fins_command,
     _classify_fins_status,
     _consume_fins_stream,
@@ -17,7 +17,7 @@ from dayu.cli.commands.fins import (
     run_fins_command,
     _should_log_fins_progress_as_info,
 )
-from dayu.contracts.fins import (
+from alpha.contracts.fins import (
     DownloadCommandPayload,
     DownloadProgressPayload,
     DownloadResultData,
@@ -377,8 +377,8 @@ class TestRunFinsCommand:
         setup_calls: list[argparse.Namespace] = []
 
         with (
-            patch("dayu.cli.commands.fins.setup_loglevel", side_effect=lambda namespace: setup_calls.append(namespace)),
-            patch("dayu.cli.commands.fins._build_fins_ops_service", return_value=MagicMock()),
+            patch("alpha.cli.commands.fins.setup_loglevel", side_effect=lambda namespace: setup_calls.append(namespace)),
+            patch("alpha.cli.commands.fins._build_fins_ops_service", return_value=MagicMock()),
         ):
             exit_code = run_fins_command(args)
 
@@ -417,7 +417,7 @@ class TestRunFinsCommand:
             execution=mock_result,  # stream=True 但返回 FinsResult，触发 RuntimeError
         )
 
-        with patch("dayu.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
+        with patch("alpha.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
             exit_code = run_fins_command(args)
 
         assert exit_code == 1
@@ -451,7 +451,7 @@ class TestRunFinsCommand:
         mock_service = MagicMock()
         mock_service.submit.return_value = MagicMock(execution=mock_result)
 
-        with patch("dayu.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
+        with patch("alpha.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
             exit_code = run_fins_command(args)
 
         assert exit_code == 0
@@ -478,7 +478,7 @@ class TestRunFinsCommand:
         mock_service = MagicMock()
         mock_service.submit.return_value = MagicMock(execution=_fake_stream())
 
-        with patch("dayu.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
+        with patch("alpha.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
             exit_code = run_fins_command(args)
 
         assert exit_code == 1
@@ -494,7 +494,7 @@ class TestRunFinsCommand:
             quiet=False,
         )
 
-        with patch("dayu.cli.commands.fins._build_fins_ops_service", return_value=MagicMock()):
+        with patch("alpha.cli.commands.fins._build_fins_ops_service", return_value=MagicMock()):
             exit_code = run_fins_command(args)
 
         assert exit_code == 1
@@ -617,7 +617,7 @@ class TestIsFinsResultFailure:
         mock_service = MagicMock()
         mock_service.submit.return_value = MagicMock(execution=mock_result)
 
-        with patch("dayu.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
+        with patch("alpha.cli.commands.fins._build_fins_ops_service", return_value=mock_service):
             exit_code = run_fins_command(args)
 
         assert exit_code == 1

@@ -26,9 +26,9 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Optional, cast
 
 import pytest
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.engine.context_budget import ContextBudgetState, ToolResultBudgetCapper
-from dayu.engine.async_agent import (
+from alpha.contracts.agent_types import AgentMessage
+from alpha.engine.context_budget import ContextBudgetState, ToolResultBudgetCapper
+from alpha.engine.async_agent import (
     AgentRunningConfig,
     AsyncAgent,
     _build_compaction_summary,
@@ -36,8 +36,8 @@ from dayu.engine.async_agent import (
     _find_safe_split_point,
     AgentResult,
 )
-from dayu.engine.async_openai_runner import AsyncOpenAIRunnerRunningConfig, _detect_context_overflow
-from dayu.engine.events import (
+from alpha.engine.async_openai_runner import AsyncOpenAIRunnerRunningConfig, _detect_context_overflow
+from alpha.engine.events import (
     EventType,
     StreamEvent,
     content_complete,
@@ -46,8 +46,8 @@ from dayu.engine.events import (
     metadata_event,
     warning_event,
 )
-from dayu.engine.sse_parser import SSEStreamParser
-from dayu.engine.tool_trace import JsonlToolTraceStore, V2ToolTraceRecorder, TRACE_TYPE_ITERATION_USAGE
+from alpha.engine.sse_parser import SSEStreamParser
+from alpha.engine.tool_trace import JsonlToolTraceStore, V2ToolTraceRecorder, TRACE_TYPE_ITERATION_USAGE
 
 if TYPE_CHECKING:
     from aiohttp import ClientResponse

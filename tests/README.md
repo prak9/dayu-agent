@@ -15,9 +15,9 @@
   - `tests/engine/test_log.py` 负责守住全局日志双流路由边界：`ERROR` 以下只写 stdout，`ERROR` 及以上只写 stderr，不能再把同一条失败日志同时打到两个流里造成 CLI 重复显示
   - `tests/engine/test_prompt_assets.py` 与 `tests/engine/test_prompt_composer.py` 共同守住 scene manifest 的当前默认模型边界：推理/交互类 scene 默认应对齐 `mimo-v2.5-pro-thinking-plan`，写作类 scene 默认应对齐 `mimo-v2.5-pro-plan`；若测试仍断言旧 `pro` 默认，会把真实 prompt 配置漂移误报成回归
   - `tests/engine/test_write_pipeline.py` 还要守住 `scene_executor.py` 的共享重试边界：write/overview/infer/decision/fix/regenerate/raw prompt、confirm 和 repair 都必须复用同一套 LLM 执行失败重试语义；取消不得重试，解析失败只在 confirm/repair 这类声明了解析契约的路径重试，且最终错误消息必须保留各 scene 自身语义
-  - `tests/engine/test_context_budget.py` 负责守住 `dayu.engine.context_budget` 的真源边界，包括 `ContextBudgetState`、工具结果预测性预算裁剪和相关 warning 语义
+  - `tests/engine/test_context_budget.py` 负责守住 `alpha.engine.context_budget` 的真源边界，包括 `ContextBudgetState`、工具结果预测性预算裁剪和相关 warning 语义
   - `tests/engine/test_web_tools.py` 负责守住 web search provider 回退、web tools 的请求头、内容编码、自刷新壳页跟随、challenge 检测、storage state 解析与浏览器回退边界
-  - `tests/engine/test_web_playwright_backend.py` 负责守住 `dayu.engine.tools.web_playwright_backend` 的真源边界，包括浏览器单例、子进程 worker、资源路由与关闭/终止收口
+  - `tests/engine/test_web_playwright_backend.py` 负责守住 `alpha.engine.tools.web_playwright_backend` 的真源边界，包括浏览器单例、子进程 worker、资源路由与关闭/终止收口
 - `tests/fins/`
   - Fins direct operation、窄仓储、processor、tool service 测试
   - `tests/integration/fins/test_fins_tools_ground_truth.py` 依赖仓库内 `workspace/` 的真实 source 文档样本与 `tests/fixtures/fins/ground_truth/` 基线；当 CI 或干净环境里缺少这批本地样本时，应显式 `skip`，不能把“样本未准备”误报成产品回归
@@ -30,7 +30,7 @@
   - `tests/fins/test_fins_tools_service.py` 与 `tests/fins/test_fins_tools_service_helpers_coverage.py` 共同守住消费侧 fiscal 边界：`list_documents()` 不得再仅凭 `report_date` 为 10-Q 回填季度，也不得为其他 source 文档回填空的 `fiscal_year`；当前只允许保留表单内生且不依赖日期猜测的低风险回退（如 `10-K/20-F -> FY`）
   - `tests/fins/test_fins_runtime_tool_service.py` 还要守住 `FinsToolService` 的构造期实例不变量：runtime 返回的真实 service 必须在 `__init__` 中声明实例级缓存（如 `_meta_cache`），不能把属性存在性延后到读路径里的 `hasattr` 懒初始化
   - `tests/fins/test_virtual_section_table_assignment.py` 负责守住 `_VirtualSectionProcessorMixin` 的稳定边界：虚拟章节表格映射要保持同源重分配，未启用虚拟章节时 `list_sections/read_section/list_tables/get_section_title/search` 也必须原样透传到底层 processor，而不是靠 `type: ignore[misc]` 放任下一跳协议漂移
-  - 其中 `tests/fins/test_storage_batch_recovery.py` 负责守住 storage batch 真源边界：隐藏工作目录统一位于 `workspace/.dayu/`，并且 orphan staging / backup 必须由 storage recovery 自动收口，不能把清理逻辑散落到上层入口；batch 锁必须按 ticker 粒度保持跨进程互斥，同一 ticker 不能双写，不同 ticker 仍可并发，recovery 看到活跃锁时只能跳过；这套文件锁语义在 POSIX 必须继续走 `fcntl.flock()`，在 Windows 必须改用 `msvcrt.locking()`，不能再退化成无锁，而且 blocking recovery 锁在 Windows 上也必须保持“持续等待直到拿到锁”的语义，不能偷换成有限次重试；一旦 ticker 锁已经释放，即使原 owner 进程仍然存活，也必须允许 recovery 清理遗留 token，缺少 journal 且无法判定 ticker 的 token 目录同样必须保守跳过，不能误删 live staging；如果 recovery 在枚举 token 后目录被 owner 正常删除，也必须把它视为已消失 token 并跳过，不能因 `FileNotFoundError` 中断整批恢复；rollback 即使 journal 写失败也必须继续清理并释放锁，不能把同 ticker 后续 batch 永久卡死
+  - 其中 `tests/fins/test_storage_batch_recovery.py` 负责守住 storage batch 真源边界：隐藏工作目录统一位于 `workspace/.alpha/`，并且 orphan staging / backup 必须由 storage recovery 自动收口，不能把清理逻辑散落到上层入口；batch 锁必须按 ticker 粒度保持跨进程互斥，同一 ticker 不能双写，不同 ticker 仍可并发，recovery 看到活跃锁时只能跳过；这套文件锁语义在 POSIX 必须继续走 `fcntl.flock()`，在 Windows 必须改用 `msvcrt.locking()`，不能再退化成无锁，而且 blocking recovery 锁在 Windows 上也必须保持“持续等待直到拿到锁”的语义，不能偷换成有限次重试；一旦 ticker 锁已经释放，即使原 owner 进程仍然存活，也必须允许 recovery 清理遗留 token，缺少 journal 且无法判定 ticker 的 token 目录同样必须保守跳过，不能误删 live staging；如果 recovery 在枚举 token 后目录被 owner 正常删除，也必须把它视为已消失 token 并跳过，不能因 `FileNotFoundError` 中断整批恢复；rollback 即使 journal 写失败也必须继续清理并释放锁，不能把同 ticker 后续 batch 永久卡死
   - 其中 `tests/fins/test_llm_ci_scripts.py` 负责守住 `utils/llm_ci_process.py` 与 `utils/llm_ci_score.py` 的最小增量调度、同一 ticker 子批次串行化、failed filings 识别、form 归一化、summary 聚合与输入解析边界，避免 CI 优化辅助脚本在执行层漂移
   - 其中 `tests/fins/test_sec_6k_primary_document_repair.py` 与 `tests/fins/test_sec_pipeline_download.py` 共同守住 6-K active source 主文件 reconcile 边界：下载/历史修正都必须以当前 `BsSixKFormProcessor` 对同 filing HTML 候选的核心报表可提取性为真源，把最能稳定提取 `income + balance_sheet` 的文件写回 `primary_document`，不能退回 cover-only 保护或 filename 启发式主导
   - 其中 `tests/fins/test_tool_snapshot_export.py` 负责守住 legacy snapshot 导出入口与当前窄仓储契约的一致性，尤其是快照导出完成后必须能同步回写 processed manifest，避免“文件已落盘但文档不可发现”的测试漂移
@@ -39,10 +39,16 @@
 - `tests/architecture/`
   - 依赖边界与架构守护测试
 
+- `tests/cli/workspace_migrations/test_alpha_namespace_migration.py` 覆盖命名升级中的一致性备份、历史文本保留、跨版本初始化锁、活动进程拒绝、中断恢复及配置冲突；`test_alpha_namespace.py` 守护包和命令身份。
+- `tests/research/` 用真实 SQLite 与文件系统验证所有权、幂等输入、跨实例领取、停止序号边界和不可变版本；故障注入覆盖目录已提交但 SQL 回滚及已引用文件损坏。研究库初始化另由 CLI 迁移测试覆盖。
+- invest 计算测试使用纯假设参数，覆盖缺数、口径、求根及无套利边界；`tests/fixtures/invest/` 冻结原 skill 的 PE、GF-DMA 和数据校验结果及来源哈希，独立于开发机路径运行。方法包测试核对引用闭包、原内容恢复、目录提交中断及阻断 alpha 导入时的独立计算。
+- `tests/research/test_calculation_runner.py` 使用真实短进程验证零退出码失败报告、输出超限、Host 令牌取消、外层任务取消和启动中取消，并检查进程已经退出；超限用例另有短超时，防止管道收尾回归挂起整个测试。
+- `tests/application/test_host_admission.py` 验证返回前原子受理、请求冲突、旧调用路径互斥、停止代际、结果重放及消费者断开收尾；使用 spawn 子进程验证受理进程退出后的未启动 Run 领取。对应 schema 初始化由 CLI 迁移测试覆盖。
+
 另外：
 - `tests/fixtures/` 放测试数据
 - `tests/` 根目录下的少量 `test_*.py` 用于承接项目级工具脚本与通用辅助模块的轻量回归；这类测试应优先守住稳定输入输出边界，不把临时脚本细节固化进测试
-  - `tests/test_build_offline_bundle.py` 与 `tests/test_smoke_test_offline_bundle.py` 负责守住发布离线包的项目级边界：wheelhouse 与安装脚本必须纳入 `[browser,web]` extras；`dayu-web --help` 当前尚未完成，暂不作为离线包 README 或 smoke 验证项
+  - `tests/test_build_offline_bundle.py` 与 `tests/test_smoke_test_offline_bundle.py` 负责守住发布离线包的项目级边界：wheelhouse 与安装脚本必须纳入 `[browser,web]` extras；`alpha-web --help` 当前尚未完成，暂不作为离线包 README 或 smoke 验证项
 - `tests/engine/test_docling_processor_integration.py`、`tests/fins/test_docling_upload_service_integration.py`、`tests/engine/test_web_fetch_docling_integration.py` 是问题 2 第一批真实集成测试，必须直接走真实 Docling 执行链，不允许通过 monkeypatch `DocumentConverter` 或 fake `DoclingDocument` 伪造通过
 - 仓库根 `tests/` 明确作为本地测试包维护，避免干净虚拟环境里第三方同名 `tests` 包抢占导入解析，导致 `pyright` 或测试辅助模块引用漂移到 `site-packages`
 
@@ -72,7 +78,7 @@ pip install -r requirements.txt
 查看覆盖率：
 
 ```bash
-.venv/bin/pytest tests --cov=dayu --cov-report=term --cov-branch
+.venv/bin/pytest tests --cov=alpha --cov-report=term --cov-branch
 ```
 
 类型检查：
@@ -94,7 +100,7 @@ pip install -r requirements.txt
 - 必须使用固定 fixture
 - 必须走真实第三方执行链
 - 表格退化不可接受，不能只断言“返回非空字符串”
-- 当前 Dayu 已将 upload / web tool 等 Docling PDF 转换入口统一收口到 `dayu.docling_runtime`；默认设备为 `auto`，转换走二维（backend × device）有序回退尝试链：非 Windows、Windows 显式加速器设备（`cuda/mps/xpu`），以及 Windows `auto` 且 `torch.cuda.is_available()` 为真时，先 `(docling-parse, resolved)`，再 `(pypdfium2, resolved)`；Windows 的 `cpu` 设备或 `auto` 但 CUDA 不可用时，先 `(pypdfium2, resolved)`，再 `(docling-parse, resolved)`，用于规避 `docling-parse` 在 Windows CPU/auto 路径上的 C++ 层崩溃刷屏风险；仅当 `resolved == auto` 时追加 `(docling-parse, cpu)`；任意一档成功即返回，全链失败时以首次失败作为 `__cause__`。若需要显式覆盖加速器设备，可通过环境变量 `DAYU_DOCLING_DEVICE=auto|cpu|cuda|mps|xpu` 调整。Docling 输入统一走 `DocumentStream(BytesIO(bytes))`（封装在 `convert_pdf_bytes_with_docling()`），以规避 Windows 上 `Path` 被 mbcs 编码导致的 `not valid` 误判
+- 当前 Alpha 已将 upload / web tool 等 Docling PDF 转换入口统一收口到 `alpha.docling_runtime`；默认设备为 `auto`，转换走二维（backend × device）有序回退尝试链：非 Windows、Windows 显式加速器设备（`cuda/mps/xpu`），以及 Windows `auto` 且 `torch.cuda.is_available()` 为真时，先 `(docling-parse, resolved)`，再 `(pypdfium2, resolved)`；Windows 的 `cpu` 设备或 `auto` 但 CUDA 不可用时，先 `(pypdfium2, resolved)`，再 `(docling-parse, resolved)`，用于规避 `docling-parse` 在 Windows CPU/auto 路径上的 C++ 层崩溃刷屏风险；仅当 `resolved == auto` 时追加 `(docling-parse, cpu)`；任意一档成功即返回，全链失败时以首次失败作为 `__cause__`。若需要显式覆盖加速器设备，可通过环境变量 `ALPHA_DOCLING_DEVICE=auto|cpu|cuda|mps|xpu` 调整。Docling 输入统一走 `DocumentStream(BytesIO(bytes))`（封装在 `convert_pdf_bytes_with_docling()`），以规避 Windows 上 `Path` 被 mbcs 编码导致的 `not valid` 误判
 - 与此对应，unit test 若只想隔离 Docling 转换结果，应优先 patch `convert_pdf_bytes_with_docling()` 或 `run_docling_pdf_conversion()` 这类项目内真源 seam；若只测装配参数，再 patch `build_docling_pdf_converter()`，不要继续直接 patch 第三方 `DocumentConverter` 类
 
 ### 3.2 Service / Host / Agent 路径守护
@@ -123,14 +129,14 @@ pip install -r requirements.txt
 - `test_web_routes.py` 负责守住 Web 依赖装配已经收口到 `fastapi_app` 的显式窄依赖注入，router 工厂不再回退到全局 service locator 或旧 `Application` API。
 - `test_chat_service.py`、`test_fins_service.py` 与 `test_web_routes.py` 还要共同守住请求受理时机：`Service.submit_*()` 必须在返回 submission 前完成同步校验，校验失败时不得创建新的 Host session，Web 入口也不得返回 `202 Accepted` 或启动后台消费任务。
 - `tests/application/test_console_output.py` 负责守住 CLI / WeChat / render 入口的标准流容错边界：在非 UTF-8 终端里打印中文 help 或错误文案时不得因 `UnicodeEncodeError` 崩溃。
-- `tests/cli/test_init_command.py` 还要守住 `dayu-cli init` 的交互输入边界：测试不得隐式依赖开发机已有的 `SEC_USER_AGENT` 等环境变量短路交互流程，凡是验证完整 `run_init_command()` 路径的用例，都应显式 `delenv/setenv` 相关变量并提供完整输入序列；`--reset` 这类破坏性开关还必须验证二次确认语义，且直接回车默认按 `N` 取消。
+- `tests/cli/test_init_command.py` 还要守住 `alpha init` 的交互输入边界：测试不得隐式依赖开发机已有的 `SEC_USER_AGENT` 等环境变量短路交互流程，凡是验证完整 `run_init_command()` 路径的用例，都应显式 `delenv/setenv` 相关变量并提供完整输入序列；`--reset` 这类破坏性开关还必须验证二次确认语义，且直接回车默认按 `N` 取消。
 - `tests/cli/test_init_command.py` 还要守住已有 workspace 的增量补齐语义：未传 `--overwrite` 时，`init` 只能补齐缺失的 `config/prompts/**` 资产，不能覆盖用户本地已经改过的 manifest、scene 或其他配置文件。
-- `tests/cli/workspace_migrations/` 负责守住 `dayu-cli init` 启动期的一次性 schema 迁移：`run.json` lane 新 key 只能补缺省值，必须保留用户已有取值；Host SQLite 与 transcript 类迁移必须幂等、fail-fast，不能在请求期补救。
+- `tests/cli/workspace_migrations/` 负责守住 `alpha init` 启动期的一次性 schema 迁移：`run.json` lane 新 key 只能补缺省值，必须保留用户已有取值；Host SQLite 与 transcript 类迁移必须幂等、fail-fast，不能在请求期补救。
 - `tests/application/test_cancellation_bridge.py` 与 `tests/engine/test_async_openai_runner_utils.py` 这类并发/超时测试，不得把 0.08s、0.2s 这类固定 sleep 当成必然成立的完成信号；应使用带超时的轮询等待来守住语义，避免 CI runner 时序抖动造成伪失败。
 - `tests/fins/test_storage_batch_recovery.py` 这类跨进程锁测试同样不得把 5 秒级硬编码收口时间当成必然成立的环境保证；应使用具名超时常量和轮询等待，让较慢的 Windows runner 仍能验证同一套锁语义，而不是把时序抖动误报成存储回归。
 - `test_web_routes.py` 还要守住 Web 的客户端错误语义：像 `PromptService.submit()`、`ChatService.resume_pending_turn()` 这类已经在 Service 边界同步抛出的 `ValueError/KeyError`，router 必须映射成对应 `4xx`，且 `/api/chat/resume` 只能在 resume 成功后才创建后台消费任务，不能漏成 `500` 或先受理后失败。
 - `test_web_routes.py` 还要守住 `/api/write` 的未支持语义：当 Web 当前不支持在线写作时，route 必须显式返回 `501`，不能再用 `202` / `accepted=true` 伪装成已受理。
-- `test_streamlit_watchlist.py` 负责守住 Streamlit 自选股组件的本地持久化与表格合并边界：`workspace/.dayu/streamlit/watchlist.json` 读写、删除/编辑/新增合并、必填校验与 ticker 去重语义不能漂移。
+- `test_streamlit_watchlist.py` 负责守住 Streamlit 自选股组件的本地持久化与表格合并边界：`workspace/.alpha/streamlit/watchlist.json` 读写、删除/编辑/新增合并、必填校验与 ticker 去重语义不能漂移。
 - `test_streamlit_chat_utils.py` 负责守住 `chat/utils.py` 的 session/trace 标识生成、流式文本提取与 Markdown 归一、事件折叠与副作用判定等纯函数语义。
 - `test_streamlit_chat_stream_runtime.py` 负责守住 `chat/stream_runtime.py` 的首 chunk 超时、chunk 间超时、取消传播、worker 退出后 trailing event 消费与 error 事件收口语义。
 - `test_streamlit_chat_tab.py` 负责守住 `chat_tab.py` 中 `ChatMessage` 稳定语义、`load_history_for_ticker` 的历史轮次映射与 fail-soft（空结果/异常）语义，以及 `perform_clear_session_history` 对 `KeyError / Rejected / Stale(含静默重试) / PartiallyApplied / 重试失败` 的 UI 分支语义。
@@ -145,24 +151,24 @@ pip install -r requirements.txt
 - `test_cli_running_config.py` 与 `test_cli_interactive_coverage.py` 还要守住 `sessions close` 与 labeled conversation 的衔接语义：如果 label 命中的底层 Host session 已是 `closed`，CLI 必须先提示“旧对话已关闭”，再按同名 label 新建一条全新 conversation；若 label 之前是通过 `conv remove --label` 主动释放，则不应再额外提示“旧对话已关闭”。
 - `test_host_commands.py` 与 `test_host_admin_service.py` 负责守住会话管理面边界：CLI 只能消费 `HostAdminService.list_sessions()` / `list_session_recent_turns()` 这组通用 digest 接口，并通过 `--source/--scene` 过滤；Service 只能通过 Host 公开协议读取 conversation digest / turn excerpt，不能让 UI 直接读取 transcript 文件。
 - `test_conv_commands.py` 负责守住 CLI label registry 的管理面：`conv list/status/remove` 只管理 label 到 Host session 的映射，不直接替代 Host session 列表，也不把普通 one-shot `scene=prompt` 会话纳入可恢复 conversation。`conv list` 默认只输出 active 的 label 视角摘要，`conv list --all` 才补充已关闭对话，并且不再暴露 `SESSION_ID`；若命中 registry 漂移到不存在 Host session 的脏 record，CLI 必须先清理而不是展示伪 `missing` 状态。`conv remove --label` 必须在 label 未被占用时关闭底层 session 并删除 registry record，使同名 label 下次重新从新会话开始。若需要诊断底层 `session_id`，应通过 `conv status --label <label>` 或 `sessions` 查看。
-- `test_cli_running_config.py` 还要守住 interactive 的 `state_dir` 单实例锁：同一 workspace 下第二个 interactive 进程必须显式失败，不能并发共享 `.dayu/interactive`。
-- Host 默认 SQLite、conversation transcript、interactive 绑定、SEC cache/throttle 与 WeChat 默认状态目录都属于 workspace 内部运行时状态，默认路径应统一落在 `workspace/.dayu/` 下；涉及这些默认值的测试不要再把 `.host`、`.session`、`.interactive`、`.sec_cache`、`.sec_throttle`、`.wechat` 当成真源。
+- `test_cli_running_config.py` 还要守住 interactive 的 `state_dir` 单实例锁：同一 workspace 下第二个 interactive 进程必须显式失败，不能并发共享 `.alpha/interactive`。
+- Host 默认 SQLite、conversation transcript、interactive 绑定、SEC cache/throttle 与 WeChat 默认状态目录都属于 workspace 内部运行时状态，默认路径应统一落在 `workspace/.alpha/` 下；涉及这些默认值的测试不要再把 `.host`、`.session`、`.interactive`、`.sec_cache`、`.sec_throttle`、`.wechat` 当成真源。
 - `test_dependency_boundaries.py` 还要守住 `startup` 只能依赖 `services/host` 暴露的 public preparation API，不能再直接 import `SceneDefinitionReader`、`ConversationPolicyReader`、`SceneExecutionAcceptancePreparer` 或 `DEFAULT_LANE_CONFIG`。
-- `test_dependency_boundaries.py` 也要守住 `Service` 只能依赖 `dayu.host.protocols` 与 `dayu.host.host_execution` 暴露的稳定边界，不能再 import `dayu.host.host.Host`，也不能直接访问 `host.executor`、`host.session_registry`、`host.run_registry`、`host.concurrency_governor`、`host.event_bus`，以及加下划线后的 `host._executor`、`host._session_registry`、`host._run_registry`、`host._concurrency_governor`、`host._event_bus`、`host._pending_turn_store`。
-- `test_dependency_boundaries.py` 还要守住 `Service` 不得直接 import `dayu.host.pending_turn_store`，pending turn 的上层公开边界只能来自 `dayu.host.protocols` 中的稳定 DTO 与协议。
-- `test_dependency_boundaries.py` 还要守住 `contracts/` 与 `execution/` 作为跨层稳定契约层，不得反向 import `dayu.engine`；运行时配置、取消原语与跨层协议必须定义在 contracts/execution 自己的真源模块里。
+- `test_dependency_boundaries.py` 也要守住 `Service` 只能依赖 `alpha.host.protocols` 与 `alpha.host.host_execution` 暴露的稳定边界，不能再 import `alpha.host.host.Host`，也不能直接访问 `host.executor`、`host.session_registry`、`host.run_registry`、`host.concurrency_governor`、`host.event_bus`，以及加下划线后的 `host._executor`、`host._session_registry`、`host._run_registry`、`host._concurrency_governor`、`host._event_bus`、`host._pending_turn_store`。
+- `test_dependency_boundaries.py` 还要守住 `Service` 不得直接 import `alpha.host.pending_turn_store`，pending turn 的上层公开边界只能来自 `alpha.host.protocols` 中的稳定 DTO 与协议。
+- `test_dependency_boundaries.py` 还要守住 `contracts/` 与 `execution/` 作为跨层稳定契约层，不得反向 import `alpha.engine`；运行时配置、取消原语与跨层协议必须定义在 contracts/execution 自己的真源模块里。
 - `test_dependency_boundaries.py` 还要守住 UI 请求入口不得直接 import `DocToolLimits`、`FinsToolLimits`、`WebToolsConfig` 这类具体 limits/config 类型；CLI / WeChat 只能传原始 override，由 execution 真源在 merge/snapshot 阶段完成规范化。
-- prompt 渲染相关测试现在以 `dayu.prompting.prompt_renderer` 为真源，不应再从 `dayu.engine.prompts` 导入。
+- prompt 渲染相关测试现在以 `alpha.prompting.prompt_renderer` 为真源，不应再从 `alpha.engine.prompts` 导入。
 - `test_contract_preparation.py` 负责守住 Service 侧 contract preparation 的机械装配边界，尤其是 `accepted_execution_spec` 与 `execution_permissions` 的同步关系。
 - `test_contract_preparation.py`、`test_prompt_composer.py`、`test_scene_execution.py` 与 `test_write_pipeline.py` 还要共同守住 Prompt Contributions 边界：Service 必须先按 scene manifest 的 `context_slots` 收口为 exact set，Host 若收到未声明 slot 只能 warning + ignore，不能再把冗余 slot 升级成 scene 执行失败。
 - 涉及 `AcceptedExecutionSpec` 的新测试，优先按 `model/runtime/tools/infrastructure` 四个分组构造与断言；不要再新增新的平铺 bag 夹具。
 - `test_chat_service.py`、`test_prompt_service.py` 与 `test_scene_execution.py` 需要守住 `conversation.enabled=true` 的 scene 默认写入 `host_policy.resumable=True`，而非 conversation scene 继续保持 `False`。
 - `test_prompt_service.py` 这类 Service contract 测试里，若只验证 `PromptService -> ExecutionContract` 的装配，不要再用 `SimpleNamespace` 伪造 `AcceptedSceneExecution` 内部字段；应直接构造真实 `SceneDefinition`、`ModelConfig` 与 `ResolvedExecutionOptions`，并通过测试 helper 把 `host` 收窄回 `StubHostExecutor` / `StubSessionRegistry` 后再断言内部记录。
-- `test_scene_execution.py` 还需要守住 scene allowlist / max_iterations / max_consecutive_failed_tool_batches / temperature profile 的共享真源在 `dayu.execution.options`，避免 Service 与 Host 再各自维护一份规则。
+- `test_scene_execution.py` 还需要守住 scene allowlist / max_iterations / max_consecutive_failed_tool_batches / temperature profile 的共享真源在 `alpha.execution.options`，避免 Service 与 Host 再各自维护一份规则。
 - `test_scene_execution.py` 与配置加载相关测试还需要守住 CLI runner 已彻底禁用：`runner_type=cli` 应在模型加载或 Host 装配阶段显式失败，而不是继续被当成可用路径。
 - 直接构造 `ResolvedExecutionOptions`、`AcceptedToolConfigSpec` 或 `PreparedAgentTurnSnapshot` 的测试，工具配置应通过 `toolset_configs` 进入契约；不要再把 `doc_tool_limits` / `fins_tool_limits` / `web_tools_config` 当成跨层字段夹带到 Host 或 contract snapshot。
 - `test_scene_execution.py` 还要守住内部 `RunnerType` / `FallbackMode` 可提升为枚举承接，但配置快照和 JSON 边界仍保持原字符串值，不要把外部输入边界改造成枚举字面量协议。
-- execution 运行配置的测试真源现在拆成三层：`dayu.contracts.runtime_config_snapshot` 负责跨层快照 TypedDict（`RunnerRunningConfigSnapshot` / `AgentRunningConfigSnapshot`）；`dayu.execution.options` 负责合并规则；`dayu.execution.runtime_config` 负责纯运行配置模型与快照转换函数。凡是直接构造 `ResolvedExecutionOptions` 的测试，应优先使用 `AgentRuntimeConfig`、`OpenAIRunnerRuntimeConfig`、`CliRunnerRuntimeConfig` 这组 execution 侧纯模型，不要再把 engine 实现类直接塞回 execution 层对象。
+- execution 运行配置的测试真源现在拆成三层：`alpha.contracts.runtime_config_snapshot` 负责跨层快照 TypedDict（`RunnerRunningConfigSnapshot` / `AgentRunningConfigSnapshot`）；`alpha.execution.options` 负责合并规则；`alpha.execution.runtime_config` 负责纯运行配置模型与快照转换函数。凡是直接构造 `ResolvedExecutionOptions` 的测试，应优先使用 `AgentRuntimeConfig`、`OpenAIRunnerRuntimeConfig`、`CliRunnerRuntimeConfig` 这组 execution 侧纯模型，不要再把 engine 实现类直接塞回 execution 层对象。
 - `test_host_executor.py`、`test_run_registry.py`、`test_host_admin_service.py` 与 `test_web_routes.py` 需要共同守住 Host timeout 取消链路。`request_cancel()` 只记录 `cancel_requested_at` / `cancel_requested_reason`，终态 `cancel_reason` 必须等 Host 在 run 生命周期边界统一收敛后才写入；管理视图与 API 需要同时透出这两层信息。
 - `test_host_executor.py` 与 `test_run_registry.py` 还要继续守住 orphan run 修复语义：startup cleanup 只能清理超过 grace period 的 dead-pid 活跃 run，不能误伤刚启动或仍在收尾的前台 direct operation；若同一 owner 的 run 被外部误判成 `orphan: owner process terminated`，后续成功收口必须允许修复回 `SUCCEEDED`，而异常路径也不能再被重复 `fail_run()` 掩盖成状态机错误。
 - `test_host_executor.py` 还要守住 transcript 落库闸门：即使 Agent 本轮已经产出 `final_answer`，只要 run 在 transcript 持久化前被取消，`persist_turn()` 也必须跳过，不能把“已取消”run 的回答写进会话真源。
@@ -176,7 +182,7 @@ pip install -r requirements.txt
 - `test_web_routes.py` 这类 FastAPI 组合根测试，若通过 `sys.modules` 注入假的 `fastapi` / `pydantic` 模块，应在 `ModuleType` 边界集中 `cast(Any, module)` 后再挂 `FastAPI`、`APIRouter`、`BaseModel`；若依赖对象只用于验证 router 工厂接收的是哪一组窄 Service，可在 `create_fastapi_app()` 调用边界做一次协议收窄，不要散落 `SimpleNamespace` 假协议。
 - `test_wechat_outbox_integration.py` 与 `test_wechat_daemon.py` 需要共同守住 WeChat 路径的边界：daemon 通过 `ReplyDeliveryService` 提交/claim/ack/nack 交付状态，reply 补投递不再复用 pending turn，也不能绕开 Service 直接写 Host reply outbox；同一个 `state_dir` 还必须保持 daemon 单实例锁，避免并发实例错误回收 `delivery_in_progress` 并造成重复交付；`.daemon.lock` 记录的 owner PID 也必须始终覆盖为当前实例，不能因为 append 模式把旧 PID 或锁区填充字节残留在文件里。
 - `test_wechat_daemon.py` 还要继续守住 delivery worker 级策略：WeChat 只对网络/服务暂时性错误做有限次重试，`iLink ret != 0` 这类显式业务失败必须首轮收口为 `failed_terminal`，不能被误判成可无限补发。
-- `test_wechat_main.py` 与 `test_wechat_service_manager.py` 需要共同守住 WeChat 用户级托管命令面的稳定语义，尤其是实例标签 `--label -> workspace/.dayu/wechat-<label>` 的映射、`service list` 仅枚举当前 workspace 下已安装实例，以及 `service start/restart/stop/status/uninstall` 与 launchd/systemd 后端的启动/重启边界不能混淆。
+- `test_wechat_main.py` 与 `test_wechat_service_manager.py` 需要共同守住 WeChat 用户级托管命令面的稳定语义，尤其是实例标签 `--label -> workspace/.alpha/wechat-<label>` 的映射、`service list` 仅枚举当前 workspace 下已安装实例，以及 `service start/restart/stop/status/uninstall` 与 launchd/systemd 后端的启动/重启边界不能混淆。
 - `test_wechat_daemon.py` 还要守住 WeChat daemon 的状态文件 I/O 已通过 daemon 自持的串行适配器搬离 event loop，并且 shutdown 会等待已提交持久化请求收口完成。
 - `test_wechat_daemon.py` 还要守住 iLink 载荷里的 `message_type` / `item.type` 解析边界：非数字字符串只能被安全视为非文本或跳过坏 item，不能因为裸 `int()` 崩溃打断 daemon 主循环。
 - `test_wechat_daemon.py` 与 `test_wechat_outbox_integration.py` 还要共同守住 WeChat 的 ChatService 消费边界：daemon 只允许走 `submit_turn()`、`list_resumable_pending_turns()`、`resume_pending_turn()` 这组稳定 public contract，不能再回退到 `stream_turn()` 或 `hasattr`/`type: ignore` 兼容分支。
@@ -198,15 +204,15 @@ pip install -r requirements.txt
 - `test_cli_running_config.py` 负责守住 CLI 显式参数、`run.json`、`llm_models.json`、scene manifest、`toolset_registrars.json` 与 prompt assets 能否真正贯通到 `Service -> Host -> scene preparation -> Agent`，包括 `accepted_execution_spec`、最终 `AgentCreateArgs`、system prompt、`execution_permissions` 以及 toolset registrar adapter 到叶子 `register_*_tools` 参数的落地；这类测试应优先在 `build_async_agent` 边界替换 `MockAgent`，并在 registrar adapter 边界观察 `context.toolset_config` 与真实工具注册，而不是重新 mock 掉整条 runtime。
 - `test_write_pipeline.py` 还要守住 write pipeline 的 scene 级环境变量闸门：模型环境变量校验必须收口在 `SceneContractPreparer` 这类 Service 内部真源，并按实际创建的 scene 惰性执行；未使用的 scene 不得提前阻断轻量模式。
 - `test_cli_running_config.py` 还要守住 CLI 参数校验的退出契约：`setup_write_config()` 在缺失模板文件或 `--write-max-retries < 0` 时必须显式 `raise SystemExit(2)`，不能回退到站点级 `exit()`，以免嵌入环境与测试捕获语义漂移。
-- `test_cli_running_config.py` 还要守住 CLI 写作薄入口的参数边界：`dayu.cli.main.run_write_pipeline()` 只接受真实执行所需的 `write_config` 与 `write_service`，不能继续保留 `workspace_config`、`running_config`、`model_config` 这类未消费的兼容关键字误导调用方。
+- `test_cli_running_config.py` 还要守住 CLI 写作薄入口的参数边界：`alpha.cli.main.run_write_pipeline()` 只接受真实执行所需的 `write_config` 与 `write_service`，不能继续保留 `workspace_config`、`running_config`、`model_config` 这类未消费的兼容关键字误导调用方。
 - `test_toolset_registrar_coverage.py` 负责守住 toolset registrar 的数值反序列化边界：`ToolsetConfigSnapshot.payload` 中的字符串数字必须先通过统一 coercion helper 收口，再进入 doc/web/fins 专用 limits/config 对象。
 - `test_cli_running_config.py`、`tests/fins/test_storage_split_repositories.py` 与 `tests/fins/test_sec_pipeline_download_stream.py` 还要共同守住财报存储边界：CLI 对“是否已有本地 filings”的判断，以及 SEC pipeline 对“是否已有 instance XBRL”的判断，都必须通过 `SourceDocumentRepositoryProtocol` 的仓储事实接口完成，不能回退到上层拼 `portfolio/...` 路径或自行扫目录。
-- `tests/fins/test_storage_batch_recovery.py`、`tests/fins/test_storage_split_repositories.py`、`tests/engine/test_cli_running_config.py` 与 `tests/fins/test_sec_pipeline_helpers.py` 还要共同守住 batch/recovery 边界：隐藏工作目录只认 `workspace/.dayu/`，活动 batch 的 staging 读视图必须继续可见，而异常退出后的 `repo_batches` / `repo_backups` 残留只能由 storage 层按 journal 和文件状态自动恢复；恢复器的活跃性真源是 ticker 锁本身，不能把“owner 进程还活着”误提升成 batch 仍活跃的证据，也不能回退到 UI startup 的 `try/finally` 清理；ticker 锁与 recovery 锁的跨平台实现必须收敛到同一套文件锁真源，POSIX/Windows 都要保持真实互斥；`create_directories=False` 的只读探测不得触发 recovery 或写入 `.dayu`。
+- `tests/fins/test_storage_batch_recovery.py`、`tests/fins/test_storage_split_repositories.py`、`tests/engine/test_cli_running_config.py` 与 `tests/fins/test_sec_pipeline_helpers.py` 还要共同守住 batch/recovery 边界：隐藏工作目录只认 `workspace/.alpha/`，活动 batch 的 staging 读视图必须继续可见，而异常退出后的 `repo_batches` / `repo_backups` 残留只能由 storage 层按 journal 和文件状态自动恢复；恢复器的活跃性真源是 ticker 锁本身，不能把“owner 进程还活着”误提升成 batch 仍活跃的证据，也不能回退到 UI startup 的 `try/finally` 清理；ticker 锁与 recovery 锁的跨平台实现必须收敛到同一套文件锁真源，POSIX/Windows 都要保持真实互斥；`create_directories=False` 的只读探测不得触发 recovery 或写入 `.alpha`。
 - `tests/application/test_host_admin_service.py` 与 `tests/application/test_web_routes.py` 还要守住 session source 受理边界：`HostAdminService.create_session()` 遇到非法 `source` 必须抛出 `ValueError`，`/api/sessions` 必须把它映射成 `400`；不能再把错误来源静默降级成 `web` 并污染 session 来源统计。
 - `tests/fins/test_ground_truth_baseline.py` 与 `tests/fins/test_score_sec_ci.py` 还要继续守住 processed snapshot 边界：离线基线/评分工具只能通过 `ProcessedDocumentRepositoryProtocol` 发现样本、通过 `DocumentBlobRepositoryProtocol` 读取 `tool_snapshot_*.json`，不能在生产代码里回退到直接拼 `workspace/portfolio/{ticker}/processed/...` 或 `glob` 扫描目录。
 - `tests/fins/test_score_sec_ci.py` 还要守住新的可喂性评分口径：active filing 缺少 processed，或 processed 文档缺少/破坏 `tool_snapshot_meta.json` 时，必须落到 completeness hard gate；其它 truth 快照缺失只能让对应维度记 0 分，不能再把整批评分直接打成异常退出。
 - `test_conversation_memory.py` 还需要守住 Host conversation compaction runtime contract 的公开边界：conversation memory 只能调用显式公开的 compaction scene / agent 准备接口，不能再通过 `object` 请求或跨模块受保护方法拼装 Agent。
-- `test_conversation_store.py` 还要守住 `dayu.host._coercion` 是 Host 内部共享字符串元组规范化真源，避免 `conversation_memory.py` 与 `conversation_store.py` 再各自复制 `_coerce_string_tuple()` 逻辑。
+- `test_conversation_store.py` 还要守住 `alpha.host._coercion` 是 Host 内部共享字符串元组规范化真源，避免 `conversation_memory.py` 与 `conversation_store.py` 再各自复制 `_coerce_string_tuple()` 逻辑。
 - `test_write_pipeline.py` 与相关 prompt/runtime 装配测试里的 fake 不应再用宽 `SimpleNamespace` 冒充 `WorkspaceResourcesProtocol`、`ResolvedExecutionOptions`、`SceneExecutionAcceptancePreparer` 或 `HostExecutorProtocol`；优先复用强类型 helper，并在测试边界显式 `cast` 到稳定协议视图。
 - `test_write_pipeline.py` 还要继续守住 `confirm -> repair contract -> repair executor` 这条处置链：`confirmed_missing` 必须被代码侧收口成 `delete_claim`，repair 不得再把这类 claim 弱化后保留；对应 patch 也不得使用 `substring` 只删半句，至少要命中完整 line / bullet / paragraph。删除整段或整行后若只留下缩进空白行、空 bullet 或多余空行，也必须由 executor 侧 cleanup 统一收口，不能把结构残片留给模型善后。
 - `test_write_pipeline.py` 还要继续守住 `E3` 的收口边界：当 evidence line 自己指向不存在、不可定位或明显不属于当前 ticker 的来源时，这不是可 confirm 的 `E1/E2` 缺证，也不是可局部补锚的 `S7`；代码侧必须强制把它收口成 `regenerate_chapter` / `chapter_regenerate`，不能让自定义 `repair_contract` 再把它降回局部 patch。
@@ -215,15 +221,15 @@ pip install -r requirements.txt
 - `test_write_pipeline.py` 还要守住审计模块拆分边界：`audit_formatting.py` 只放 Markdown 文本操作（标题/证据行/内容提取/patch 匹配），`audit_rules.py` 只放审计决策真源（解析/规则/修复合同/复核合并），`audit_evidence_rewriter.py` 只放证据锚点重写。三个模块之间的依赖方向是 `formatting ← rules` 和 `formatting ← evidence_rewriter → rules`，不允许反向。
 - `test_write_pipeline.py`、`test_write_service.py`、`test_host_executor.py` 与 `test_contract_preparation.py` 还要共同守住新的并发等待契约：`write_pipeline` 顶层 hosted run 不得再占用 `write_chapter`；写作 scene 只能通过 contracts 层的 `concurrency_acquire_policy=unbounded` 向 Host 声明“无限等待”意图，不能反向依赖 Host 私有 governor 或 `llm_api` 细节；非写作路径继续走 `host_default`。
 - `test_concurrency.py`、`test_host_executor.py` 与 `test_host_executor_lane_stacking.py` 还要共同守住 Host 并发治理真源：permit 等待必须同时具备“可取消”和“运行中自回收 dead-PID stale permit”两条能力，避免再把 Service 侧的一次性启动清理当成根修复。
-- `test_cli_running_config.py` 和 `test_cli_interactive_coverage.py` 还要守住 CLI 模块拆分边界：`arg_parsing.py` 只放 argparse 参数定义和解析器构建，`dependency_setup.py` 只放数据类型定义、配置解析和 Service 构建，`commands/` 承担各子命令执行，`main.py` 只做命令分发。monkeypatch 路径必须指向被调用函数所在的实际模块命名空间（例如 `_build_fins_ops_service` 在 `dayu.cli.commands.fins` 被调用，patch 应指向 `dayu.cli.commands.fins._build_fins_ops_service`），不允许通过包级 re-export 或旧 `main.py` seam 绕行。
-- `test_wechat_main.py` 还要守住 WeChat 模块拆分边界：`arg_parsing.py` 只负责参数解析与上下文收口，`runtime.py` 只负责 WeChat 运行时装配与 service/runtime helper，`commands/` 承担 `login / run / service` 子命令执行，`main.py` 只做命令分发。monkeypatch 必须 patch 到真实被调用模块（例如 `_has_persisted_wechat_login` 在 `dayu.wechat.commands.service` 被调用时，应 patch `dayu.wechat.commands.service._has_persisted_wechat_login`，不能回退去 patch 旧 `main.py` seam 或其他转发层）。
-- `test_entrypoints.py` 还要守住 CLI / WeChat 的冷启动边界：导入 `dayu.cli.main` 时不得抢先导入 `dayu.cli.commands.*`、`dependency_setup` 这类重运行时模块，导入 `dayu.wechat.main` 时也不得提前拉起 `dayu.wechat.daemon`；`--help` 与 `dayu-cli init` 这类薄入口必须继续保持“主入口只分发、命令模块按需导入”的结构。
+- `test_cli_running_config.py` 和 `test_cli_interactive_coverage.py` 还要守住 CLI 模块拆分边界：`arg_parsing.py` 只放 argparse 参数定义和解析器构建，`dependency_setup.py` 只放数据类型定义、配置解析和 Service 构建，`commands/` 承担各子命令执行，`main.py` 只做命令分发。monkeypatch 路径必须指向被调用函数所在的实际模块命名空间（例如 `_build_fins_ops_service` 在 `alpha.cli.commands.fins` 被调用，patch 应指向 `alpha.cli.commands.fins._build_fins_ops_service`），不允许通过包级 re-export 或旧 `main.py` seam 绕行。
+- `test_wechat_main.py` 还要守住 WeChat 模块拆分边界：`arg_parsing.py` 只负责参数解析与上下文收口，`runtime.py` 只负责 WeChat 运行时装配与 service/runtime helper，`commands/` 承担 `login / run / service` 子命令执行，`main.py` 只做命令分发。monkeypatch 必须 patch 到真实被调用模块（例如 `_has_persisted_wechat_login` 在 `alpha.wechat.commands.service` 被调用时，应 patch `alpha.wechat.commands.service._has_persisted_wechat_login`，不能回退去 patch 旧 `main.py` seam 或其他转发层）。
+- `test_entrypoints.py` 还要守住 CLI / WeChat 的冷启动边界：导入 `alpha.cli.main` 时不得抢先导入 `alpha.cli.commands.*`、`dependency_setup` 这类重运行时模块，导入 `alpha.wechat.main` 时也不得提前拉起 `alpha.wechat.daemon`；`--help` 与 `alpha init` 这类薄入口必须继续保持“主入口只分发、命令模块按需导入”的结构。
 - `test_chat_service.py` 这类 Service/Host 边界测试里，如果断言必须观察 Host 内部 stub（如 `_executor`、`_run_registry`、`_pending_turn_store`），应先通过测试 helper 把 `ConversationalExecutionGatewayProtocol` 显式收窄到测试用具体 `Host` / stub 类型；不要把私有属性访问直接散落在测试正文里。
 - `tests/application/conftest.py` 这类共享夹具文件必须直接跟随 `HostExecutorProtocol` / `SessionRegistryProtocol` 演进；像 `StubHostExecutor.run_operation_stream/run_operation_sync` 这类泛型返回签名、以及 `StubSessionRegistry.close_idle_sessions()` 这类新协议方法，应优先在共享夹具真源补齐，而不是在每个下游测试里重复 `cast` 或 `type: ignore`。
 - 项目级 `tests/conftest.py` 这类 import 兼容夹具若需要预加载模块，也要先显式断言 `ModuleSpec/loader` 非空，再在 `ModuleType` 边界集中 `cast(Any, module)` 后补动态别名；不要把 `spec.loader` 的可空分支或动态属性赋值散落到正文。
 - `test_cli_interactive_coverage.py` 这类 CLI UI 测试里的 fake session 应直接实现 `ChatServiceProtocol` / `PromptServiceProtocol` 公开方法（如 `submit_turn`、`resume_pending_turn`、`list_resumable_pending_turns`、`cleanup_stale_pending_turns`、`submit`），不要继续只靠旧的 `stream/stream_turn` 形态再由测试把对象硬塞进 `interactive_ui`。
-- `test_sse_parser.py` 与 `test_sec_pipeline_download.py` 这类 Engine/Fins 装配测试，遇到 `ClientResponse`、`AsyncOpenAIRunnerRunningConfig`、`SecDownloader` 等生产签名时，优先在测试装配边界用 helper 做一次显式类型收窄；不要为了消除 pyright 报错去让测试 stub 继承不匹配的生产实现类，尤其不要把同步 stub 硬继承到异步 downloader 真源上。ticker 市场识别一律对齐 `dayu.fins.ticker_normalization.normalize_ticker` 真源，需要 stub 时在消费者模块路径上 `monkeypatch.setattr(module, "normalize_ticker", ...)` 返回自造 `NormalizedTicker`，不要重造识别类。
-- Engine 内部测试如果必须直接构造 `AgentRunningConfig` 或 `AsyncOpenAIRunnerRunningConfig`，应从各自定义模块导入，不要再依赖 `dayu.engine` 的聚合导出面；跨层 runtime config 快照真源在 `dayu.contracts.runtime_config_snapshot`，纯运行配置值对象与转换函数在 `dayu.execution.runtime_config`。
+- `test_sse_parser.py` 与 `test_sec_pipeline_download.py` 这类 Engine/Fins 装配测试，遇到 `ClientResponse`、`AsyncOpenAIRunnerRunningConfig`、`SecDownloader` 等生产签名时，优先在测试装配边界用 helper 做一次显式类型收窄；不要为了消除 pyright 报错去让测试 stub 继承不匹配的生产实现类，尤其不要把同步 stub 硬继承到异步 downloader 真源上。ticker 市场识别一律对齐 `alpha.fins.ticker_normalization.normalize_ticker` 真源，需要 stub 时在消费者模块路径上 `monkeypatch.setattr(module, "normalize_ticker", ...)` 返回自造 `NormalizedTicker`，不要重造识别类。
+- Engine 内部测试如果必须直接构造 `AgentRunningConfig` 或 `AsyncOpenAIRunnerRunningConfig`，应从各自定义模块导入，不要再依赖 `alpha.engine` 的聚合导出面；跨层 runtime config 快照真源在 `alpha.contracts.runtime_config_snapshot`，纯运行配置值对象与转换函数在 `alpha.execution.runtime_config`。
 - `tests/fins/test_bs_report_form_common.py` 这类 processor 单测里，`Source` dummy 应保持普通类做结构兼容；`XBRL`、`_TableBlock` 等实现类型应在测试装配边界集中 `cast` / helper 收窄，不要把 `SimpleNamespace` 直接写进处理器字段或方法签名。
 - `tests/engine/test_bs_processor.py` 这类基础 processor 搜索测试里，`SearchHit.section_ref/snippet` 等非必填字段也应通过 helper 安全读取；不要在基础回归里裸下标访问，否则很容易和 `search_utils` 一类文件重复产生同源 TypedDict 错误。
 - `tests/engine/test_bs_processor_coverage.py` 这类覆盖补丁测试里，不要复用同名测试函数；传给 `_safe_table_text()` 的 `table_tag` 也要先断言非空，再把 BeautifulSoup 的可选返回值传进内部 helper。
@@ -299,18 +305,18 @@ pip install -r requirements.txt
 - `tests/engine/test_sec_processor.py` 在 `SecProcessor` 拆分或装配链调整时，还要继续守住全文回退语义：单全文章节预加载与运行时 `get_full_text()` 两条路径都必须在 `document.text()` 为空时统一回退到原始 HTML 抽文，避免 `20-F/iXBRL` 文档重新产出空全文。
 - `test_web_tools.py` 需要守住 web fetch 的机械恢复规则：requests 侧 `Accept-Encoding` 只能声明当前运行时真的支持的编码；立即 `meta refresh` 要在抓取层继续跟随，且每一跳都要按剩余 budget 重算 timeout；不支持的内容编码、timeout、部分 SSL/TLS 握手失败、一小组浏览器更容易恢复的 `412/521` 类状态，以及带前端壳页特征的 challenge/抽取失败，都要优先导向既有浏览器回退，而不是把脏 HTML 继续送进正文抽取。
 - `test_web_tools.py` 还要守住取消语义：requests 主路径要在 warmup、probe、下载、meta refresh 跟随与正文转换的阶段边界观察 linked `CancellationToken`；走到浏览器回退时，同一执行令牌也必须继续透传。
-- `test_web_tools.py` 还需要守住第二阶段下沉后的 HTTP 真源：timeout/session 相关 helper 的真源在 `dayu.engine.tools.web_http_session`，内容编码与字符集解析真源在 `dayu.engine.tools.web_http_encoding`；新增 monkeypatch 或直接导入时不要再默认绑回 `web_tools.py` 本地实现。
-- `test_web_tools.py` 还需要守住第二阶段继续下沉后的 fetch 编排真源：warmup、content-type probe、HTML/Docling 路由、meta refresh 跟随与 requests->browser 升级判定的真源在 `dayu.engine.tools.web_fetch_orchestrator`；`web_tools.py` 里的同名函数现在只是兼容测试锚点的薄包装。
-- `test_web_tools.py` 与 `test_web_playwright_backend.py` 还需要共同守住第三阶段下沉后的 Playwright 真源：浏览器单例、子进程 worker、storage state 解析、deadline 预算与浏览器回退执行的真源在 `dayu.engine.tools.web_playwright_backend`；`web_tools.py` 中对应函数现在主要承担兼容包装职责，而 backend 真源分支应优先在专门测试文件中直接覆盖。
+- `test_web_tools.py` 还需要守住第二阶段下沉后的 HTTP 真源：timeout/session 相关 helper 的真源在 `alpha.engine.tools.web_http_session`，内容编码与字符集解析真源在 `alpha.engine.tools.web_http_encoding`；新增 monkeypatch 或直接导入时不要再默认绑回 `web_tools.py` 本地实现。
+- `test_web_tools.py` 还需要守住第二阶段继续下沉后的 fetch 编排真源：warmup、content-type probe、HTML/Docling 路由、meta refresh 跟随与 requests->browser 升级判定的真源在 `alpha.engine.tools.web_fetch_orchestrator`；`web_tools.py` 里的同名函数现在只是兼容测试锚点的薄包装。
+- `test_web_tools.py` 与 `test_web_playwright_backend.py` 还需要共同守住第三阶段下沉后的 Playwright 真源：浏览器单例、子进程 worker、storage state 解析、deadline 预算与浏览器回退执行的真源在 `alpha.engine.tools.web_playwright_backend`；`web_tools.py` 中对应函数现在主要承担兼容包装职责，而 backend 真源分支应优先在专门测试文件中直接覆盖。
 - `test_web_tools.py` 还需要守住 Playwright 的硬收口：默认回退执行应优先在子进程边界内完成，timeout 或取消后父进程必须终止 worker，而不是继续接受“后台线程可能仍在运行”的软超时语义。
 - `test_web_tools.py` 还要守住 Playwright 结果回传时序：父进程必须先消费 result queue，再等待 worker 完全退出；同时要允许“进程已退出但队列结果稍后才可见”的短暂 drain 窗口，避免把成功抓取误报成 timeout 或 worker exited without result。
-- `test_web_tools.py` 还需要守住 `search_web` 的内部边界：provider 选择、API key 缺失回退、DuckDuckGo URL 解析与结果摘要组装的真源在 `dayu.engine.tools.web_search_providers`，而不是重新塞回 `web_tools.py`。
+- `test_web_tools.py` 还需要守住 `search_web` 的内部边界：provider 选择、API key 缺失回退、DuckDuckGo URL 解析与结果摘要组装的真源在 `alpha.engine.tools.web_search_providers`，而不是重新塞回 `web_tools.py`。
 - `test_web_tools.py` 还需要守住 challenge 误判边界：DataDome 这类 vendor header 仍是强挑战信号，但单独的清理型 vendor cookie 不能直接把 200 正常正文页判成 blocked。
 - `test_web_tools.py` 还需要守住 storage state 的双路径收敛：按 host 命中的 Playwright storage state 不仅要传给浏览器回退，也要能把其中 cookie 注入 requests 主路径，避免像 Bloomberg 这类站点仍然卡在 403 robot page。
 - `test_web_tools.py` 还需要守住浏览器回退画像：Playwright context 要继续带现代导航头、支持按 host 及 `www` 变体命中 storage state，并在受控范围内做首页预热与页面稳定化等待。
 - `test_web_tools.py` 还需要守住旧站点字符集纠偏：当响应头缺失 charset、但 HTML meta 或 `apparent_encoding` 已暴露 `gb2312/gbk/gb18030` 等编码时，正文抽取前必须先修正解码，不能直接信任 `response.text` 的默认拉丁编码结果。
 - `test_web_tools.py` 的测试桩也要跟随真源边界：requests 会话桩应直接继承 `requests.Session` 并保持 `get/head` 与基类兼容的签名；故意喂非法 `domains`、`MaxRetryError(pool=None)`、函数 `__tool_extra__` 或 `ModuleType` 动态属性时，只在该负例/注入边界单次 `cast(Any, ...)`，不要把宽类型和动态属性写入散落到正文断言里。
-- `test_log.py` 需要守住两条日志边界：全局默认日志分流语义仍是 stdout 保留全量日志、`ERROR` 及以上同时走 stderr；日志真源仍是 `dayu.log`，不要把 `Log` / `LogLevel` 再包装回 `dayu.engine`。
+- `test_log.py` 需要守住两条日志边界：全局默认日志分流语义仍是 stdout 保留全量日志、`ERROR` 及以上同时走 stderr；日志真源仍是 `alpha.log`，不要把 `Log` / `LogLevel` 再包装回 `alpha.engine`。
 - 这类 `build_async_agent` 边界测试里的 mock 需要跟随公共契约升级：当前 `trace_identity` 是 `AgentTraceIdentity`，如果测试要断言字段值，应显式转成 `to_metadata()` 后再比较，而不是继续把它当成可迭代字典输入。
 - 对 CLI 装配测试，优先 patch `_prepare_cli_host_dependencies` 与按需 `Service builder` 这类稳定边界；不要重新引入“一次性创建所有 Service”的 bundle runtime 测试夹具。
 - 当前这类贯通测试至少要覆盖三段：
@@ -359,7 +365,7 @@ pip install -r requirements.txt
 另外：
 - 写作流水线的 regenerate / repair 路径必须有非空 `audit_decision` invariant；若状态机调整，这个 guard 需要在 `tests/engine/test_write_pipeline.py` 继续守住，不能退回“靠流程顺序默认成立”。
 - write pipeline 现在已把单章状态机与审计协调下沉到内部协调器，并把最终报告组装、运行摘要聚合拆到独立协作者；`tests/engine/test_write_pipeline.py` 需要继续守住 `WritePipelineRunner` 只做 orchestration/delegation，不要把审计、rewrite、报告组装或摘要聚合重新塞回 Runner。
-- write pipeline 的审计规则码现在统一收口到 `dayu/services/internal/write_pipeline/enums.py`；`tests/engine/test_write_pipeline.py` 在构造 `Violation`、`EvidenceConfirmationEntry`、`RemediationAction` 等内部模型时，应直接使用 `AuditRuleCode` 真源，而不是继续散落规则字符串；只有 prompt / JSON payload 这类外部协议表面才保留字符串形态。
+- write pipeline 的审计规则码现在统一收口到 `alpha/services/internal/write_pipeline/enums.py`；`tests/engine/test_write_pipeline.py` 在构造 `Violation`、`EvidenceConfirmationEntry`、`RemediationAction` 等内部模型时，应直接使用 `AuditRuleCode` 真源，而不是继续散落规则字符串；只有 prompt / JSON payload 这类外部协议表面才保留字符串形态。
 - `tests/engine/test_write_pipeline.py` 对 audit / rewrite 的细粒度断言要直接命中 `ChapterAuditCoordinator` 与 `ChapterExecutionCoordinator` 真源，不能再通过 `WritePipelineRunner` 保留纯透传 facade 测试入口。
 - `tests/engine/test_write_pipeline.py` 还要守住章节状态机的 rewrite 计数边界：`retry_count` 只表示已成功提交的重写次数，`PREPARE_REWRITE` 只能生成待执行序号；若 regenerate / repair 在本轮执行中抛错，`retry_count` 与 `rewrite_history` 都不能提前加一。
 - `tests/application/test_execution_runtime_config.py` 负责守住运行配置快照恢复语义，包括字符串数字快照仍按当前规则恢复成数值；不要把这类恢复逻辑散落到调用方测试里。
@@ -370,6 +376,7 @@ Fins 相关改动时，至少同步更新：
 - `tests/fins/test_fins_tools_service.py`
 - `tests/fins/test_fins_tools_registry.py`
 - `tests/fins/test_ingestion_tools.py`
+- `tests/fins/test_statement_period_columns.py` 用真实 BABA 列名守住带期间标签的数值读取；ingestion 测试同时检查预处理工具已注册、选中文档透传及多表单请求的真实拆分结果。
 - `tests/fins/test_storage_split_repositories.py`
 - 受影响的 pipeline / processor 测试
 - `tests/fins/test_cli_formatters_coverage.py` 需要继续守住 Fins pipeline 事件即使内部收口为枚举，也保持原有小写字符串值兼容 CLI 输出与 fixture 构造。
@@ -394,8 +401,8 @@ Fins 相关改动时，至少同步更新：
 - `Source` 是只读结构化协议，测试里的 dummy source 应写成普通类做结构兼容，不要显式继承 `Source`。
 - 处理器版本契约以 `get_parser_version()` 为准；若需要断言 parser version，优先校验方法返回值，而不是要求协议声明类变量。
 - Engine 与 Fins 的 processor 测试要继续守住 HTML 规则边界：`tests/engine/` 只验证通用 HTML/Text 基元和扩展钩子，EDGAR SGML 剥离、SEC 封面页 layout 识别、section heading 横线表识别等领域规则必须放在 `tests/fins/`，不能再由 Engine 测试钉死。
-- direct operation 公共契约测试还要守住 `dayu.contracts.fins` 已按命令拆成强类型 payload/result/progress dataclass；`tests/application/test_fins_service.py`、`tests/fins/test_fins_runtime_tool_service.py`、`tests/engine/test_cli_running_config.py` 与 `tests/fins/test_cli_formatters_coverage.py` 不应再回退到构造跨层 `Dict[str, Any]` god-bag。
-- 共享 processor helper 的测试要绑定公共真源而不是具体处理器私有实现；例如 HTML 表格 DataFrame 解析应锚定 `dayu.engine.processors.table_utils.parse_html_table_dataframe()`，不要再 monkeypatch `bs_processor.py` 内部下划线函数。
+- direct operation 公共契约测试还要守住 `alpha.contracts.fins` 已按命令拆成强类型 payload/result/progress dataclass；`tests/application/test_fins_service.py`、`tests/fins/test_fins_runtime_tool_service.py`、`tests/engine/test_cli_running_config.py` 与 `tests/fins/test_cli_formatters_coverage.py` 不应再回退到构造跨层 `Dict[str, Any]` god-bag。
+- 共享 processor helper 的测试要绑定公共真源而不是具体处理器私有实现；例如 HTML 表格 DataFrame 解析应锚定 `alpha.engine.processors.table_utils.parse_html_table_dataframe()`，不要再 monkeypatch `bs_processor.py` 内部下划线函数。
 - source storage 相关测试还要继续守住共享真源分工：`tests/fins/test_storage_split_repositories.py` 负责仓储事实接口，`tests/fins/test_sec_pipeline_download_stream.py` / `tests/fins/test_sec_pipeline_download.py` 负责 pipeline 只能消费仓储结论，`tests/engine/test_cli_running_config.py` 负责 CLI startup 只能消费 `has_local_filings` 这类上层事实，而不是直接读取 `portfolio/` 目录布局。
 - Engine / processor 测试若覆盖页面摘要或搜索 evidence，断言应对齐稳定 TypedDict 契约，不要继续验证 helper 时代遗留的私有字段，例如页面 `start_on_page/end_on_page` 或 evidence `match_position`。
 - SEC processor / virtual section 测试还要守住两个稳定输出：`SectionContent.children` 只承载直接子章节导航摘要，`FinancialStatementResult` 在失败分支也必须保持完整必填字段形状。
@@ -489,11 +496,11 @@ Fins 相关改动时，至少同步更新：
 - 主链不再出现 `application/runtime/capabilities`
 - `startup preparation` 不得创建 `Host`
 - `startup preparation` 只能调用 `services/host` 的公开 preparation API，不能触碰下层内部实现
-- `prompting` 不得反向依赖已删除的 `dayu.engine.prompts`
+- `prompting` 不得反向依赖已删除的 `alpha.engine.prompts`
 - `Engine` 不得重新出现 `load_prompt`、`parse_when_*`、`PromptParseError` 这类 prompt 渲染实现
 - `ExecutionContract` 的业务装配只能在 `contract_preparation` 中收口构造；`contracts` 层的 snapshot restore 属于机械恢复例外
 - `Service` 不得直接构造 `AgentCreateArgs`
-- `services/host/fins` 等内部实现层不得再通过 `dayu.prompting`、`dayu.fins` 这类 package root 获取实现符号；若需要实现对象，必须直接导入具体子模块
+- `services/host/fins` 等内部实现层不得再通过 `alpha.prompting`、`alpha.fins` 这类 package root 获取实现符号；若需要实现对象，必须直接导入具体子模块
 - `Host` 只消费 `ExecutionContract`
 - `Agent` 不理解上层聚合对象
 - `fins/tools` 与 `fins/pipelines` 不得重新 import 旧 `DocumentRepository / FsDocumentRepository`
@@ -510,3 +517,19 @@ Fins 相关改动时，至少同步更新：
 - 对 Fins 读工具 / runtime 的旧 fake repository，优先通过 `tests/fins/legacy_repository_adapters.py` 适配到 `company/source/processed/blob` 窄仓储；不要为了测试回加生产代码里的 `repository=` 兼容参数
 - 涉及创建文件 symlink 的边界用例，必须从 `tests/conftest.py` 复用 `requires_symlink` 装饰器，由其在导入期实际探测能力（成功则跑、失败则带原因 skip）；不要在每个用例里各写一份 `try: os.symlink ... except OSError: pytest.skip`，也不要按 `sys.platform == "win32"` 一刀切跳过——Windows 启用开发者模式或以管理员运行时仍应正常覆盖该边界。
 - 若某层已删除，对应旧测试也应删除，不做“保留纪念”
+
+研究工具专项覆盖真实注册表、作用域隔离、零退出码但校验失败、历史截止日约束、大报告续读及方法引用路径。`test_service.py` 只隔离模型流，保留真实 Service/Host/scene 装配，验证两轮版本继承、跨库受理调和、停止后新输入、缺少报告草稿及显式恢复。CLI 可用 `alpha research --help` 检查参数；真实模型研究与离线模型流测试分别记录。
+
+`test_analysis.py` 覆盖候选稿字段定位、长正文及嵌套数据契约、哈希固定提交、实际财报覆盖和跨 Run 来源恢复。`test_external_entry.py` 保留真实 Host 与工具，验证外部入口不嵌套模型、互斥与取消；`test_mcp_entry.py` 使用官方 SDK 和真实 stdio 子进程。财报回归同时核对期间标签、便利币种排除、跨单元格括号负号及已登记 XBRL 快照的缓存复用。Notion 主题与版本的模拟验收和真实页面回读分别留证。
+
+`tests/telegram/` 使用模拟 HTTP 远端、真实渠道数据库和真实 Service/Host/scene 验证双研究隔离、完整 daemon 生命周期、分页/旧按钮、创建响应丢失、按钮版本固定、摘要和文件交付去重。发送故障测试覆盖首发卡片冻结、限流与未知结果；入口测试验证白名单和只读预检。真实 Bot 验收独立记录，离线测试不冒充真实连接成功。
+
+`test_operation_admission.py` 验证独立操作在返回前持久登记、跨 Host 实例复用同一 Run、成功不重复调用、活跃租约互斥、失败需要调和，以及接受进程退出较久后的待执行保护。快照损坏用例验证处理函数未运行、租约释放且 Run 进入明确失败。
+
+`tests/integrations/notion/` 的远端是 `httpx.MockTransport`，本地使用真实研究仓储、Host 与发布服务。覆盖同步/202 任务、限流、权限修复后的新授权、已创建丢响应、不完整或被修改的回读，以及取消时等待 HTTP 并保留 page ID。`test_publication_journey.py` 验证 Telegram v1 按钮在 v2 出现后仍推送 v1，并向原话题投递链接。CLI 发布 fixture 使用工作区默认研究路径，避免仓储自定义测试路径混入入口验证。
+
+研究材料测试包含真实 PDF 页码提取、Fins 原件往返、取消回收子进程、时间边界、文件损坏与跨研究拒绝；Telegram 材料旅程在实际 HTTP 模拟下载后生成 v2 并验证 v1 不变。Notion 分段测试在真实业务库与 Mock HTTP 上注入未知追加、异步成功及任务过期。父取消回归先复现晚注册子执行仍进入业务和运行中子执行未取消，再验证终态与资源收尾。
+
+`tests/research/test_cli.py` 同时覆盖实际命令解析、创建/材料/执行/显式恢复/报告/归档流程；仅替换模型流，Service 与 Host 使用实际装配。
+
+Codex 运行器测试使用原生协议模拟与实际工具作用域，管道测试启动真实受控子进程，验证交错通知、错误脱敏、无输出时取消和 TERM 无响应后的回收。凭据与入口缺少 token 的测试使用隔离 CODEX_HOME，禁止依赖个人真实 token；覆盖独立 credentials.toml、覆盖优先级和损坏配置脱敏。真实 Codex/Invest 只读探针单独留证，不作为无凭据测试的隐式依赖。

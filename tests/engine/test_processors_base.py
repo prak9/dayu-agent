@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import get_type_hints
 
-from dayu.engine.processors import base
-from dayu.engine.processors.source import Source
+from alpha.engine.processors import base
+from alpha.engine.processors.source import Source
 
 
 def test_placeholder_types_are_dict_subclasses() -> None:

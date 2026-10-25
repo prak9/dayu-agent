@@ -7,11 +7,11 @@ from typing import Optional
 
 import pytest
 
-from dayu.fins.processors.def14a_processor import Def14AFormProcessor
-from dayu.fins.processors.eight_k_processor import EightKFormProcessor
-from dayu.fins.processors.sc13_processor import Sc13FormProcessor
-from dayu.fins.processors.bs_six_k_processor import BsSixKFormProcessor
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors.def14a_processor import Def14AFormProcessor
+from alpha.fins.processors.eight_k_processor import EightKFormProcessor
+from alpha.fins.processors.sc13_processor import Sc13FormProcessor
+from alpha.fins.processors.bs_six_k_processor import BsSixKFormProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 class _FakeSection:
@@ -197,7 +197,7 @@ def test_sc13_processor_splits_item_and_tail_sections(
         "Exhibit 1 Share Repurchase Agreement"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -253,7 +253,7 @@ def test_sc13_processor_fallbacks_to_document_text_when_sections_are_placeholder
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocumentWithPlaceholderSections(
             section_text=section_text,
             document_text=document_text,
@@ -312,7 +312,7 @@ def test_sc13_processor_uses_document_text_when_base_has_no_item_markers(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocumentWithPlaceholderSections(
             section_text=section_text,
             document_text=document_text,
@@ -360,7 +360,7 @@ def test_eight_k_processor_splits_item_sections(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 

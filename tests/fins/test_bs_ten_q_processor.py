@@ -16,22 +16,22 @@ from typing import Optional
 
 import pytest
 
-from dayu.fins.processors.bs_ten_q_processor import BsTenQFormProcessor
-from dayu.fins.processors.sec_form_section_common import _VirtualSection
-from dayu.fins.processors.ten_q_processor import TenQFormProcessor
-from dayu.fins.processors.ten_q_form_common import (
+from alpha.fins.processors.bs_ten_q_processor import BsTenQFormProcessor
+from alpha.fins.processors.sec_form_section_common import _VirtualSection
+from alpha.fins.processors.ten_q_processor import TenQFormProcessor
+from alpha.fins.processors.ten_q_form_common import (
     _anchor_produces_meaningful_items,
     _build_ten_q_markers,
     _find_all_part_heading_positions,
     _select_best_part_i_anchor,
     expand_ten_q_virtual_sections_content,
 )
-from dayu.fins.processors.ten_q_form_common import (
+from alpha.fins.processors.ten_q_form_common import (
     _PART_I_HEADING_PATTERN,
     _PART_II_HEADING_PATTERN,
 )
-from dayu.fins.processors.ten_q_form_common import _html_flexible_word
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors.ten_q_form_common import _html_flexible_word
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 def _make_source(path: Path, *, media_type: Optional[str] = "text/html") -> LocalFileSource:
@@ -1541,7 +1541,7 @@ def test_bs_ten_q_processor_parser_version() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    assert BsTenQFormProcessor.PARSER_VERSION == "bs_ten_q_processor_v1.0.0"
+    assert BsTenQFormProcessor.PARSER_VERSION == "bs_ten_q_processor_v1.0.2"
 
 
 @pytest.mark.unit
@@ -1643,8 +1643,8 @@ def test_registry_routes_10q_to_bs_primary() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.engine.processors.source import Source
-    from dayu.fins.processors.registry import build_fins_processor_registry
+    from alpha.engine.processors.source import Source
+    from alpha.fins.processors.registry import build_fins_processor_registry
 
     class _DummySource:
         def __init__(self) -> None:
@@ -1679,8 +1679,8 @@ def test_registry_10q_fallback_candidates() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.engine.processors.source import Source
-    from dayu.fins.processors.registry import build_fins_processor_registry
+    from alpha.engine.processors.source import Source
+    from alpha.fins.processors.registry import build_fins_processor_registry
 
     class _DummySource:
         def __init__(self) -> None:

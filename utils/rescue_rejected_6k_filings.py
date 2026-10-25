@@ -36,7 +36,7 @@ def _ensure_repo_root_on_sys_path() -> None:
 
 _ensure_repo_root_on_sys_path()
 
-from dayu.fins.rejected_6k_rescue import rescue_rejected_6k_filings
+from alpha.fins.rejected_6k_rescue import rescue_rejected_6k_filings
 
 
 def _build_argument_parser() -> argparse.ArgumentParser:

@@ -4,9 +4,9 @@ from typing import Mapping
 
 import pytest
 
-from dayu.startup.config_file_resolver import ConfigFileResolver
-from dayu.startup.config_loader import ConfigLoader
-from dayu.startup.prompt_assets import FilePromptAssetStore
+from alpha.startup.config_file_resolver import ConfigFileResolver
+from alpha.startup.config_loader import ConfigLoader
+from alpha.startup.prompt_assets import FilePromptAssetStore
 
 
 def _header_value(headers: object, key: str) -> str | None:
@@ -80,7 +80,7 @@ def test_prompt_asset_store_reads_overview_manifest_file() -> None:
 
 
 def test_fallback_to_package_config(tmp_path):
-    """测试缺失文件时 fallback 到包内 dayu/config。"""
+    """测试缺失文件时 fallback 到包内 alpha/config。"""
     # 只创建空目录，触发 fallback
     workspace_config = tmp_path / "config"
     workspace_config.mkdir(parents=True, exist_ok=True)

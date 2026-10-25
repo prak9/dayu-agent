@@ -16,16 +16,16 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from dayu.contracts.agent_execution import ExecutionContract, ReplayHandle
-from dayu.contracts.cancellation import CancelledError, CancellationToken
-from dayu.contracts.events import AppResult
-from dayu.host.host_execution import HostExecutorProtocol
-from dayu.host.protocols import (
+from alpha.contracts.agent_execution import ExecutionContract, ReplayHandle
+from alpha.contracts.cancellation import CancelledError, CancellationToken
+from alpha.contracts.events import AppResult
+from alpha.host.host_execution import HostExecutorProtocol
+from alpha.host.protocols import (
     SessionClearingError,
     SessionClearingFailedError,
     SessionClosedError,
 )
-from dayu.services.internal.write_pipeline.pipeline import (
+from alpha.services.internal.write_pipeline.pipeline import (
     _HostScenePromptContractExecutor,
 )
 

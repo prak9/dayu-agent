@@ -5,7 +5,7 @@
 - 开源之后的日常开发、贡献、同步流程。
 
 核心假设：
-- GitHub 远端名：`github`，地址 `git@github.com:noho/dayu-agent.git`。
+- GitHub 远端名：`github`，地址 `git@github.com:noho/alpha-agent.git`。
 - 局域网 Gitea 远端名：`lan`。
 - 本地曾经以 `lan-main` 作为主线，有大量非公开开发历史。
 
@@ -112,7 +112,7 @@ git push lan main:main
 
 ### 第 5 步：GitHub 仓库设置（网页操作）
 
-去 `github.com/noho/dayu-agent` 的 Settings → General：
+去 `github.com/noho/alpha-agent` 的 Settings → General：
 - **Default branch** 设为 `main`。
 - Settings → Branches → Add branch protection rule：
   - Branch name pattern：`main`
@@ -360,7 +360,7 @@ Linux 仍保留在线安装、源码安装、锁文件 smoke 与 CI 平台验证
 
 这里有一个前提要明确：
 
-- 当前 [utils/build_offline_bundle.py](</Users/leo/workspace/dayu-agent/utils/build_offline_bundle.py>) 会基于**当前运行平台**下载 wheelhouse
+- 当前 [utils/build_offline_bundle.py](</Users/leo/workspace/alpha-agent/utils/build_offline_bundle.py>) 会基于**当前运行平台**下载 wheelhouse
 - 构建脚本会把下载到的源码分发包（sdist）预先构建成 wheel，确保离线安装阶段只消费 `wheelhouse/` 中的 wheel
 - `--platform-id` 主要用于命名、安装脚本分支和归档后缀
 - 它**不是**“一台机器交叉构建任意平台离线包”的开关
@@ -373,7 +373,7 @@ Linux 仍保留在线安装、源码安装、锁文件 smoke 与 CI 平台验证
 
 1. 构建项目 wheel
 2. 基于对应平台的 `constraints/lock-<platform>-py311.txt` 构建离线安装包
-3. 运行 [utils/smoke_test_offline_bundle.py](</Users/leo/workspace/dayu-agent/utils/smoke_test_offline_bundle.py>) 做干净虚拟环境 smoke，覆盖 `dayu-cli` / `dayu-wechat` / `dayu-render`
+3. 运行 [utils/smoke_test_offline_bundle.py](</Users/leo/workspace/alpha-agent/utils/smoke_test_offline_bundle.py>) 做干净虚拟环境 smoke，覆盖 `alpha` / `alpha-wechat` / `alpha-render`
 
 示例中的 `dist/offline` 可以按需替换成别的输出目录。
 
@@ -382,12 +382,12 @@ Linux 仍保留在线安装、源码安装、锁文件 smoke 与 CI 平台验证
 ```bash
 source .venv/bin/activate && python -m pip install --upgrade pip build
 rm -rf dist build && python -m build --wheel && python utils/build_offline_bundle.py \
-  --wheel "$(ls dist/dayu_agent-*.whl | tail -n1)" \
+  --wheel "$(ls dist/alpha_agent-*.whl | tail -n1)" \
   --constraints constraints/lock-macos-arm64-py311.txt \
   --platform-id macos-arm64 \
   --output-dir dist/offline
 python utils/smoke_test_offline_bundle.py \
-  --archive "$(ls dist/offline/dayu-agent-*-macos-arm64-offline.tar.gz | tail -n1)"
+  --archive "$(ls dist/offline/alpha-agent-*-macos-arm64-offline.tar.gz | tail -n1)"
 ```
 
 若需额外手工验证，执行：
@@ -413,18 +413,18 @@ gh pr checkout <PR号> --force
 与再次编译：
 
 ```bash
-CACHE_DIR="$HOME/.cache/dayu-agent/macos-x64-offline-verify/wheels"
+CACHE_DIR="$HOME/.cache/alpha-agent/macos-x64-offline-verify/wheels"
 mkdir -p "$CACHE_DIR"
 
 source .venv/bin/activate && python -m pip install --upgrade pip build
 rm -rf dist build && python -m build --wheel && python utils/build_offline_bundle.py \
-  --wheel "$(ls dist/dayu_agent-*.whl | tail -n1)" \
+  --wheel "$(ls dist/alpha_agent-*.whl | tail -n1)" \
   --constraints constraints/lock-macos-x64-py311.txt \
   --platform-id macos-x64 \
   --output-dir dist/offline \
   --wheel-cache-dir "$CACHE_DIR"
 python utils/smoke_test_offline_bundle.py \
-  --archive "$(ls dist/offline/dayu-agent-*-macos-x64-offline.tar.gz | tail -n1)"
+  --archive "$(ls dist/offline/alpha-agent-*-macos-x64-offline.tar.gz | tail -n1)"
 ```
 
 若需额外手工验证，执行：
@@ -449,7 +449,7 @@ pip install -e ".[test,dev,browser,web]" -c constraints/lock-macos-x64-py311.txt
 
 仓库内提供了 Linux 验证容器：
 
-- [docker/linux-x64-offline-verify/Dockerfile](</Users/leo/workspace/dayu-agent/docker/linux-x64-offline-verify/Dockerfile>)
+- [docker/linux-x64-offline-verify/Dockerfile](</Users/leo/workspace/alpha-agent/docker/linux-x64-offline-verify/Dockerfile>)
 
 如果当前开发机是 Apple Silicon（`macos-arm64`），这里必须显式指定 `linux/amd64`。
 否则 Docker 默认会起 `linux/arm64` 容器，最终下载到的是 `aarch64` wheel，但文件名仍会被误标成 `linux-x64`，验证结果失真。
@@ -460,40 +460,40 @@ pip install -e ".[test,dev,browser,web]" -c constraints/lock-macos-x64-py311.txt
 docker build \
   --platform linux/amd64 \
   -f docker/linux-x64-offline-verify/Dockerfile \
-  -t dayu-linux-x64-verify .
+  -t alpha-linux-x64-verify .
 ```
 
 再启动容器：
 
 ```bash
-mkdir -p "$HOME/.cache/dayu-agent/linux-x64-offline-verify/pip"
+mkdir -p "$HOME/.cache/alpha-agent/linux-x64-offline-verify/pip"
 docker run --rm -it \
   --platform linux/amd64 \
   --user "$(id -u):$(id -g)" \
   -e HOME=/tmp/home \
-  -v "$HOME/.cache/dayu-agent/linux-x64-offline-verify/pip:/tmp/pip-cache" \
-  -v "$PWD:/dayu-agent" \
-  -w /dayu-agent \
-  dayu-linux-x64-verify \
+  -v "$HOME/.cache/alpha-agent/linux-x64-offline-verify/pip:/tmp/pip-cache" \
+  -v "$PWD:/alpha-agent" \
+  -w /alpha-agent \
+  alpha-linux-x64-verify \
   /bin/sh -lc 'mkdir -p "$HOME" "$PIP_CACHE_DIR" && exec /bin/bash'
 ```
 
 说明：
 
 - 首次执行 `python utils/build_offline_bundle.py` 仍可能下载很久；这是正常的，因为需要把完整 Linux wheelhouse 拉到本机缓存。
-- 只要继续复用同一个宿主机缓存目录 `~/.cache/dayu-agent/linux-x64-offline-verify/pip`，后续再次构建同平台、同 Python 版本、且依赖集合高度重叠的离线包时，`pip download` 会优先复用已缓存的 wheel 与 HTTP 元数据，通常会明显更快。
+- 只要继续复用同一个宿主机缓存目录 `~/.cache/alpha-agent/linux-x64-offline-verify/pip`，后续再次构建同平台、同 Python 版本、且依赖集合高度重叠的离线包时，`pip download` 会优先复用已缓存的 wheel 与 HTTP 元数据，通常会明显更快。
 - 如果你删掉这个缓存目录、切换到另一台机器、修改锁定文件导致依赖版本大幅变化，或者上游只提供 sdist 需要重新构建，那么下载时间仍可能重新变长。
 
 容器内执行：
 
 ```bash
 rm -rf dist build && python -m build --wheel && python utils/build_offline_bundle.py \
-  --wheel "$(ls dist/dayu_agent-*.whl | tail -n1)" \
+  --wheel "$(ls dist/alpha_agent-*.whl | tail -n1)" \
   --constraints constraints/lock-linux-x64-py311.txt \
   --platform-id linux-x64 \
   --output-dir dist/offline
 python utils/smoke_test_offline_bundle.py \
-  --archive "$(ls dist/offline/dayu-agent-*-linux-x64-offline.tar.gz | tail -n1)"
+  --archive "$(ls dist/offline/alpha-agent-*-linux-x64-offline.tar.gz | tail -n1)"
 ```
 
 若需额外手工验证，容器内执行：
@@ -504,7 +504,7 @@ export PATH=$PATH:/tmp/home/.local/bin
 
 ##### 7.3.1 Host SQLite 锁竞争复现（外挂慢盘 / 方案 A）
 
-用途：本地**放大**"fsync 慢 × 并发 writer"这个撞锁前提，用来验证 `dayu/host/host_store.py::write_transaction`（`BEGIN IMMEDIATE` + autocommit）是否真把 Host SQLite 上的 upgrade deadlock 根除。不是替代 Windows CI，**仅用于本地根因复现**；Windows lane 是否绿色仍以 `full-platform-validation windows-x64 (py3.11)` 为准。
+用途：本地**放大**"fsync 慢 × 并发 writer"这个撞锁前提，用来验证 `alpha/host/host_store.py::write_transaction`（`BEGIN IMMEDIATE` + autocommit）是否真把 Host SQLite 上的 upgrade deadlock 根除。不是替代 Windows CI，**仅用于本地根因复现**；Windows lane 是否绿色仍以 `full-platform-validation windows-x64 (py3.11)` 为准。
 
 原理：`windows-latest` runner 撞锁的根因不是"Windows 语义差异"，而是 Azure VM 盘 fsync 延迟大、commit 窗口长。USB 机械硬盘（HDD）单次 fsync 约 10–30ms，比 Azure Windows VM 还慢一个量级，能把并发 writer 的锁争抢放到显微镜下。
 
@@ -512,13 +512,13 @@ export PATH=$PATH:/tmp/home/.local/bin
 
 - 外接 HDD 挂载点为 `/Volumes/WD-1`。`ls /Volumes/WD-1` 能看到内容即可。
 - macOS Docker Desktop → Settings → Resources → File Sharing，把 `/Volumes/WD-1` 加入共享路径（默认不含 `/Volumes`，不加会导致挂卷为空）。
-- 仍然只用已构建好的 `dayu-linux-x64-verify` 镜像，不新增镜像维护。
+- 仍然只用已构建好的 `alpha-linux-x64-verify` 镜像，不新增镜像维护。
 
 复现步骤：
 
 ```bash
 # 1. 在慢盘上准备 pytest basetemp。放在慢盘是关键——测试走的 tmp_path 必须落到 HDD 上，撞锁窗口才会被放大。
-SLOW_ROOT="/Volumes/WD-1/dayu-lock-repro"
+SLOW_ROOT="/Volumes/WD-1/alpha-lock-repro"
 mkdir -p "$SLOW_ROOT/pytest-basetemp" "$SLOW_ROOT/pip-cache"
 
 # 2. 启动 linux/amd64 容器：repo 走 SSD（编译/安装快），pytest basetemp 单独挂到慢盘。
@@ -528,10 +528,10 @@ docker run --rm -it \
   -e HOME=/tmp/home \
   -e PIP_CACHE_DIR=/tmp/pip-cache \
   -v "$SLOW_ROOT/pip-cache:/tmp/pip-cache" \
-  -v "$PWD:/dayu-agent" \
+  -v "$PWD:/alpha-agent" \
   -v "$SLOW_ROOT/pytest-basetemp:/slow" \
-  -w /dayu-agent \
-  dayu-linux-x64-verify \
+  -w /alpha-agent \
+  alpha-linux-x64-verify \
   /bin/sh -lc 'mkdir -p "$HOME" "$PIP_CACHE_DIR" && exec /bin/bash'
 ```
 
@@ -562,7 +562,7 @@ grep -c "database is locked" /slow/lock-repro.log || echo "0 次"
 判定口径：
 
 - 契约化修复生效时，上面第 5 步 500 轮 **应当 0 次** `database is locked`，且 `--count=500` 的整体耗时随机波动，不出现陡增。
-- 若仍出现 `database is locked`，说明还有一条没走 `write_transaction` 的写路径，或事务内混进了长时阻塞 I/O；需要对照 `grep -n "conn.commit\|BEGIN IMMEDIATE\|conn.rollback" dayu/host` 再审一遍。
+- 若仍出现 `database is locked`，说明还有一条没走 `write_transaction` 的写路径，或事务内混进了长时阻塞 I/O；需要对照 `grep -n "conn.commit\|BEGIN IMMEDIATE\|conn.rollback" alpha/host` 再审一遍。
 - 跑完记得清理：`rm -rf "$SLOW_ROOT/pytest-basetemp"`（pip-cache 可以保留，下次复现能直接复用）。
 
 限制：
@@ -578,13 +578,13 @@ grep -c "database is locked" /slow/lock-repro.log || echo "0 次"
 python -m pip install --upgrade pip build
 Remove-Item -Recurse -Force dist, build -ErrorAction SilentlyContinue
 python -m build --wheel
-$wheel = Get-ChildItem dist/dayu_agent-*.whl | Select-Object -Last 1
+$wheel = Get-ChildItem dist/alpha_agent-*.whl | Select-Object -Last 1
 python utils/build_offline_bundle.py `
   --wheel $wheel.FullName `
   --constraints constraints/lock-windows-x64-py311.txt `
   --platform-id windows-x64 `
   --output-dir dist/offline
-$archive = Get-ChildItem dist/offline/dayu-agent-*-windows-x64-offline.zip | Select-Object -Last 1
+$archive = Get-ChildItem dist/offline/alpha-agent-*-windows-x64-offline.zip | Select-Object -Last 1
 python utils/smoke_test_offline_bundle.py --archive $archive.FullName
 ```
 若需额外手工验证，执行：
@@ -617,11 +617,11 @@ pip install -e ".[test,dev,browser,web]" -c constraints/lock-windows-x64-py311.t
 当前正式发布资产包括：
 
 - 一个在线安装用的通用 wheel：
-  - `dayu_agent-<version>-py3-none-any.whl`
+  - `alpha_agent-<version>-py3-none-any.whl`
 - 3 个平台离线安装包：
-  - `dayu-agent-<version>-macos-arm64-offline.tar.gz`
-  - `dayu-agent-<version>-macos-x64-offline.tar.gz`
-  - `dayu-agent-<version>-windows-x64-offline.zip`
+  - `alpha-agent-<version>-macos-arm64-offline.tar.gz`
+  - `alpha-agent-<version>-macos-x64-offline.tar.gz`
+  - `alpha-agent-<version>-windows-x64-offline.zip`
 
 Linux 离线包体积超过 GitHub Release 资产承载能力，当前不作为正式发布资产；Linux 用户使用在线 wheel 安装或源码安装。
 
@@ -687,19 +687,19 @@ pip install --upgrade https://github.com/noho/dayu-agent/releases/download/v0.1.
 
 从 [Releases](https://github.com/noho/dayu-agent/releases) 页面下载对应平台的离线安装包：
 
-- Mac ARM芯片：`dayu-agent-0.1.4-macos-arm64-offline.tar.gz`
-- Mac Intel芯片：`dayu-agent-0.1.4-macos-x64-offline.tar.gz`
-- Windows：`dayu-agent-0.1.4-windows-x64-offline.zip`
+- Mac ARM芯片：`alpha-agent-0.1.4-macos-arm64-offline.tar.gz`
+- Mac Intel芯片：`alpha-agent-0.1.4-macos-x64-offline.tar.gz`
+- Windows：`alpha-agent-0.1.4-windows-x64-offline.zip`
 
 Linux 用户请使用上面的在线 wheel 安装或源码安装。
 
 ### 注意
 
 如果你从 v0.1.3 升级：
-- 本次更新后需运行一次 `dayu-cli init` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
+- 本次更新后需运行一次 `alpha init` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
 
 如果你从更早版本升级：
-- 本次更新后需运行一次 `dayu-cli init --reset` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
+- 本次更新后需运行一次 `alpha init --reset` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
 
 ## 本次更新
 
@@ -721,11 +721,11 @@ Linux 用户请使用上面的在线 wheel 安装或源码安装。
 - 修复 Web 交互式分析中的重复事件消费、历史加载、清空历史和异常收口问题。
 
 安装后可用命令：
-- `dayu-cli init` — 初始化配置
-- `dayu-cli` — 财报分析 CLI
-- `dayu-web` — Web UI
-- `dayu-wechat` — WeChat 服务
-- `dayu-render` — 报告渲染
+- `alpha init` — 初始化配置
+- `alpha` — 财报分析 CLI
+- `alpha-web` — Web UI
+- `alpha-wechat` — WeChat 服务
+- `alpha-render` — 报告渲染
 
 感谢以下贡献者参与本次发布（按 GitHub 用户名排序）：
 @noho、@xingren23
@@ -747,10 +747,10 @@ EOF
 
 只有当它全部成功后，这次 release 才算真正完成。最终 Release 页面应看到这 4 个资产：
 
-- `dayu_agent-<version>-py3-none-any.whl`
-- `dayu-agent-<version>-macos-arm64-offline.tar.gz`
-- `dayu-agent-<version>-macos-x64-offline.tar.gz`
-- `dayu-agent-<version>-windows-x64-offline.zip`
+- `alpha_agent-<version>-py3-none-any.whl`
+- `alpha-agent-<version>-macos-arm64-offline.tar.gz`
+- `alpha-agent-<version>-macos-x64-offline.tar.gz`
+- `alpha-agent-<version>-windows-x64-offline.zip`
 
 如果只是想手工试跑发布流程而不污染正式 Release，可以手动触发 `workflow_dispatch`。  
 但要注意：`workflow_dispatch` 只会生成 workflow artifact，不会把文件上传到 GitHub Release。
@@ -937,26 +937,26 @@ push 后 PR 自动更新，CI 重新跑。最终 merge 时用 **Squash and merge
 
 ```bash
 # 1. 在独立目录展开当前代码
-git worktree add ../dayu-agent-runs/download-aapl HEAD
+git worktree add ../alpha-agent-runs/download-aapl HEAD
 
 # 2. 进入该目录跑任务，原目录继续开发
-cd ../dayu-agent-runs/download-aapl
-python -m dayu.cli download --ticker AAPL
+cd ../alpha-agent-runs/download-aapl
+python -m alpha.cli download --ticker AAPL
 
 # 3. 任务结束后清理 worktree
 cd -
-git worktree remove ../dayu-agent-runs/download-aapl
+git worktree remove ../alpha-agent-runs/download-aapl
 ```
 
 也可以基于已有的发布 tag（如 `v0.1.0`）开 worktree：
 ```bash
-git worktree add ../dayu-agent-runs/prod-v0.1.0 v0.1.0
+git worktree add ../alpha-agent-runs/prod-v0.1.0 v0.1.0
 ```
 
 #### 已有 worktree 想更新到最新代码
 
 ```bash
-cd ../dayu-agent-runs/download-aapl
+cd ../alpha-agent-runs/download-aapl
 git reset --hard main
 ```
 
@@ -970,20 +970,20 @@ git tag run/download-aapl-20260417
 git push lan run/download-aapl-20260417   # 可选：推到 lan 留底，便于事后复盘
 
 # 2. 在独立目录展开该 tag 的工作区
-git worktree add ../dayu-agent-runs/download-aapl run/download-aapl-20260417
+git worktree add ../alpha-agent-runs/download-aapl run/download-aapl-20260417
 
 # 3. 进入该目录跑任务，原目录继续开发
-cd ../dayu-agent-runs/download-aapl
-python -m dayu.cli download --ticker AAPL
+cd ../alpha-agent-runs/download-aapl
+python -m alpha.cli download --ticker AAPL
 
 # 4. 任务结束后清理 worktree，tag 保留
 cd -
-git worktree remove ../dayu-agent-runs/download-aapl
+git worktree remove ../alpha-agent-runs/download-aapl
 ```
 
 #### 约定
 
-- worktree 目录统一放在仓库同级的 `../dayu-agent-runs/<名字>` 下，便于集中管理。
+- worktree 目录统一放在仓库同级的 `../alpha-agent-runs/<名字>` 下，便于集中管理。
 - `run/*` tag 只推 `lan`（私人备份），不推 `github`（对外部贡献者无价值）。
 - 同时跑多个长任务时，每个任务一个 worktree，互不干扰。
 
@@ -1009,10 +1009,10 @@ git status
 
 # 2. 基于自己的功能分支创建一个临时集成分支，并开独立 worktree
 git switch feat/xxx
-git worktree add -b integration/pr-123 ../dayu-agent-prs/pr-123-integration feat/xxx
+git worktree add -b integration/pr-123 ../alpha-agent-prs/pr-123-integration feat/xxx
 
 # 3. 在独立目录拉下对方 PR
-cd ../dayu-agent-prs/pr-123-integration
+cd ../alpha-agent-prs/pr-123-integration
 git fetch github pull/123/head:pr-123
 
 # 4. 把对方 PR 临时 merge 进来做集成验证
@@ -1023,7 +1023,7 @@ git status
 
 # 6. 验证完直接删掉整个 worktree 和临时分支，不把这次 merge 带回正式分支
 cd -
-git worktree remove ../dayu-agent-prs/pr-123-integration
+git worktree remove ../alpha-agent-prs/pr-123-integration
 git branch -D integration/pr-123
 ```
 

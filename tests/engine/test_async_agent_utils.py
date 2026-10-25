@@ -3,10 +3,10 @@
 
 from typing import Any, AsyncIterator
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.engine.async_agent import AsyncAgent, AgentRunningConfig
-from dayu.engine.duplicate_call_guard import _make_tool_signature
-from dayu.engine.events import StreamEvent, EventType
+from alpha.contracts.agent_types import AgentMessage
+from alpha.engine.async_agent import AsyncAgent, AgentRunningConfig
+from alpha.engine.duplicate_call_guard import _make_tool_signature
+from alpha.engine.events import StreamEvent, EventType
 
 
 class _DummyRunner:

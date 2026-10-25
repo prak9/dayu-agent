@@ -1,3 +1,3 @@
-python -m dayu.cli interactive \
+python -m alpha.cli interactive \
   --enable-tool-trace \
   "$@"

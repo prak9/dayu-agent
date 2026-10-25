@@ -29,7 +29,7 @@ def _detect_symlink_capability() -> tuple[bool, str]:
         无。
     """
 
-    with tempfile.TemporaryDirectory(prefix="dayu_symlink_probe_") as probe_dir:
+    with tempfile.TemporaryDirectory(prefix="alpha_symlink_probe_") as probe_dir:
         probe_root = Path(probe_dir)
         target = probe_root / "target"
         target.write_text("probe", encoding="utf-8")
@@ -89,7 +89,7 @@ def config_fixtures(fixtures_dir):
     return fixtures_dir / "config"
 
 # 预加载 protocols 并补齐 LLMRunner 别名，避免 utils.engine.__init__ 导入失败
-protocols_path = Path(__file__).parent.parent / "dayu" / "engine" / "protocols.py"
+protocols_path = Path(__file__).parent.parent / "alpha" / "engine" / "protocols.py"
 spec = importlib.util.spec_from_file_location("utils.engine.protocols", protocols_path)
 assert spec is not None and spec.loader is not None
 protocols = importlib.util.module_from_spec(spec)

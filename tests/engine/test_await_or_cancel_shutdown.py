@@ -12,8 +12,8 @@ import asyncio
 
 import pytest
 
-from dayu.contracts.cancellation import CancelledError, CancellationToken
-from dayu.engine.cancellation import await_or_cancel
+from alpha.contracts.cancellation import CancelledError, CancellationToken
+from alpha.engine.cancellation import await_or_cancel
 
 
 def _noop_check() -> None:

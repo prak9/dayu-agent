@@ -9,9 +9,9 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.contracts.model_config import OpenAICompatibleModelConfig
-from dayu.startup import config_loader as module
-from dayu.startup.config_file_resolver import ConfigFileResolver, resolve_package_config_path
+from alpha.contracts.model_config import OpenAICompatibleModelConfig
+from alpha.startup import config_loader as module
+from alpha.startup.config_file_resolver import ConfigFileResolver, resolve_package_config_path
 
 
 @pytest.mark.unit
@@ -373,7 +373,7 @@ def test_load_toolset_registrars_caches_and_validates_entries(monkeypatch: pytes
     """toolset registrar 加载应返回副本，并校验 key/value。"""
 
     resolver = ConfigFileResolver(resolve_package_config_path())
-    payload = {"doc": "dayu.engine.registrar:register"}
+    payload = {"doc": "alpha.engine.registrar:register"}
     monkeypatch.setattr(resolver, "read_json", lambda filename, required=True: payload)
 
     loader = module.ConfigLoader(resolver)

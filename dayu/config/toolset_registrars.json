@@ -1,7 +1,0 @@
-{
-  "utils": "dayu.engine.toolset_registrars.register_utils_toolset",
-  "doc": "dayu.engine.toolset_registrars.register_doc_toolset",
-  "web": "dayu.engine.toolset_registrars.register_web_toolset",
-  "fins": "dayu.fins.toolset_registrars.register_fins_read_toolset",
-  "ingestion": "dayu.fins.toolset_registrars.register_fins_ingestion_toolset"
-}

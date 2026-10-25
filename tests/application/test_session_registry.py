@@ -8,11 +8,11 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext
-from dayu.host.host_store import HostStore
-from dayu.host.session_registry import SQLiteSessionRegistry
-from dayu.contracts.session import SessionSource, SessionState
-from dayu.log import Log
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext
+from alpha.host.host_store import HostStore
+from alpha.host.session_registry import SQLiteSessionRegistry
+from alpha.contracts.session import SessionSource, SessionState
+from alpha.log import Log
 
 
 @pytest.fixture()

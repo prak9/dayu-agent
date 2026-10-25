@@ -11,30 +11,30 @@ from typing import cast
 
 import pytest
 
-import dayu.host.pending_turn_store as pending_turn_store_module
-import dayu.host.prepared_turn as prepared_turn_module
-from dayu.contracts.agent_execution import AgentCreateArgs, ExecutionDocPermissions, ExecutionPermissions, ExecutionWebPermissions
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext
-from dayu.contracts.model_config import OpenAICompatibleRunnerParams
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot
-from dayu.host.host_store import HostStore
-from dayu.host.lease import LeaseExpiredError
-from dayu.host.conversation_store import ConversationTranscript
-from dayu.host.pending_turn_store import (
+import alpha.host.pending_turn_store as pending_turn_store_module
+import alpha.host.prepared_turn as prepared_turn_module
+from alpha.contracts.agent_execution import AgentCreateArgs, ExecutionDocPermissions, ExecutionPermissions, ExecutionWebPermissions
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext
+from alpha.contracts.model_config import OpenAICompatibleRunnerParams
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot
+from alpha.host.host_store import HostStore
+from alpha.host.lease import LeaseExpiredError
+from alpha.host.conversation_store import ConversationTranscript
+from alpha.host.pending_turn_store import (
     InMemoryPendingConversationTurnStore,
     PendingConversationTurnState,
     PendingTurnResumeConflictError,
     SQLitePendingConversationTurnStore,
 )
-from dayu.host.prepared_turn import (
+from alpha.host.prepared_turn import (
     PreparedAgentTurnSnapshot,
     PreparedConversationSessionSnapshot,
     deserialize_prepared_agent_turn_snapshot,
     serialize_prepared_agent_turn_snapshot,
 )
-from dayu.host.protocols import PendingConversationTurnStoreProtocol
-from dayu.host.run_registry import SQLiteRunRegistry
-from dayu.execution.options import ConversationMemorySettings
+from alpha.host.protocols import PendingConversationTurnStoreProtocol
+from alpha.host.run_registry import SQLiteRunRegistry
+from alpha.execution.options import ConversationMemorySettings
 
 
 def _install_strict_monotonic_now_utc(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -68,7 +68,7 @@ def _install_strict_monotonic_now_utc(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_sqlite_pending_turn_store_upsert_and_resume_updates_source_run_id(tmp_path: Path) -> None:
     """相同 session/scene/user_text 恢复时应复用记录并把 source_run_id 指向新 run。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
 
@@ -103,7 +103,7 @@ def test_sqlite_pending_turn_store_upsert_and_resume_updates_source_run_id(tmp_p
 def test_sqlite_pending_turn_store_rejects_non_object_prepared_snapshot(tmp_path: Path) -> None:
     """prepared turn 快照必须是 JSON object。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
 
@@ -308,7 +308,7 @@ def test_prepared_turn_helper_functions_cover_private_parsers(tmp_path: Path) ->
 def test_sqlite_pending_turn_store_rejects_different_user_text_for_same_active_slot(tmp_path: Path) -> None:
     """同一 session/scene 存在活跃 pending turn 时不允许覆盖为不同 user_text。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     store.upsert_pending_turn(
@@ -335,7 +335,7 @@ def test_sqlite_pending_turn_store_rejects_different_user_text_for_same_active_s
 def test_sqlite_pending_turn_store_concurrent_upsert_is_atomic(tmp_path: Path) -> None:
     """同一 session/scene 并发 upsert 时应原子收敛到单条记录。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
 
@@ -394,7 +394,7 @@ def test_sqlite_pending_turn_store_update_path_parses_full_row_only_after_commit
 ) -> None:
     """同槽位更新时不应在锁内整行反序列化 pending turn。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     large_snapshot = '{"conversation_session": {"transcript": [' + ','.join('"x"' for _ in range(2000)) + ']}}'
@@ -442,7 +442,7 @@ def test_sqlite_pending_turn_store_update_path_parses_full_row_only_after_commit
 def test_sqlite_pending_turn_store_lists_resumable_pending_turns(tmp_path: Path) -> None:
     """列举 pending turn 时应支持按 scene 和交付状态过滤。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     first = store.upsert_pending_turn(
@@ -473,7 +473,7 @@ def test_sqlite_pending_turn_store_lists_resumable_pending_turns(tmp_path: Path)
 def test_pending_turn_schema_includes_resume_source_and_source_run_index(tmp_path: Path) -> None:
     """pending turn schema 应持久化恢复尝试状态与 source_run 索引。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     conn = host_store.get_connection()
 
@@ -499,7 +499,7 @@ def test_pending_turn_schema_includes_resume_source_and_source_run_index(tmp_pat
 def test_sqlite_pending_turn_store_records_resume_attempts_and_failure_message(tmp_path: Path) -> None:
     """pending turn 仓储应持久化恢复次数与最近失败原因。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -529,7 +529,7 @@ def test_sqlite_pending_turn_store_records_resume_attempts_and_failure_message(t
 def test_sqlite_pending_turn_store_record_resume_attempt_respects_atomic_max_attempts(tmp_path: Path) -> None:
     """恢复尝试自增应由仓储原子守住最大次数。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -576,7 +576,7 @@ def test_sqlite_pending_turn_store_record_resume_attempt_respects_atomic_max_att
 def test_sqlite_pending_turn_store_exhausted_attempt_deletes_record(tmp_path: Path) -> None:
     """达上限时应原子删除记录并 raise ValueError。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -622,7 +622,7 @@ def test_inmemory_pending_turn_store_exhausted_attempt_deletes_record() -> None:
 def test_sqlite_pending_turn_store_rejects_concurrent_resume_acquire(tmp_path: Path) -> None:
     """并发 acquire 必须只有一方拿到 RESUMING，另一方抛 PendingTurnResumeConflictError。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -693,7 +693,7 @@ def test_inmemory_pending_turn_store_rejects_duplicate_resume_acquire() -> None:
 def test_sqlite_pending_turn_store_release_resume_lease_restores_state(tmp_path: Path) -> None:
     """release_resume_lease 把 RESUMING 原子回退到 pre_resume_state。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -726,7 +726,7 @@ def test_sqlite_pending_turn_store_release_resume_lease_restores_state(tmp_path:
 def test_sqlite_pending_turn_store_record_resume_failure_releases_lease(tmp_path: Path) -> None:
     """record_resume_failure 在 RESUMING 态应同时写错误消息并回退 state。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -783,7 +783,7 @@ def test_inmemory_pending_turn_store_release_resume_lease_restores_state() -> No
 def test_pending_turn_store_implements_runtime_protocol(tmp_path: Path) -> None:
     """SQLite pending turn store 应满足 runtime protocol。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
 
@@ -794,11 +794,11 @@ def test_pending_turn_store_implements_runtime_protocol(tmp_path: Path) -> None:
 def test_run_registry_implements_runtime_protocol(tmp_path: Path) -> None:
     """SQLite run registry 应满足 runtime protocol。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     registry = SQLiteRunRegistry(host_store)
 
-    from dayu.host.protocols import RunRegistryProtocol
+    from alpha.host.protocols import RunRegistryProtocol
 
     assert isinstance(registry, RunRegistryProtocol)
 
@@ -903,7 +903,7 @@ def test_sqlite_release_resume_lease_warns_on_missing_pre_resume_state(
 ) -> None:
     """SQLite 版 cleanup_stale_resuming 在 pre_resume_state 为 NULL 时应告警并降级回退。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
 
@@ -945,7 +945,7 @@ def test_sqlite_record_resume_failure_warns_on_missing_pre_resume_state(
 ) -> None:
     """SQLite 版 record_resume_failure 在 pre_resume_state 为 NULL 时应告警并降级回退。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
 
@@ -1033,7 +1033,7 @@ def test_inmemory_lease_mismatch_release_raises_lease_expired() -> None:
 def test_sqlite_lease_mismatch_release_raises_lease_expired(tmp_path: Path) -> None:
     """SQLite 实现：A → cleanup → B → A 迟到写入路径全部 LeaseExpiredError。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -1087,7 +1087,7 @@ def test_sqlite_lease_mismatch_release_raises_lease_expired(tmp_path: Path) -> N
 def test_sqlite_lease_threading_double_connection(tmp_path: Path) -> None:
     """跨线程双连接：A acquire → cleanup（另一线程）→ A 迟到 rebind 必抛 LeaseExpiredError。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -1201,7 +1201,7 @@ def test_sqlite_cleanup_stale_resuming_skips_when_updated_at_advanced(
 
     _install_strict_monotonic_now_utc(monkeypatch)
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(
@@ -1295,7 +1295,7 @@ def test_inmemory_writes_after_cleanup_before_reacquire_raise_lease_expired() ->
 def test_sqlite_writes_after_cleanup_before_reacquire_raise_lease_expired(tmp_path: Path) -> None:
     """SQLite：同结构防御：cleanup 后、B 未 acquire 时旧 holder 三类写入全 LeaseExpired。"""
 
-    host_store = HostStore(tmp_path / ".host" / "dayu_host.db")
+    host_store = HostStore(tmp_path / ".host" / "alpha_host.db")
     host_store.initialize_schema()
     store = SQLitePendingConversationTurnStore(host_store)
     created = store.upsert_pending_turn(

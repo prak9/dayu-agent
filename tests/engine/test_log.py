@@ -12,8 +12,8 @@ import logging
 
 import pytest
 
-import dayu.log as dayu_log_module
-from dayu.log import Log, LogLevel
+import alpha.log as alpha_log_module
+from alpha.log import Log, LogLevel
 
 
 class TestLogLevelSetting:
@@ -140,12 +140,12 @@ class TestLogOutput:
             logger.setLevel(logging.DEBUG)
             logger.propagate = False
             logger.addHandler(
-                dayu_log_module._build_stream_handler(
+                alpha_log_module._build_stream_handler(
                     stream=stdout_buffer,
-                    max_level=dayu_log_module._STDOUT_MAX_LEVEL,
+                    max_level=alpha_log_module._STDOUT_MAX_LEVEL,
                 )
             )
-            logger.addHandler(dayu_log_module._build_stream_handler(stream=stderr_buffer, min_level=logging.ERROR))
+            logger.addHandler(alpha_log_module._build_stream_handler(stream=stderr_buffer, min_level=logging.ERROR))
 
             logger.info("Info to stdout")
             logger.warning("Warn to stdout")

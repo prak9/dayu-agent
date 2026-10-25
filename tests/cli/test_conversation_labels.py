@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from dayu.cli.conversation_labels import (
+from alpha.cli.conversation_labels import (
     CLI_CONVERSATION_SOURCE,
     FileConversationLabelRegistry,
     generate_cli_conversation_session_id,
     validate_conversation_label,
 )
-from dayu.cli.conversation_label_locks import ConversationLabelLease
-from dayu.workspace_paths import build_cli_conversation_label_record_path
+from alpha.cli.conversation_label_locks import ConversationLabelLease
+from alpha.workspace_paths import build_cli_conversation_label_record_path
 
 pytestmark = pytest.mark.unit
 

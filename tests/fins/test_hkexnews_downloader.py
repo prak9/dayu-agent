@@ -1,4 +1,4 @@
-"""``dayu/fins/downloaders/hkexnews_downloader.py`` 单元测试。
+"""``alpha/fins/downloaders/hkexnews_downloader.py`` 单元测试。
 
 覆盖披露易 stock list 解析、title search 参数、语言策略、多代码匹配、
 季度空结果、Q2/Q4 独立识别与 PDF 校验。所有测试都通过 ``httpx.MockTransport`` 注入 fixture，
@@ -15,14 +15,14 @@ from urllib.parse import parse_qs
 import httpx
 import pytest
 
-from dayu.fins.downloaders.hkexnews_downloader import (
+from alpha.fins.downloaders.hkexnews_downloader import (
     HKEXNEWS_ACTIVE_STOCK_ZH_URL,
     HKEXNEWS_BASE_URL,
     HKEXNEWS_INACTIVE_STOCK_ZH_URL,
     HKEXNEWS_TITLE_SEARCH_URL,
     HkexnewsDiscoveryClient,
 )
-from dayu.fins.pipelines.cn_download_models import (
+from alpha.fins.pipelines.cn_download_models import (
     CnCompanyProfile,
     CnFiscalPeriod,
     CnReportCandidate,

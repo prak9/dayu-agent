@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-import dayu.host.concurrency as concurrency_module
-from dayu.contracts.cancellation import CancelledError, CancellationToken
-from dayu.host.concurrency import SQLiteConcurrencyGovernor
-from dayu.host.host_store import HostStore
+import alpha.host.concurrency as concurrency_module
+from alpha.contracts.cancellation import CancelledError, CancellationToken
+from alpha.host.concurrency import SQLiteConcurrencyGovernor
+from alpha.host.host_store import HostStore
 
 
 @pytest.fixture()
@@ -106,7 +106,7 @@ class TestAcquireBlocking:
 
             raise RuntimeError("stop loop")
 
-        monkeypatch.setattr("dayu.host.concurrency.time.sleep", _raise_after_first_sleep)
+        monkeypatch.setattr("alpha.host.concurrency.time.sleep", _raise_after_first_sleep)
 
         with pytest.raises(RuntimeError, match="stop loop"):
             governor.acquire("sec_download")

@@ -1,13 +1,13 @@
-"""``dayu-cli init`` workspace 临界区互斥测试。
+"""``alpha init`` workspace 临界区互斥测试。
 
 本模块覆盖 PR-5 (#108) 引入的 workspace advisory lock：
 ``_copy_config + _copy_assets + apply_all_workspace_migrations`` 整段必须由
-``StateDirSingleInstanceLock`` 独占持有，以避免双 ``dayu-cli init`` 进程在同一
+``StateDirSingleInstanceLock`` 独占持有，以避免双 ``alpha init`` 进程在同一
 workspace 上并发改动 SQLite 与 ``run.json`` 时互相踩踏。
 
 测试不真正起子进程：直接复用 ``StateDirSingleInstanceLock`` 的真实文件锁
 （POSIX ``fcntl.flock`` / Windows ``msvcrt.locking``）模拟"另一进程已经持锁"，
-然后调用 ``dayu.cli.commands.init`` 入口，断言：
+然后调用 ``alpha.cli.commands.init`` 入口，断言：
 
 1. 检测到锁竞争时返回非 0 退出码；
 2. 不会进入 ``_copy_config`` / ``apply_all_workspace_migrations`` 临界区；
@@ -22,8 +22,8 @@ from typing import Any
 
 import pytest
 
-from dayu.cli.commands import init as init_module
-from dayu.state_dir_lock import StateDirSingleInstanceLock
+from alpha.cli.commands import init as init_module
+from alpha.state_dir_lock import StateDirSingleInstanceLock
 
 
 @pytest.fixture()
@@ -42,16 +42,16 @@ def _build_args(workspace_root: Path) -> Namespace:
         workspace_root: 工作区根目录。
 
     Returns:
-        Namespace：模拟 ``dayu-cli init -d <workspace>`` 的解析结果。
+        Namespace：模拟 ``alpha init -d <workspace>`` 的解析结果。
     """
 
-    return Namespace(base=str(workspace_root), overwrite=False, reset=False)
+    return Namespace(codex=False, base=str(workspace_root), overwrite=False, reset=False)
 
 
 def _build_reset_args(workspace_root: Path) -> Namespace:
-    """构造 ``dayu-cli init --reset`` 的 Namespace。"""
+    """构造 ``alpha init --reset`` 的 Namespace。"""
 
-    return Namespace(base=str(workspace_root), overwrite=False, reset=True)
+    return Namespace(codex=False, base=str(workspace_root), overwrite=False, reset=True)
 
 
 @pytest.mark.unit
@@ -87,8 +87,8 @@ def test_init_aborts_when_workspace_lock_already_held(
 
     assert exit_code == 1
     captured = capsys.readouterr()
-    assert "dayu workspace init" in captured.out
-    assert "另一个 dayu-cli init" in captured.out
+    assert "alpha workspace init" in captured.out
+    assert "另一个 alpha init" in captured.out
 
 
 @pytest.mark.unit
@@ -153,7 +153,7 @@ def test_init_reset_does_not_run_when_lock_already_held(
 ) -> None:
     """锁竞争失败时 ``--reset`` 删除目标的动作必须 **不** 被执行。
 
-    ``--reset`` 删除的 ``.dayu/`` / ``config/`` / ``assets/`` 与临界区操作
+    ``--reset`` 删除的 ``.alpha/`` / ``config/`` / ``assets/`` 与临界区操作
     的是同一批 workspace 产物。如果 reset 在锁外发生，另一进程仍会在
     "我们删 → 我们复制" 的中间窗口冲进来踩踏，因此 reset 必须落在锁内。
     """
@@ -194,7 +194,7 @@ def test_init_reset_does_not_run_when_lock_already_held(
     assert (workspace_root / "config" / "marker.txt").read_text(encoding="utf-8") == "alive"
     assert (workspace_root / "assets" / "marker.txt").read_text(encoding="utf-8") == "alive"
     captured = capsys.readouterr()
-    assert "另一个 dayu-cli init" in captured.out
+    assert "另一个 alpha init" in captured.out
 
 
 @pytest.mark.unit

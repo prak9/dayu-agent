@@ -12,23 +12,23 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from dayu.fins.domain.document_models import FileObjectMeta, FilingCreateRequest, SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.downloaders.sec_downloader import DownloaderEvent, RemoteFileDescriptor
-from dayu.fins.pipelines.download_events import DownloadEventType
-from dayu.fins.pipelines import sec_pipeline
-from dayu.fins.pipelines import sec_6k_rules as _sec_6k_rules
-from dayu.fins.pipelines import sec_download_diagnostics as _sec_download_diagnostics
-from dayu.fins.pipelines import sec_download_event_mapping as _sec_download_event_mapping
-from dayu.fins.pipelines import sec_download_state as _sec_download_state
-from dayu.fins.pipelines import sec_filing_collection as _sec_filing_collection
-from dayu.fins.pipelines import sec_fiscal_fields as _sec_fiscal_fields
-from dayu.fins.pipelines import sec_form_utils as _sec_form_utils
-from dayu.fins.pipelines import sec_sc13_filtering as _sec_sc13_filtering
-from dayu.fins.pipelines import sec_upload_workflow as _sec_upload_workflow
-from dayu.fins.pipelines import processed_snapshot_helpers as _processed_snapshot_helpers
-from dayu.fins.pipelines.sec_pipeline import SecPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.domain.document_models import FileObjectMeta, FilingCreateRequest, SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.downloaders.sec_downloader import DownloaderEvent, RemoteFileDescriptor
+from alpha.fins.pipelines.download_events import DownloadEventType
+from alpha.fins.pipelines import sec_pipeline
+from alpha.fins.pipelines import sec_6k_rules as _sec_6k_rules
+from alpha.fins.pipelines import sec_download_diagnostics as _sec_download_diagnostics
+from alpha.fins.pipelines import sec_download_event_mapping as _sec_download_event_mapping
+from alpha.fins.pipelines import sec_download_state as _sec_download_state
+from alpha.fins.pipelines import sec_filing_collection as _sec_filing_collection
+from alpha.fins.pipelines import sec_fiscal_fields as _sec_fiscal_fields
+from alpha.fins.pipelines import sec_form_utils as _sec_form_utils
+from alpha.fins.pipelines import sec_sc13_filtering as _sec_sc13_filtering
+from alpha.fins.pipelines import sec_upload_workflow as _sec_upload_workflow
+from alpha.fins.pipelines import processed_snapshot_helpers as _processed_snapshot_helpers
+from alpha.fins.pipelines.sec_pipeline import SecPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
 from tests.fins.storage_testkit import build_fs_storage_test_context, build_storage_core
 
 
@@ -1993,7 +1993,7 @@ def test_filter_sc13_by_direction_keeps_only_subject_ticker(tmp_path: Path) -> N
             filer_key="001-1",
         ),
     ]
-    from dayu.fins.pipelines.sec_sc13_filtering import (
+    from alpha.fins.pipelines.sec_sc13_filtering import (
         SecSc13WorkflowHost as _SecSc13WorkflowHost,
         filter_sc13_by_direction as _filter_sc13_by_direction_impl,
     )

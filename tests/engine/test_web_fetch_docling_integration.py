@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.engine.tools.web_fetch_orchestrator import _docling_convert_to_markdown
+from alpha.engine.tools.web_fetch_orchestrator import _docling_convert_to_markdown
 
 pytestmark = pytest.mark.integration
 
@@ -28,7 +28,7 @@ def _fixture_pdf_path() -> Path:
         Path(__file__).resolve().parents[1]
         / "fixtures"
         / "docling"
-        / "dayu_docling_integration_fixture.pdf"
+        / "alpha_docling_integration_fixture.pdf"
     )
     if not fixture_path.exists():
         raise FileNotFoundError(f"Docling PDF fixture 不存在: {fixture_path}")

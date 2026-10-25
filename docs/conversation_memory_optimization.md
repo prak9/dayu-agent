@@ -1,6 +1,6 @@
 ## 背景
 
-`dayu/host/conversation_memory.py` 的多轮记忆 baseline 已跑通，跨模型档位对齐完成（1M 档 13 个模型、256K 档 3 个模型）。静态分析暴露 4 个结构性问题，本 issue 一次性按全新 schema 重构，**硬切换、不留兼容**。范围限定 `conversation.enabled = true` 的 scene（`interactive / wechat / prompt_mt`）。
+`alpha/host/conversation_memory.py` 的多轮记忆 baseline 已跑通，跨模型档位对齐完成（1M 档 13 个模型、256K 档 3 个模型）。静态分析暴露 4 个结构性问题，本 issue 一次性按全新 schema 重构，**硬切换、不留兼容**。范围限定 `conversation.enabled = true` 的 scene（`interactive / wechat / prompt_mt`）。
 
 ## 已识别的结构性问题
 
@@ -46,7 +46,7 @@
 
 ### `pinned_state` 是什么 + 怎么产生
 
-**结构定义**（`dayu/host/conversation_store.py:229-237`），4 字段：
+**结构定义**（`alpha/host/conversation_store.py:229-237`），4 字段：
 
 | 字段 | 类型 | 财报场景含义 | 例子 |
 |---|---|---|---|
@@ -165,10 +165,10 @@
 
 **两个迁移点**：
 
-1. **`dayu/config/llm_models.json`**：删除全部 19 处 `runtime_hints.conversation_memory` 块（不再需要，default 接管）
-2. **`dayu/cli/commands/init.py`**：删除 `_build_conversation_memory_overrides`（行 78-103）整个函数，及其在 `init.py:1056 / 1187` 两处调用。`dayu-cli init` 添加 ollama / OpenAI 兼容模型时不再写入 `conversation_memory` 覆盖到 `workspace/config/llm_models.json`，按 default 走
+1. **`alpha/config/llm_models.json`**：删除全部 19 处 `runtime_hints.conversation_memory` 块（不再需要，default 接管）
+2. **`alpha/cli/commands/init.py`**：删除 `_build_conversation_memory_overrides`（行 78-103）整个函数，及其在 `init.py:1056 / 1187` 两处调用。`alpha init` 添加 ollama / OpenAI 兼容模型时不再写入 `conversation_memory` 覆盖到 `workspace/config/llm_models.json`，按 default 走
 
-`workspace/config/llm_models.json` 用户已生成的旧 entry **不需要迁移**：按项目硬约束"全新 schema 起库处理"，旧 workspace 由 `workspace_migrations` 在 `dayu-cli init` 流程处理；本次只保证新 init 不再写覆盖、官方 default 干净。
+`workspace/config/llm_models.json` 用户已生成的旧 entry **不需要迁移**：按项目硬约束"全新 schema 起库处理"，旧 workspace 由 `workspace_migrations` 在 `alpha init` 流程处理；本次只保证新 init 不再写覆盖、官方 default 干净。
 
 ### 移除字段（硬切换）
 
@@ -225,7 +225,7 @@ for episode in reversed(transcript.episodes):
 
 - **1M 档 cap 设到 60000**：基于"memory 克制"信条的工程判断；现有 1M 档用户若依赖更大 working 池追问，可小步上调；项目信条明确"长上下文留给财报材料"，方向一致。
 - **不再等生产数据**：参数化配置可调，先落地机制；后续按生产观察小步调参。
-- **schema 硬切换**：按项目硬约束"全新 schema 起库处理"，旧库迁移作为 `workspace_migrations` 插件进入 `dayu-cli init` 流程。
+- **schema 硬切换**：按项目硬约束"全新 schema 起库处理"，旧库迁移作为 `workspace_migrations` 插件进入 `alpha init` 流程。
 
 ---
 

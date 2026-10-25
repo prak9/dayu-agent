@@ -9,16 +9,16 @@ from typing import Any, Callable, Coroutine, cast
 
 import pytest
 
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.contracts.reply_outbox import ReplyOutboxState
-from dayu.host.host import Host
-from dayu.host.host_execution import HostExecutorProtocol
-from dayu.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
-from dayu.services.contracts import ReplyDeliverySubmitRequest, ReplyDeliveryView
-from dayu.services.reply_delivery_service import ReplyDeliveryService
-from dayu.web.routes.chat import _consume_stream
-from dayu.web.routes.reply_outbox import (
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.contracts.reply_outbox import ReplyOutboxState
+from alpha.host.host import Host
+from alpha.host.host_execution import HostExecutorProtocol
+from alpha.host.protocols import RunRegistryProtocol, SessionRegistryProtocol
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.services.contracts import ReplyDeliverySubmitRequest, ReplyDeliveryView
+from alpha.services.reply_delivery_service import ReplyDeliveryService
+from alpha.web.routes.chat import _consume_stream
+from alpha.web.routes.reply_outbox import (
     _build_reply_delivery_payload,
     _parse_reply_delivery_state,
     create_reply_outbox_router,
@@ -267,7 +267,7 @@ def test_chat_stream_consumer_logs_delivery_key_conflict_without_breaking_existi
         )
 
     errors: list[str] = []
-    from dayu.log import Log as _Log
+    from alpha.log import Log as _Log
 
     monkeypatch.setattr(
         _Log,
@@ -312,7 +312,7 @@ def test_chat_stream_consumer_warns_when_reply_ready_but_run_id_missing(
         )
 
     warnings: list[str] = []
-    from dayu.log import Log as _Log
+    from alpha.log import Log as _Log
 
     monkeypatch.setattr(_Log, "warning", lambda message, *, module=None: warnings.append(str(message)))
 

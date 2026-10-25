@@ -7,8 +7,8 @@ from typing import Optional
 
 import pytest
 
-from dayu.fins.processors.eight_k_processor import EightKFormProcessor
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors.eight_k_processor import EightKFormProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 class _FakeSection:
@@ -158,7 +158,7 @@ def test_eight_k_processor_handles_empty_items(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -210,7 +210,7 @@ def test_eight_k_processor_deduplicates_items(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -261,7 +261,7 @@ def test_eight_k_processor_without_signature_marker(
         "This is the end of the document without any signature line."
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -314,7 +314,7 @@ def test_eight_k_processor_signature_truncation(
         "More exhibit content that should not be part of any item."
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -420,7 +420,7 @@ def test_eight_k_processor_case_insensitive_item_matching(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 

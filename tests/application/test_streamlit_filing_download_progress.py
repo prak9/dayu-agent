@@ -6,7 +6,7 @@ from queue import Queue
 
 import pytest
 
-from dayu.contracts.fins import (
+from alpha.contracts.fins import (
     DownloadFilingResultItem,
     DownloadFilingResultStatus,
     DownloadProgressPayload,
@@ -16,8 +16,8 @@ from dayu.contracts.fins import (
     FinsEventType,
     FinsProgressEventName,
 )
-from dayu.services.contracts import FinsSubmission
-from dayu.web.streamlit.pages.filing.download_progress import (
+from alpha.services.contracts import FinsSubmission
+from alpha.web.streamlit.pages.filing.download_progress import (
     DownloadQueueEvent,
     DownloadStatus,
     DownloadTaskState,
@@ -452,7 +452,7 @@ def test_run_download_stream_worker_error_sends_error_event() -> None:
 @pytest.mark.unit
 def test_run_download_stream_worker_sync_result() -> None:
     """同步结果（非 AsyncIterator）应直接写入 result 事件。"""
-    from dayu.contracts.fins import (
+    from alpha.contracts.fins import (
         DownloadResultData,
         FinsCommandName,
         FinsResult,
@@ -488,7 +488,7 @@ def test_run_download_stream_worker_sync_result() -> None:
 @pytest.mark.asyncio
 async def test_consume_stream_events_forward_progress() -> None:
     """消费流时应将 PROGRESS 事件转发为 DownloadQueueEvent。"""
-    from dayu.web.streamlit.pages.filing.download_progress import (
+    from alpha.web.streamlit.pages.filing.download_progress import (
         consume_download_stream_events_to_queue,
     )
 
@@ -539,7 +539,7 @@ async def test_consume_stream_events_forward_progress() -> None:
 @pytest.mark.asyncio
 async def test_consume_stream_skips_non_fins_event() -> None:
     """消费流时非 FinsEvent 对象应被跳过。"""
-    from dayu.web.streamlit.pages.filing.download_progress import (
+    from alpha.web.streamlit.pages.filing.download_progress import (
         consume_download_stream_events_to_queue,
     )
 

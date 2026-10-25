@@ -17,7 +17,7 @@ from typing import Any
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedModelSpec,
     AgentCreateArgs,
@@ -28,14 +28,14 @@ from dayu.contracts.agent_execution import (
     ReplayHandle,
     ScenePreparationSpec,
 )
-from dayu.contracts.agent_types import AgentMessage
-from dayu.engine.events import EventType, StreamEvent
-from dayu.execution.options import ExecutionOptions
-from dayu.host.executor import DefaultHostExecutor
-from dayu.host.host_execution import HostedRunContext
-from dayu.host.host_store import HostStore
-from dayu.host.run_registry import SQLiteRunRegistry
-from dayu.host.scene_preparer import PreparedAgentExecution
+from alpha.contracts.agent_types import AgentMessage
+from alpha.engine.events import EventType, StreamEvent
+from alpha.execution.options import ExecutionOptions
+from alpha.host.executor import DefaultHostExecutor
+from alpha.host.host_execution import HostedRunContext
+from alpha.host.host_store import HostStore
+from alpha.host.run_registry import SQLiteRunRegistry
+from alpha.host.scene_preparer import PreparedAgentExecution
 
 
 def _minimal_accepted_execution_spec() -> AcceptedExecutionSpec:
@@ -129,7 +129,7 @@ def _make_executor(monkeypatch: pytest.MonkeyPatch, agent: _FakeAgent) -> Defaul
         run_registry=StubRunRegistry(),
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: agent)
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: agent)
     return executor
 
 
@@ -295,7 +295,7 @@ def test_replay_agent_and_wait_drives_full_run_lifecycle_on_real_registry(
         run_registry=run_registry,
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", lambda **_: agent)
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", lambda **_: agent)
 
     initial = _build_contract(user_message="问题1")
     _, handle = asyncio.run(executor.run_agent_and_wait_replayable(initial))
@@ -343,7 +343,7 @@ def test_replay_agent_and_wait_rebuilds_async_agent_with_new_token(
         run_registry=StubRunRegistry(),
         scene_preparation=_StubScenePreparation(),  # type: ignore[arg-type]
     )
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", _record_build)
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", _record_build)
 
     initial = _build_contract(user_message="问题1")
     _, handle = asyncio.run(executor.run_agent_and_wait_replayable(initial))
@@ -375,8 +375,8 @@ def test_replay_agent_and_wait_publishes_cancelled_event_when_runner_raises(
     会丢失终态事件，与 run_registry 出现状态漂移。
     """
 
-    from dayu.contracts.cancellation import CancelledError as DayuCancelledError
-    from dayu.contracts.events import AppEvent, AppEventType
+    from alpha.contracts.cancellation import CancelledError as AlphaCancelledError
+    from alpha.contracts.events import AppEvent, AppEventType
     from tests.application.conftest import StubRunRegistry
 
     class _RecordingEventBus:
@@ -401,7 +401,7 @@ def test_replay_agent_and_wait_publishes_cancelled_event_when_runner_raises(
             del messages, session_id, run_id, stream, disable_tools
             if False:  # 让函数保持 async generator 形态。
                 yield None
-            raise DayuCancelledError("runner 中途取消")
+            raise AlphaCancelledError("runner 中途取消")
 
     builds = [initial_agent, _RaiseCancelledAgent()]
     cursor: list[int] = []
@@ -411,7 +411,7 @@ def test_replay_agent_and_wait_publishes_cancelled_event_when_runner_raises(
         cursor.append(idx)
         return builds[idx]
 
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", _record_build)
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", _record_build)
 
     bus = _RecordingEventBus()
     executor = DefaultHostExecutor(
@@ -424,7 +424,7 @@ def test_replay_agent_and_wait_publishes_cancelled_event_when_runner_raises(
     _, handle = asyncio.run(executor.run_agent_and_wait_replayable(initial))
 
     replay_contract = _build_contract(user_message="再来", replay_from=handle)
-    with pytest.raises(DayuCancelledError):
+    with pytest.raises(AlphaCancelledError):
         asyncio.run(executor.replay_agent_and_wait(handle, replay_contract))
 
     cancelled = [e for _, e in bus.events if e.type == AppEventType.CANCELLED]
@@ -441,7 +441,7 @@ def test_replay_agent_and_wait_converts_cancellation_origin_exception(
     CancelledError，而是与 CANCELLED AppEvent 矛盾的业务异常。
     """
 
-    from dayu.contracts.cancellation import CancelledError as DayuCancelledError
+    from alpha.contracts.cancellation import CancelledError as AlphaCancelledError
     from tests.application.conftest import StubRunRegistry
 
     initial_agent = _FakeAgent(final_text="第一次")
@@ -472,7 +472,7 @@ def test_replay_agent_and_wait_converts_cancellation_origin_exception(
         cursor.append(idx)
         return builds[idx]
 
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", _record_build)
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", _record_build)
 
     executor = DefaultHostExecutor(
         run_registry=registry,
@@ -483,7 +483,7 @@ def test_replay_agent_and_wait_converts_cancellation_origin_exception(
     _, handle = asyncio.run(executor.run_agent_and_wait_replayable(initial))
 
     replay_contract = _build_contract(user_message="再来", replay_from=handle)
-    with pytest.raises(DayuCancelledError):
+    with pytest.raises(AlphaCancelledError):
         asyncio.run(executor.replay_agent_and_wait(handle, replay_contract))
 
 
@@ -497,7 +497,7 @@ def test_replay_agent_and_wait_raises_cancelled_when_cancel_requested_mid_stream
     成功结果继续处理脏数据，掩盖取消语义。
     """
 
-    from dayu.contracts.cancellation import CancelledError as DayuCancelledError
+    from alpha.contracts.cancellation import CancelledError as AlphaCancelledError
     from tests.application.conftest import StubRunRegistry
 
     initial_agent = _FakeAgent(final_text="第一次")
@@ -540,11 +540,11 @@ def test_replay_agent_and_wait_raises_cancelled_when_cancel_requested_mid_stream
         build_calls.append(idx)
         return builds[idx]
 
-    monkeypatch.setattr("dayu.host.executor.build_async_agent", _record_build)
+    monkeypatch.setattr("alpha.host.executor.build_async_agent", _record_build)
 
     initial = _build_contract(user_message="问题1")
     _, handle = asyncio.run(executor.run_agent_and_wait_replayable(initial))
 
     replay_contract = _build_contract(user_message="再来", replay_from=handle)
-    with pytest.raises(DayuCancelledError):
+    with pytest.raises(AlphaCancelledError):
         asyncio.run(executor.replay_agent_and_wait(handle, replay_contract))

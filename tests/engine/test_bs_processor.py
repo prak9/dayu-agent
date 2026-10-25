@@ -7,10 +7,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.fins.storage.local_file_source import LocalFileSource
-from dayu.engine.processors import bs_processor
-from dayu.engine.processors.bs_processor import BSProcessor
-from dayu.engine.processors.base import SearchHit
+from alpha.fins.storage.local_file_source import LocalFileSource
+from alpha.engine.processors import bs_processor
+from alpha.engine.processors.bs_processor import BSProcessor
+from alpha.engine.processors.base import SearchHit
 
 
 SYNTHETIC_HTML = """

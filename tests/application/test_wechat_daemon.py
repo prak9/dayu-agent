@@ -15,24 +15,24 @@ from typing import AsyncIterator, Iterator, Mapping
 
 import pytest
 
-import dayu.state_dir_lock as state_dir_lock_module
-import dayu.wechat.daemon as wechat_daemon_module
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext
-from dayu.contracts.reply_outbox import ReplyOutboxState
-from dayu.host.host import Host
-from dayu.host.protocols import ConversationSessionTurnExcerpt
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
-from dayu.state_dir_lock import StateDirSingleInstanceLock
-from dayu.services.reply_delivery_service import ReplyDeliveryService
-from dayu.services.contracts import (
+import alpha.state_dir_lock as state_dir_lock_module
+import alpha.wechat.daemon as wechat_daemon_module
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext
+from alpha.contracts.reply_outbox import ReplyOutboxState
+from alpha.host.host import Host
+from alpha.host.protocols import ConversationSessionTurnExcerpt
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.state_dir_lock import StateDirSingleInstanceLock
+from alpha.services.reply_delivery_service import ReplyDeliveryService
+from alpha.services.contracts import (
     ChatPendingTurnView,
     ChatResumeRequest,
     ChatTurnRequest,
     ChatTurnSubmission,
     ReplyDeliverySubmitRequest,
 )
-from dayu.wechat.daemon import (
+from alpha.wechat.daemon import (
     _AsyncWeChatStateStoreAdapter,
     _build_wechat_delivery_context,
     _extract_message_text,
@@ -47,8 +47,8 @@ from dayu.wechat.daemon import (
     WeChatReply,
     WeChatReplyBuilder,
 )
-from dayu.wechat.ilink_client import IlinkApiError, QRCodeLoginStatus, QRCodeLoginTicket
-from dayu.wechat.state_store import (
+from alpha.wechat.ilink_client import IlinkApiError, QRCodeLoginStatus, QRCodeLoginTicket
+from alpha.wechat.state_store import (
     build_wechat_runtime_identity,
     FileWeChatStateStore,
     WeChatDaemonState,
@@ -703,7 +703,7 @@ def test_extract_message_text_skips_non_numeric_item_type() -> None:
 
 @pytest.mark.unit
 def test_process_once_reuses_same_session_for_same_user(tmp_path: Path) -> None:
-    """验证同一微信用户会复用同一 Dayu session。"""
+    """验证同一微信用户会复用同一 Alpha session。"""
 
     store = FileWeChatStateStore(tmp_path / ".wechat")
     store.save(WeChatDaemonState(bot_token="token-1", base_url="https://ilink.example"))
@@ -844,7 +844,7 @@ def test_process_once_logs_received_and_sent_messages(tmp_path: Path, monkeypatc
     logged: list[str] = []
     session_id = build_wechat_session_id("user@im.wechat")
 
-    monkeypatch.setattr("dayu.wechat.daemon.Log.info", lambda message, *, module="APP": logged.append(f"{module}:{message}"))
+    monkeypatch.setattr("alpha.wechat.daemon.Log.info", lambda message, *, module="APP": logged.append(f"{module}:{message}"))
 
     asyncio.run(daemon.process_once())
 
@@ -881,7 +881,7 @@ def test_load_existing_authenticated_state_raises_without_token(tmp_path: Path) 
     client = _FakeIlinkClient()
     daemon = _build_daemon(chat_service=service, state_store=store, client=client)
 
-    with pytest.raises(RuntimeError, match="python -m dayu.wechat login"):
+    with pytest.raises(RuntimeError, match="python -m alpha.wechat login"):
         asyncio.run(daemon.load_existing_authenticated_state())
 
 
@@ -921,7 +921,7 @@ def test_run_forever_logs_when_entering_wait_loop(tmp_path: Path, monkeypatch: p
         raise asyncio.CancelledError()
 
     monkeypatch.setattr(daemon, "process_once", _stop_immediately)
-    monkeypatch.setattr("dayu.wechat.daemon.Log.info", lambda message, *, module="APP": logged.append(f"{module}:{message}"))
+    monkeypatch.setattr("alpha.wechat.daemon.Log.info", lambda message, *, module="APP": logged.append(f"{module}:{message}"))
 
     with pytest.raises(asyncio.CancelledError):
         asyncio.run(daemon.run_forever(require_existing_auth=True))
@@ -1757,7 +1757,7 @@ def test_run_forever_clears_auth_state_after_unauthorized_poll(tmp_path: Path) -
         config=WeChatDaemonConfig(allow_interactive_relogin=False),
     )
 
-    with pytest.raises(RuntimeError, match="python -m dayu.wechat login"):
+    with pytest.raises(RuntimeError, match="python -m alpha.wechat login"):
         asyncio.run(daemon.run_forever(require_existing_auth=True))
 
     loaded = store.load()
@@ -2375,7 +2375,7 @@ def test_handle_inbound_message_returns_false_without_chat_key(tmp_path: Path, m
     )
     daemon = _build_daemon(chat_service=service, state_store=store, client=client)
     monkeypatch.setattr(
-        "dayu.wechat.daemon.Log.warning",
+        "alpha.wechat.daemon.Log.warning",
         lambda message, *, module="": logged.append(message),
     )
 
@@ -2410,7 +2410,7 @@ def test_handle_inbound_message_returns_false_without_to_user_id(tmp_path: Path,
     )
     daemon = _build_daemon(chat_service=service, state_store=store, client=client)
     monkeypatch.setattr(
-        "dayu.wechat.daemon.Log.warning",
+        "alpha.wechat.daemon.Log.warning",
         lambda message, *, module="": logged.append(message),
     )
 
@@ -2452,7 +2452,7 @@ def test_process_once_with_errors_in_reply(tmp_path: Path, monkeypatch: pytest.M
     )
     daemon = _build_daemon(chat_service=service, state_store=store, client=client)
     monkeypatch.setattr(
-        "dayu.wechat.daemon.Log.warning",
+        "alpha.wechat.daemon.Log.warning",
         lambda message, *, module="": logged.append(message),
     )
 
@@ -2483,7 +2483,7 @@ def test_open_login_url_handles_webbrowser_exception(tmp_path: Path, monkeypatch
 
     monkeypatch.setattr("webbrowser.open", _raise)
     monkeypatch.setattr(
-        "dayu.wechat.daemon.Log.warning",
+        "alpha.wechat.daemon.Log.warning",
         lambda message, *, module="": logged.append(message),
     )
 

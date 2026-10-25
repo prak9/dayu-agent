@@ -7,10 +7,10 @@ from typing import Optional, cast
 
 import pytest
 
-from dayu.fins.domain.document_models import CompanyMeta
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines import sec_safe_meta_access
-from dayu.fins.storage import (
+from alpha.fins.domain.document_models import CompanyMeta
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines import sec_safe_meta_access
+from alpha.fins.storage import (
     CompanyMetaRepositoryProtocol,
     ProcessedDocumentRepositoryProtocol,
     SourceDocumentRepositoryProtocol,

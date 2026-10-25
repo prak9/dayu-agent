@@ -8,8 +8,8 @@ from typing import AsyncIterator, Callable, cast
 
 import pytest
 
-from dayu.contracts.cancellation import CancellationToken
-from dayu.contracts.fins import (
+from alpha.contracts.cancellation import CancellationToken
+from alpha.contracts.fins import (
     DownloadCommandPayload,
     DownloadProgressPayload,
     DownloadResultData,
@@ -28,18 +28,18 @@ from dayu.contracts.fins import (
     UploadFilingsFromCommandPayload,
     UploadMaterialCommandPayload,
 )
-from dayu.contracts.session import SessionSource
-from dayu.fins.domain.document_models import FilingSummary
-from dayu.fins.service_runtime import DefaultFinsRuntime
-from dayu.host.host import Host
-from dayu.host.host_execution import HostedRunContext, HostedRunSpec
-from dayu.fins.ingestion.factory import IngestionServiceFactory
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.tools.service import FinsToolService
-from dayu.services.contracts import FinsSubmitRequest
-from dayu.services.concurrency_lanes import LANE_CN_DOWNLOAD, LANE_HK_DOWNLOAD, LANE_SEC_DOWNLOAD
-from dayu.services.fins_service import FinsService
-from dayu.services.protocols import FinsServiceProtocol
+from alpha.contracts.session import SessionSource
+from alpha.fins.domain.document_models import FilingSummary
+from alpha.fins.service_runtime import DefaultFinsRuntime
+from alpha.host.host import Host
+from alpha.host.host_execution import HostedRunContext, HostedRunSpec
+from alpha.fins.ingestion.factory import IngestionServiceFactory
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.tools.service import FinsToolService
+from alpha.services.contracts import FinsSubmitRequest
+from alpha.services.concurrency_lanes import LANE_CN_DOWNLOAD, LANE_HK_DOWNLOAD, LANE_SEC_DOWNLOAD
+from alpha.services.fins_service import FinsService
+from alpha.services.protocols import FinsServiceProtocol
 from tests.application.conftest import StubHostExecutor, StubSessionRegistry
 
 

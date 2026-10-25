@@ -14,13 +14,13 @@ from typing import Optional
 
 import pytest
 
-from dayu.fins.processors.sec_form_section_common import (
+from alpha.fins.processors.sec_form_section_common import (
     _VirtualSectionProcessorMixin,
     _build_marker_title_ranges,
     _dedupe_markers,
     _extract_table_refs,
 )
-from dayu.engine.processors.base import (
+from alpha.engine.processors.base import (
     SearchHit,
     SectionContent,
     SectionSummary,

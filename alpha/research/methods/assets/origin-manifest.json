@@ -1,0 +1,97 @@
+{
+  "origins": {
+    "skills/invest/SKILL.md": "03f2763b96e956fe6aa55dceb63fbd80d02fa551adcda210b160424691ad02cc",
+    "skills/invest/references/ai-cloud-costs.md": "b861a5e1d45bef3b984bb708a4b0aa84f41c631d43bd7a17ac0a0236dc27d014",
+    "skills/invest/references/business-quality.md": "4c60fe16f039f9ccc30788f1cd19af623f661b9b71e85ebecf5e4c1ee3494475",
+    "skills/invest/references/data-contract.md": "8531e2670e54121b549e140862d73d1d98bcf6d6f418ff9c67ec8525078dc833",
+    "skills/invest/references/earnings-transcripts.md": "40fd695f712af8df50df2c888ad69dc62e2fc1abfe659db0fef10f0ae2649ee5",
+    "skills/invest/references/financial-evidence.md": "bcfd995093da0ca5957989fa1b14189ff03de58d95e42560a4151dbad164e220",
+    "skills/invest/references/financial-extraction.md": "ca14c44b636c450c0203e06fc20a9e61f7087a451881dcbb96b75a5a3caa84de",
+    "skills/invest/references/mode-a-buy-side.md": "73108d6393b01e5fc16afd274d7f7025670ccb0ffb981da27bfbca7bdcbe0694",
+    "skills/invest/references/mode-b-bayesian-growth.md": "543ab23694719ebfa0181d71c311e78a084a166daf910ad79a2ce1b0a8abaafa",
+    "skills/invest/references/mode-c-gf-dma.md": "d41e78ff189012a6ae1a757718474054434efcb45b7914d3f2105672264119ef",
+    "skills/invest/references/mode-d-serenity-alpha.md": "30c942457a6f95ad52cc953062d1bdb69b833eba83a6af04831b0ffb7b7f1922",
+    "skills/invest/references/mode-e-tam-adj-peg.md": "6e20c693f23c4e4ea28c9fa9596181cb3d5d2788bba4ce8e9fdbb127ee042fb0",
+    "skills/invest/references/opportunity-discovery.md": "2fea7d915f8c3865c01d35635d0ba932980196e2871e702d1b586a803b34a615",
+    "skills/invest/references/options-implied-distribution.md": "360dbb290e00298a2ce78e8cc460da9b1c939228bf935562ea7dc17fca08da5c",
+    "skills/invest/references/pdf-retrieval.md": "81280a099302aa705e3162ca20f81c59452a93f414440016e88d53264ac89714",
+    "skills/invest/references/pe-implied-growth.md": "c6066b7e82c629d6dd8f2de6459616ffc7a7ae67c387b37a8b75b67d3e9ae39f",
+    "skills/invest/references/thesis-reconciliation.md": "acdd545a53184553f80e50640c24459102f902a6da1aa52c6f7a15410c14941b",
+    "skills/invest/references/uncertainty-exposure.md": "a4308ede23c57723be72fed322002d613ec8df8b37215a1ee7beb4a8fd812933",
+    "skills/invest/references/underwriting-loop.md": "781b947d1687ff2afb070e34cb269730c5cf3b0a8832667c391f6f761ae9e971",
+    "skills/research-craft/evals/flywheel/decision-checks.md": "48fc46e7355cb14acd24ad84b433316f24c21e88f996c55eb2c1357672ab2401",
+    "skills/research-craft/evals/flywheel/observed.md": "457af745bde2af60a332320a3f9eb5b2ce9c13a6fb318155c4b5c1afcb7d784f",
+    "skills/research-craft/references/harness-engineering.md": "96f2bf8df65de1f039ac4f78fe642829db566dde1e074f8c2a5342219c0a37a6",
+    "skills/research-craft/references/hypothesis-formation.md": "0df118755867352ea20e5c3bccdcc08a9d8c4cde4328948fe06d0f59b0a6058f",
+    "skills/research-craft/references/perspective-discovery.md": "cfdd453e53ee5127bbe8b7148438f532834f8549f31eee29c7cda7055919a905",
+    "skills/research-craft/references/prediction-validation.md": "4e1edee9df780634cb8affa2c4ab79e6d70239120a177a5bcede8481f73d00d6",
+    "skills/research-craft/references/research-flywheel.md": "994e0f5947a630185a269bb32f0e7ae88f9db72daa1f31b330dfe28783a9dd36",
+    "skills/research-craft/references/trace-attribution.md": "34dd2ac0ff75d70aece10b6546a1781e268a2ce782c56b9e50f4c9d8ed9ee43a",
+    "skills/tests/behavior-eval-contract.md": "eebf9324e18fe211059cd2b356aa980dfc84dc98db1be363957801c909b58af6",
+    "skills/writing/SKILL.md": "9a0e3e56b7a65161be6c8250306caee2b45d179a4952fef42a630c6cf3632bf3",
+    "skills/writing/references/checkers.md": "56e40d77c48873f66cbeb233ab577a6058e8cf1809e338309d485e7c5e4cf75b",
+    "skills/writing/references/editing-boundaries.md": "4415f2eef12613e583458acee19abbf1d6f3dfea49a0ac6e60d3f2b2d5e9bfcf",
+    "skills/writing/references/editing-levels.md": "cf043510eb054de4d0ead21954521c073771fd8f8dbf209d3e8a2427c05e6d8d",
+    "skills/writing/references/executable-text.md": "5aaf59f0e155b686e142481ce09fc914d4e62767cd5d84d655ea3072fdd84441",
+    "skills/writing/references/human-writing-source.md": "8a4189f0904bb7a13df8c496726e66b27fe04fd284693cccb0b4f4bfae902431",
+    "skills/writing/references/material-and-voice.md": "00e8ba75a3a26b629332ce6a29f2190c62201286a62735d7a0a078e844bf98e7",
+    "skills/writing/references/narrative-and-formats.md": "6a23fbf48d326bf4b25c0903e5536dbc270981efaa6ee1ec10f72b433f4d5fe1",
+    "skills/writing/references/reasoning-guide.md": "d1871c58b2afec21b106fac8ac077bcea0f673ee207b4b2307a3d4dc970bb9c3",
+    "skills/writing/references/revision-checklist.md": "8d0b8c648036d6aa0f04cdb5e57c0dacc37304802754102b7d8a871965de5ad6",
+    "skills/writing/references/style-guide.md": "29960643e5ee91e39255e0aa2260d8b065dbcb19be77544aafe43b37e5762adb",
+    "skills/writing/references/technical-explanation.md": "63d1139da06fe832b4d30a6e87214ca3dfc0005a0993e5acb320ed3ad4e4e24e",
+    "skills/writing/references/translation-guardrails.md": "aa6564a74688db1650a874b8a9b9b51f73ca42cf775910a53943be13c7debcd1",
+    "skills/writing/references/writing-sources.md": "80712ef8e503822771cc561367992dc17ddaed41a19fbe460b1c99a34eeac675"
+  },
+  "adaptations": [
+    {
+      "path": "skills/invest/references/data-contract.md",
+      "changes": [
+        {
+          "source_command": "python scripts/validate_invest_data.py",
+          "replacement": "python -m alpha_invest validate_data"
+        }
+      ]
+    },
+    {
+      "path": "skills/invest/references/mode-c-gf-dma.md",
+      "changes": [
+        {
+          "source_link": "../scripts/calculate_gf_dma.py",
+          "replacement": "[scripts/calculate_gf_dma.py](../../../alpha_invest/gf_dma.py)"
+        }
+      ]
+    },
+    {
+      "path": "skills/research-craft/evals/flywheel/decision-checks.md",
+      "changes": [
+        {
+          "source_link": "../../../tests/research-decision-cases.jsonl",
+          "replacement": "research-decision-cases.jsonl（原方法的历史样例，不随 alpha 分发）"
+        },
+        {
+          "source_link": "decision-input.json",
+          "replacement": "decision-input.json（原方法的历史样例，不随 alpha 分发）"
+        }
+      ]
+    },
+    {
+      "path": "skills/research-craft/evals/flywheel/observed.md",
+      "changes": [
+        {
+          "source_link": "observed.json",
+          "replacement": "observed.json（原方法的历史样例，不随 alpha 分发）"
+        }
+      ]
+    },
+    {
+      "path": "skills/research-craft/references/research-flywheel.md",
+      "changes": [
+        {
+          "source_link": "../scripts/run_experiment.py",
+          "replacement": "runner（该研究飞轮执行器不在 alpha 首版范围）"
+        }
+      ]
+    }
+  ]
+}

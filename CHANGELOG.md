@@ -15,10 +15,10 @@
 ### 注意
 
 如果你从 v0.1.3 升级：
-- 本次更新后需运行一次 `dayu-cli init` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
+- 本次更新后需运行一次 `alpha init` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
 
 如果你从更早版本升级：
-- 本次更新后需运行一次 `dayu-cli init --reset` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
+- 本次更新后需运行一次 `alpha init --reset` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
 
 ### 新增
 
@@ -48,21 +48,21 @@
 
 ### 注意
 
-- 本次更新后需运行一次 `dayu-cli init --reset` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
+- 本次更新后需运行一次 `alpha init --reset` ，已下载/上传的财报不会丢失，已生成的报告不会丢失。
 
 ### 新增
 
 - 离线安装包支持 3 个平台（macOS ARM64 / x64、Windows x64），新增 macOS Intel (x64)；Linux 用户可继续使用在线安装或源码安装。
-- 支持 Gemini 模型，通过运行`dayu-cli init`选择。
-- 支持本地 Ollama 上运行的模型，通过运行`dayu-cli init`选择。
-- 支持自定义 OpenAI 兼容模型（如 OpenRouter），通过运行`dayu-cli init`选择。
+- 支持 Gemini 模型，通过运行`alpha init`选择。
+- 支持本地 Ollama 上运行的模型，通过运行`alpha init`选择。
+- 支持自定义 OpenAI 兼容模型（如 OpenRouter），通过运行`alpha init`选择。
 - Agent 执行进度感知：CLI 交互模式下实时显示当前执行的工具名和关键参数。(@deanbear ： 观察 agent 努力也是一种参与感)
 - prompt / interactive 的 --label 恢复语义
   - prompt 无 --label：保留 one-shot 语义，不支持恢复上下文。
   - prompt --label <label>：每次相同`label`的 prompt 都共用相同聊天记录，**适合在OpenClaw中使用**。
   - interactive 无 --label：恢复上次相同聊天记录的交互式对话。
   - interactive --label <label>：每次相同`label`的 interactive 都是相同聊天记录的交互式对话。
-- `dayu-cli init` 添加 `--reset`，删除 workspace/ 下 `.dayu`、`config`、`assets` 目录。
+- `alpha init` 添加 `--reset`，删除 workspace/ 下 `.alpha`、`config`、`assets` 目录。
 - SSE 协议错误 trace 诊断。
 - 埋入web支持，下个版本见。(@xingren23)
 
@@ -100,7 +100,7 @@
 
 ### 变更
 
-- 支持 MiMo Plan 海外环境；已安装用户升级到该版本后，需要执行 `dayu-cli init --overwrite` 刷新初始化配置。
+- 支持 MiMo Plan 海外环境；已安装用户升级到该版本后，需要执行 `alpha init --overwrite` 刷新初始化配置。
 
 ### 修复
 
@@ -112,7 +112,7 @@
 
 ### 新增
 
-- 新增安装后初始化命令 `dayu-cli init`，用于生成项目运行所需的初始配置。
+- 新增安装后初始化命令 `alpha init`，用于生成项目运行所需的初始配置。
 
 -- 
 
@@ -123,9 +123,9 @@
 ### 新增
 
 - 发布首个可安装版本，可通过 GitHub Releases 提供的 Python wheel 安装使用。
-- 提供 `dayu-cli` 命令，可完成美股 `10-K`、`10-Q`、`20-F` 财报下载，并在已导入财报基础上执行 `prompt` 单次问答、`interactive` 多轮问答和 `write` 报告写作。
-- 提供 `dayu-wechat` 文本消息入口，可通过微信发起基础问答。
-- 提供 `dayu-render` 命令，可将 Markdown 报告渲染为 `HTML`、`PDF`、`Word`。
+- 提供 `alpha` 命令，可完成美股 `10-K`、`10-Q`、`20-F` 财报下载，并在已导入财报基础上执行 `prompt` 单次问答、`interactive` 多轮问答和 `write` 报告写作。
+- 提供 `alpha-wechat` 文本消息入口，可通过微信发起基础问答。
+- 提供 `alpha-render` 命令，可将 Markdown 报告渲染为 `HTML`、`PDF`、`Word`。
 - 提供默认配置与模板，支持通过 `workspace/config/` 覆盖运行时配置。
 
 ### 已知限制

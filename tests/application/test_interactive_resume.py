@@ -6,9 +6,9 @@ from typing import AsyncIterator
 
 import pytest
 
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.cli.interactive_ui import _RenderState, _render_stream_event, _resume_interactive_pending_turn_if_needed
-from dayu.services.contracts import ChatPendingTurnView, ChatResumeRequest
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.cli.interactive_ui import _RenderState, _render_stream_event, _resume_interactive_pending_turn_if_needed
+from alpha.services.contracts import ChatPendingTurnView, ChatResumeRequest
 
 
 class _FakeChatService:
@@ -92,7 +92,7 @@ def test_interactive_startup_resumes_pending_turn(monkeypatch: pytest.MonkeyPatc
     service = _FakeChatService()
     rendered: list[str] = []
     monkeypatch.setattr(
-        "dayu.cli.interactive_ui._render_stream_event",
+        "alpha.cli.interactive_ui._render_stream_event",
         lambda event, state: rendered.append(str(event.payload)),
     )
 
@@ -116,7 +116,7 @@ def test_interactive_startup_continues_when_resume_fails_but_pending_turn_still_
     service = _RejectingChatService()
     rendered: list[str] = []
     monkeypatch.setattr(
-        "dayu.cli.interactive_ui._render_warning_or_error",
+        "alpha.cli.interactive_ui._render_warning_or_error",
         lambda current_state, message: rendered.append(message),
     )
 
@@ -143,7 +143,7 @@ def test_interactive_startup_allows_session_when_failed_pending_turn_has_been_cl
     service = _AutoCleaningRejectingChatService()
     rendered: list[str] = []
     monkeypatch.setattr(
-        "dayu.cli.interactive_ui._render_warning_or_error",
+        "alpha.cli.interactive_ui._render_warning_or_error",
         lambda current_state, message: rendered.append(message),
     )
 
@@ -166,7 +166,7 @@ def test_interactive_startup_propagates_custom_scene_name_when_resume_fails(
     service = _RejectingChatService(expected_scene_name="custom-scene")
     rendered: list[str] = []
     monkeypatch.setattr(
-        "dayu.cli.interactive_ui._render_warning_or_error",
+        "alpha.cli.interactive_ui._render_warning_or_error",
         lambda current_state, message: rendered.append(message),
     )
 
@@ -193,11 +193,11 @@ def test_render_stream_event_marks_filtered_final_answer(monkeypatch: pytest.Mon
     state = _RenderState(show_thinking=False)
     rendered: list[str] = []
     monkeypatch.setattr(
-        "dayu.cli.interactive_ui._render_warning_or_error",
+        "alpha.cli.interactive_ui._render_warning_or_error",
         lambda current_state, message: rendered.append(message),
     )
     monkeypatch.setattr(
-        "dayu.cli.interactive_ui._render_content_delta",
+        "alpha.cli.interactive_ui._render_content_delta",
         lambda current_state, text: rendered.append(text),
     )
 
@@ -222,7 +222,7 @@ def test_render_stream_event_renders_cancelled_message(monkeypatch: pytest.Monke
     state = _RenderState(show_thinking=False)
     rendered: list[str] = []
     monkeypatch.setattr(
-        "dayu.cli.interactive_ui._render_warning_or_error",
+        "alpha.cli.interactive_ui._render_warning_or_error",
         lambda current_state, message: rendered.append(message),
     )
 

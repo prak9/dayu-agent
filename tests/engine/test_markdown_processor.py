@@ -8,9 +8,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.engine.processors import markdown_processor
-from dayu.engine.processors.markdown_processor import MarkdownProcessor
-from dayu.engine.processors.source import Source
+from alpha.engine.processors import markdown_processor
+from alpha.engine.processors.markdown_processor import MarkdownProcessor
+from alpha.engine.processors.source import Source
 
 
 def _hit_section_ref(hit: Mapping[str, object]) -> str | None:

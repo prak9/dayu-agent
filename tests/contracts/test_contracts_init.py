@@ -1,4 +1,4 @@
-"""`dayu.contracts` 包级导出测试。"""
+"""`alpha.contracts` 包级导出测试。"""
 
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ import pytest
 def test_contracts_getattr_lazily_loads_and_caches_exports(monkeypatch: pytest.MonkeyPatch) -> None:
     """包级导出应按需加载并缓存到模块全局。"""
 
-    import dayu.contracts as contracts
-    from dayu.contracts.run import RunState
+    import alpha.contracts as contracts
+    from alpha.contracts.run import RunState
 
     monkeypatch.delitem(contracts.__dict__, "RunState", raising=False)
 
@@ -24,7 +24,7 @@ def test_contracts_getattr_lazily_loads_and_caches_exports(monkeypatch: pytest.M
 def test_contracts_getattr_rejects_unknown_export() -> None:
     """未知导出名应抛出 `AttributeError`。"""
 
-    import dayu.contracts as contracts
+    import alpha.contracts as contracts
 
     with pytest.raises(AttributeError):
         contracts.__getattr__("NotExistingExport")
@@ -34,7 +34,7 @@ def test_contracts_getattr_rejects_unknown_export() -> None:
 def test_contracts_dir_contains_public_exports() -> None:
     """`__dir__()` 应包含 `__all__` 中的公共导出。"""
 
-    import dayu.contracts as contracts
+    import alpha.contracts as contracts
 
     exported_names = set(contracts.__all__)
     visible_names = set(contracts.__dir__())

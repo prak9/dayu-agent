@@ -9,9 +9,9 @@ from typing import Any, BinaryIO, cast
 
 import pytest
 
-from dayu.fins.domain.document_models import BatchToken
-from dayu.fins.processors.sc13_processor import Sc13FormProcessor
-from dayu.fins.storage.fs_batching_repository import FsBatchingRepository
+from alpha.fins.domain.document_models import BatchToken
+from alpha.fins.processors.sc13_processor import Sc13FormProcessor
+from alpha.fins.storage.fs_batching_repository import FsBatchingRepository
 
 
 class _DummySource:
@@ -92,7 +92,7 @@ def test_fs_batching_repository_delegates_begin_commit_and_rollback(monkeypatch:
 
     repository_set = type("_RepoSet", (), {"core": _Core()})()
     monkeypatch.setattr(
-        "dayu.fins.storage.fs_batching_repository.build_fs_repository_set",
+        "alpha.fins.storage.fs_batching_repository.build_fs_repository_set",
         lambda **_kwargs: cast(Any, repository_set),
     )
 
@@ -120,11 +120,11 @@ def test_sc13_processor_init_and_build_markers_delegate_to_shared_helpers(monkey
         init_calls.append((source, form_type, media_type))
 
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._BaseSecReportFormProcessor.__init__",
+        "alpha.fins.processors.sc13_processor._BaseSecReportFormProcessor.__init__",
         _fake_base_init,
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._build_sc13_markers",
+        "alpha.fins.processors.sc13_processor._build_sc13_markers",
         lambda full_text: [(0, full_text[:4])],
     )
 
@@ -143,15 +143,15 @@ def test_sc13_processor_collect_full_text_prefers_sufficient_base_text(monkeypat
     """base 文本已足够时应直接返回，不再回退 `document.text()`。"""
 
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._BaseSecReportFormProcessor._collect_full_text_from_base",
+        "alpha.fins.processors.sc13_processor._BaseSecReportFormProcessor._collect_full_text_from_base",
         lambda self: "base text",
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._has_sufficient_sc13_markers",
+        "alpha.fins.processors.sc13_processor._has_sufficient_sc13_markers",
         lambda text: text == "base text",
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._safe_virtual_document_text",
+        "alpha.fins.processors.sc13_processor._safe_virtual_document_text",
         lambda self: pytest.fail("不应访问 document.text()"),
     )
 
@@ -169,34 +169,34 @@ def test_sc13_processor_collect_full_text_falls_back_to_document_and_placeholder
     processor = object.__new__(Sc13FormProcessor)
 
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._BaseSecReportFormProcessor._collect_full_text_from_base",
+        "alpha.fins.processors.sc13_processor._BaseSecReportFormProcessor._collect_full_text_from_base",
         lambda self: "placeholder base",
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._safe_virtual_document_text",
+        "alpha.fins.processors.sc13_processor._safe_virtual_document_text",
         lambda self: "document text with markers",
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._has_sufficient_sc13_markers",
+        "alpha.fins.processors.sc13_processor._has_sufficient_sc13_markers",
         lambda text: text == "document text with markers",
     )
 
     assert processor._collect_full_text_from_base() == "document text with markers"
 
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._safe_virtual_document_text",
+        "alpha.fins.processors.sc13_processor._safe_virtual_document_text",
         lambda self: "much longer document text",
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._has_sufficient_sc13_markers",
+        "alpha.fins.processors.sc13_processor._has_sufficient_sc13_markers",
         lambda text: False,
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._is_table_placeholder_dominant_text",
+        "alpha.fins.processors.sc13_processor._is_table_placeholder_dominant_text",
         lambda text: True,
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sc13_processor._normalize_whitespace",
+        "alpha.fins.processors.sc13_processor._normalize_whitespace",
         lambda text: "short",
     )
 

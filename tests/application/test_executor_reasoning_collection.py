@@ -17,13 +17,13 @@ from typing import cast
 
 import pytest
 
-import dayu.host.executor as executor_module
-from dayu.contracts.agent_execution import AgentCreateArgs, AgentInput
-from dayu.engine.events import EventType, StreamEvent
-from dayu.host import scene_preparer as scene_preparer_module
-from dayu.host.conversation_session_archive import ConversationSessionArchive
-from dayu.host.conversation_store import FileConversationSessionArchiveStore
-from dayu.host.executor import DefaultHostExecutor
+import alpha.host.executor as executor_module
+from alpha.contracts.agent_execution import AgentCreateArgs, AgentInput
+from alpha.engine.events import EventType, StreamEvent
+from alpha.host import scene_preparer as scene_preparer_module
+from alpha.host.conversation_session_archive import ConversationSessionArchive
+from alpha.host.conversation_store import FileConversationSessionArchiveStore
+from alpha.host.executor import DefaultHostExecutor
 from tests.application.conftest import StubPendingTurnStore, StubRunRegistry
 
 

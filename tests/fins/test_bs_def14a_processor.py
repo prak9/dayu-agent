@@ -8,7 +8,7 @@ from typing import Any, Optional
 
 import pytest
 
-from dayu.fins.processors import bs_def14a_processor as module
+from alpha.fins.processors import bs_def14a_processor as module
 
 
 @pytest.mark.unit

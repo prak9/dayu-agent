@@ -12,8 +12,8 @@ from typing import Optional, BinaryIO
 
 import pytest
 
-from dayu.engine.processors.markdown_processor import MarkdownProcessor
-from dayu.engine.processors.source import Source
+from alpha.engine.processors.markdown_processor import MarkdownProcessor
+from alpha.engine.processors.source import Source
 
 
 class DummySource:

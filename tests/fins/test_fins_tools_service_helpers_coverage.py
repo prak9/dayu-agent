@@ -7,13 +7,13 @@ from typing import Any, Optional
 
 import pytest
 
-from dayu.engine.processors.source import Source
-from dayu.fins.domain.document_models import CompanyMeta, SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.tools import search_engine as _search_engine_module
-from dayu.fins.tools import service as _service_module
-from dayu.fins.tools import service_helpers as _sh_module
-from dayu.fins.tools.service import ToolArgumentError
+from alpha.engine.processors.source import Source
+from alpha.fins.domain.document_models import CompanyMeta, SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.tools import search_engine as _search_engine_module
+from alpha.fins.tools import service as _service_module
+from alpha.fins.tools import service_helpers as _sh_module
+from alpha.fins.tools.service import ToolArgumentError
 from tests.fins.legacy_repository_adapters import LegacyCompatibleFinsToolService as FinsToolService
 
 
@@ -188,7 +188,7 @@ def test_service_module_does_not_reexport_split_private_helpers() -> None:
 def test_text_and_period_normalizers() -> None:
     """覆盖参数标准化分支。"""
 
-    from dayu.fins._converters import normalize_optional_text, require_non_empty_text
+    from alpha.fins._converters import normalize_optional_text, require_non_empty_text
     assert normalize_optional_text("  ") is None
     with pytest.raises(ToolArgumentError):
         require_non_empty_text(None, empty_error=ToolArgumentError("x", "a", None, "Argument must not be empty"))
@@ -441,7 +441,7 @@ class TestBuildEvidenceMatchesRefToTopic:
 # _center_matched_text — 围绕查询居中截取
 # ============================================================================
 
-from dayu.fins.tools.search_engine import (
+from alpha.fins.tools.search_engine import (
     _cap_entries_with_exact_priority,
     _center_matched_text,
 )

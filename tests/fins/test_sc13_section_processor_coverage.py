@@ -7,8 +7,8 @@ from typing import Optional
 
 import pytest
 
-from dayu.fins.processors.sc13_processor import Sc13FormProcessor
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors.sc13_processor import Sc13FormProcessor
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 class _FakeSection:
@@ -192,7 +192,7 @@ def test_sc13_processor_handles_insufficient_items(
         "No more items beyond Item 2."
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -235,7 +235,7 @@ def test_sc13_processor_handles_empty_document(
     # 完全空的文档
     text_value = ""
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -287,7 +287,7 @@ def test_sc13_processor_without_signature_marker(
         "End of document with signature line:"  # 避免"Signature"这个词
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -344,7 +344,7 @@ def test_sc13_processor_handles_schedule_a_marker(
         "Title: Director"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -398,7 +398,7 @@ def test_sc13_processor_handles_exhibit_marker(
         "Agreement text and terms..."
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -536,7 +536,7 @@ def test_sc13_processor_reads_section_content(
         "Exhibit 1 Agreement"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -598,7 +598,7 @@ def test_sc13_processor_collects_full_text_from_sections(
         "End of document"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -647,7 +647,7 @@ def test_sc13_marker_selection_with_sparse_items(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -702,7 +702,7 @@ def test_sc13_find_item_position_after_logic(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -765,7 +765,7 @@ def test_sc13_fallback_to_document_text_when_base_insufficient(
     )
     
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocumentWithPlaceholderSections(
             section_text=section_text,
             document_text=document_text,
@@ -805,7 +805,7 @@ def test_sc13_item_pattern_matches_item_with_parenthesized_sub() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.sc13_form_common import _SC13_ITEM_PATTERN
+    from alpha.fins.processors.sc13_form_common import _SC13_ITEM_PATTERN
 
     # 带括号子编号（BABA 格式）
     match = _SC13_ITEM_PATTERN.search("Item 1(a). Security and Issuer")
@@ -831,7 +831,7 @@ def test_sc13_item_pattern_matches_standard_formats() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.sc13_form_common import _SC13_ITEM_PATTERN
+    from alpha.fins.processors.sc13_form_common import _SC13_ITEM_PATTERN
 
     # 标准带句点
     match = _SC13_ITEM_PATTERN.search("Item 1. Security and Issuer")
@@ -862,7 +862,7 @@ def test_sc13_item_pattern_no_false_positive_beyond_7() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.sc13_form_common import _SC13_ITEM_PATTERN
+    from alpha.fins.processors.sc13_form_common import _SC13_ITEM_PATTERN
 
     assert _SC13_ITEM_PATTERN.search("Item 8. Extra Section") is None
     assert _SC13_ITEM_PATTERN.search("Item 0. Preamble") is None

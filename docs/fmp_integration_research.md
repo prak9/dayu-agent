@@ -478,8 +478,8 @@ https://financialmodelingprep.com/stable/income-statement?symbol=AAPL&apikey=YOU
 
 ## 5. API Key 配置方案（方式 B：配置文件，与 llm_models.json 一致）
 
-参照 `llm_models.json` 中的 `{{ENV_VAR_NAME}}` 替换模式，在 `dayu/config/run.json` 增加
-`fmp` 配置块，由 `dayu/config.py` 统一解析后注入 `FmpToolService`：
+参照 `llm_models.json` 中的 `{{ENV_VAR_NAME}}` 替换模式，在 `alpha/config/run.json` 增加
+`fmp` 配置块，由 `alpha/config.py` 统一解析后注入 `FmpToolService`：
 
 ```json
 {
@@ -502,7 +502,7 @@ https://financialmodelingprep.com/stable/income-statement?symbol=AAPL&apikey=YOU
 }
 ```
 
-`dayu/config.py` 已有 `{{ENV_VAR_NAME}}` 替换机制，`FMP_API_KEY` 从环境变量注入，
+`alpha/config.py` 已有 `{{ENV_VAR_NAME}}` 替换机制，`FMP_API_KEY` 从环境变量注入，
 无需修改现有替换逻辑，只需在解析 `run.json` 时额外读取 `fmp` 字段。
 
 ---
@@ -589,7 +589,7 @@ ToolRegistry `execute()` 要求工具函数不抛异常，失败通过返回值�
 
 ## 8. 截断机制匹配方案
 
-现有截断策略见 `dayu/agent/engine/tools/limits.py`：
+现有截断策略见 `alpha/agent/engine/tools/limits.py`：
 
 | 策略名 | limit_key | 适用场景 |
 |--------|-----------|---------|
@@ -631,7 +631,7 @@ ToolRegistry `execute()` 要求工具函数不抛异常，失败通过返回值�
 ### 9.1 文件结构
 
 ```
-dayu/agent/fins/fmp_tools/
+alpha/agent/fins/fmp_tools/
 ├── __init__.py           # 导出 register_fmp_tools
 ├── limits.py             # FmpToolLimits dataclass
 ├── cache.py              # FmpCache（永久硬盘缓存）
@@ -1082,7 +1082,7 @@ with httpx.Client(timeout=self._limits.http_timeout) as client:
 
 ## 12. Tool Guidance Prompt 设计建议
 
-在 `dayu/config/prompts/` 中新增 `fmp_tool_guidance.md`，使用现有 `<when_tag fmp>` 语法：
+在 `alpha/config/prompts/` 中新增 `fmp_tool_guidance.md`，使用现有 `<when_tag fmp>` 语法：
 
 ```markdown
 <when_tag fmp>
@@ -1113,10 +1113,10 @@ with httpx.Client(timeout=self._limits.http_timeout) as client:
 2. `fins/fmp_tools/cache.py` — `FmpCache`（read/write/invalidate/stats）+ 单测。
 3. `fins/fmp_tools/service.py` — `FmpToolService._get()` + `_get_cached()` + 所有业务方法 + 错误归一单测。
 4. `fins/fmp_tools/tools.py` — `register_fmp_tools` + 20 个工具工厂函数。
-5. `dayu/config/run.json` — 增加 `fmp` 配置块（`{{FMP_API_KEY}}`、`cache_dir`）。
-6. `dayu/config.py` — 解析 `run.json` 的 `fmp` 字段并创建 `FmpToolService`。
+5. `alpha/config/run.json` — 增加 `fmp` 配置块（`{{FMP_API_KEY}}`、`cache_dir`）。
+6. `alpha/config.py` — 解析 `run.json` 的 `fmp` 字段并创建 `FmpToolService`。
 7. `tests/fins/test_fmp_cache.py` + `test_fmp_service.py` + `test_fmp_tools.py` — 覆盖缓存命中/未命中/TTL失效/并发写入、错误归一、截断。
-8. `dayu/config/prompts/fmp_tool_guidance.md` — 更新 Tool Guidance。
+8. `alpha/config/prompts/fmp_tool_guidance.md` — 更新 Tool Guidance。
 
 ---
 

@@ -12,12 +12,12 @@ from typing import AsyncIterator, Iterator, cast
 
 import pytest
 
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.host.protocols import ConversationSessionTurnExcerpt
-from dayu.services.contracts import ChatPendingTurnView, ChatResumeRequest, ChatTurnRequest, ChatTurnSubmission
-from dayu.services.protocols import ChatServiceProtocol
-from dayu.web.streamlit.pages.chat import stream_runtime
-from dayu.web.streamlit.pages.chat.stream_runtime import (
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.host.protocols import ConversationSessionTurnExcerpt
+from alpha.services.contracts import ChatPendingTurnView, ChatResumeRequest, ChatTurnRequest, ChatTurnSubmission
+from alpha.services.protocols import ChatServiceProtocol
+from alpha.web.streamlit.pages.chat import stream_runtime
+from alpha.web.streamlit.pages.chat.stream_runtime import (
     CHAT_STREAM_RUNTIME_HANDLES,
     consume_chat_event_stream,
     new_stream_frame_state,

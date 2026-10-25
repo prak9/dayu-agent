@@ -14,27 +14,27 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.reply_outbox import ReplyOutboxSubmitRequest
-from dayu.host.host import Host
-from dayu.host.host_store import HostStore
-from dayu.host.pending_turn_store import (
+from alpha.contracts.reply_outbox import ReplyOutboxSubmitRequest
+from alpha.host.host import Host
+from alpha.host.host_store import HostStore
+from alpha.host.pending_turn_store import (
     InMemoryPendingConversationTurnStore,
     PendingConversationTurnState,
     SQLitePendingConversationTurnStore,
 )
-from dayu.host.protocols import (
+from alpha.host.protocols import (
     SessionActivityQueryProtocol,
     SessionClearingError,
     SessionClearingFailedError,
     SessionClosedError,
     SessionWriteBlockedError,
 )
-from dayu.host.reply_outbox_store import (
+from alpha.host.reply_outbox_store import (
     InMemoryReplyOutboxStore,
     SQLiteReplyOutboxStore,
 )
-from dayu.host.session_registry import SQLiteSessionRegistry
-from dayu.contracts.session import SessionSource, SessionState
+from alpha.host.session_registry import SQLiteSessionRegistry
+from alpha.contracts.session import SessionSource, SessionState
 
 from tests.application.conftest import (
     StubHostExecutor,
@@ -146,7 +146,7 @@ def test_inmemory_stores_allow_writes_when_session_active() -> None:
 def test_sqlite_stores_barrier_with_session_registry(tmp_path: Path) -> None:
     """SQLite 仓储在默认装配下屏障生效。"""
 
-    db_path = tmp_path / ".host" / "dayu_host.db"
+    db_path = tmp_path / ".host" / "alpha_host.db"
     host_store = HostStore(db_path)
     host_store.initialize_schema()
     registry = SQLiteSessionRegistry(host_store)
@@ -259,7 +259,7 @@ def test_executor_absorbs_clearing_error_for_accepted_pending_turn() -> None:
     扩 ``SessionWriteBlockedError`` 后三子类共享同一吸收链路。
     """
 
-    from dayu.host.pending_turn_store import InMemoryPendingConversationTurnStore
+    from alpha.host.pending_turn_store import InMemoryPendingConversationTurnStore
 
     class _ClearingActivity:
         def is_session_active(self, session_id: str) -> bool:
@@ -289,7 +289,7 @@ def test_executor_absorbs_clearing_error_for_accepted_pending_turn() -> None:
 def test_executor_absorbs_clearing_failed_error_for_accepted_pending_turn() -> None:
     """``CLEARING_FAILED`` 持久锁定下迟到 pending turn 写入抛出可被基类吸收。"""
 
-    from dayu.host.pending_turn_store import InMemoryPendingConversationTurnStore
+    from alpha.host.pending_turn_store import InMemoryPendingConversationTurnStore
 
     class _ClearingFailedActivity:
         def is_session_active(self, session_id: str) -> bool:

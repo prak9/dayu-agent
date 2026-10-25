@@ -10,20 +10,20 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.fins import (
+from alpha.contracts.fins import (
     DownloadCommandPayload,
     FinsCommandName,
 )
-from dayu.fins.domain.document_models import FilingSummary
-from dayu.services.contracts import FinsSubmitRequest
-from dayu.web.streamlit.pages.filing.download_panel import (
+from alpha.fins.domain.document_models import FilingSummary
+from alpha.services.contracts import FinsSubmitRequest
+from alpha.web.streamlit.pages.filing.download_panel import (
     _DownloadFormValues,
     _build_download_log_lines,
     _build_download_submit_request,
     _format_log_time,
 )
-from dayu.web.streamlit.pages.filing.download_progress import LogEntry
-from dayu.web.streamlit.pages.filing_tab import (
+from alpha.web.streamlit.pages.filing.download_progress import LogEntry
+from alpha.web.streamlit.pages.filing_tab import (
     _calculate_dataframe_height,
     _get_filing_list,
 )

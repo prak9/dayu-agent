@@ -6,8 +6,8 @@ from typing import cast
 
 import pytest
 
-from dayu.engine.processors.base import SearchHit
-from dayu.engine.processors.search_utils import (
+from alpha.engine.processors.base import SearchHit
+from alpha.engine.processors.search_utils import (
     extract_evidence_items,
     extract_token_cooccurrence_snippets,
     enrich_hits_by_section_token_or,

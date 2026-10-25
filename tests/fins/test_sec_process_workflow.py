@@ -7,11 +7,11 @@ from typing import Callable, Optional, cast
 
 import pytest
 
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.ingestion.process_events import ProcessEventType
-from dayu.fins.pipelines import sec_process_workflow as workflow_module
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.storage import ProcessedDocumentRepositoryProtocol, SourceDocumentRepositoryProtocol
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.ingestion.process_events import ProcessEventType
+from alpha.fins.pipelines import sec_process_workflow as workflow_module
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.storage import ProcessedDocumentRepositoryProtocol, SourceDocumentRepositoryProtocol
 
 
 class _FakeDownloader:

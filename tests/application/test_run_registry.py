@@ -8,11 +8,11 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.host.host_store import HostStore
-from dayu.host.pending_turn_store import PendingConversationTurnState, SQLitePendingConversationTurnStore
-from dayu.host.run_registry import SQLiteRunRegistry
-from dayu.contracts.run import ORPHAN_RUN_ERROR_SUMMARY, RunCancelReason, RunState
-from dayu.log import Log
+from alpha.host.host_store import HostStore
+from alpha.host.pending_turn_store import PendingConversationTurnState, SQLitePendingConversationTurnStore
+from alpha.host.run_registry import SQLiteRunRegistry
+from alpha.contracts.run import ORPHAN_RUN_ERROR_SUMMARY, RunCancelReason, RunState
+from alpha.log import Log
 
 
 @pytest.fixture()
@@ -138,8 +138,8 @@ class TestRunStateTransitions:
     ) -> None:
         """同 PID 但 OwnerIdentity 三元组不匹配（PID 复用）时不允许修复 UNSETTLED。"""
 
-        from dayu.host import run_registry as run_registry_module
-        from dayu.process_liveness import OwnerIdentity
+        from alpha.host import run_registry as run_registry_module
+        from alpha.process_liveness import OwnerIdentity
 
         # 注册 run 时记录的"原 owner"身份
         original_owner = run_registry_module.current_owner_identity()
@@ -168,8 +168,8 @@ class TestRunStateTransitions:
     ) -> None:
         """同 PID 但 boot_id 不同（系统重启）时不允许修复 UNSETTLED。"""
 
-        from dayu.host import run_registry as run_registry_module
-        from dayu.process_liveness import OwnerIdentity
+        from alpha.host import run_registry as run_registry_module
+        from alpha.process_liveness import OwnerIdentity
 
         original_owner = run_registry_module.current_owner_identity()
         run = registry.register_run(service_type="test")
@@ -374,7 +374,7 @@ class TestQueryAndList:
         """list_active_runs_for_owner 严格按 OwnerIdentity 过滤。"""
 
         import os as _os
-        from dayu.process_liveness import OwnerIdentity, current_owner_identity
+        from alpha.process_liveness import OwnerIdentity, current_owner_identity
 
         r1 = registry.register_run(service_type="a")
         r2 = registry.register_run(service_type="b")
@@ -406,7 +406,7 @@ class TestQueryAndList:
     ) -> None:
         """同 PID 但 ``OwnerIdentity`` 三元组任一字段不一致时不得被识别为当前 owner。"""
 
-        from dayu.process_liveness import OwnerIdentity, current_owner_identity
+        from alpha.process_liveness import OwnerIdentity, current_owner_identity
 
         r1 = registry.register_run(service_type="a")
         registry.start_run(r1.run_id)
@@ -566,9 +566,9 @@ class TestRegisterRunSessionBarrier:
     def test_register_run_blocked_when_session_clearing(self, tmp_path: Path) -> None:
         """``CLEARING`` 期间 ``register_run`` 抛 ``SessionClearingError``。"""
 
-        from dayu.host.protocols import SessionClearingError
-        from dayu.host.session_registry import SQLiteSessionRegistry
-        from dayu.contracts.session import SessionSource
+        from alpha.host.protocols import SessionClearingError
+        from alpha.host.session_registry import SQLiteSessionRegistry
+        from alpha.contracts.session import SessionSource
 
         store = HostStore(tmp_path / "test.db")
         store.initialize_schema()
@@ -585,9 +585,9 @@ class TestRegisterRunSessionBarrier:
     def test_register_run_blocked_when_session_clearing_failed(self, tmp_path: Path) -> None:
         """``CLEARING_FAILED`` 持久锁定下 ``register_run`` 抛 ``SessionClearingFailedError``。"""
 
-        from dayu.host.protocols import SessionClearingFailedError
-        from dayu.host.session_registry import SQLiteSessionRegistry
-        from dayu.contracts.session import SessionSource
+        from alpha.host.protocols import SessionClearingFailedError
+        from alpha.host.session_registry import SQLiteSessionRegistry
+        from alpha.contracts.session import SessionSource
 
         store = HostStore(tmp_path / "test.db")
         store.initialize_schema()
@@ -605,9 +605,9 @@ class TestRegisterRunSessionBarrier:
     def test_register_run_blocked_when_session_closed(self, tmp_path: Path) -> None:
         """``CLOSED`` 状态下 ``register_run`` 抛 ``SessionClosedError``。"""
 
-        from dayu.host.protocols import SessionClosedError
-        from dayu.host.session_registry import SQLiteSessionRegistry
-        from dayu.contracts.session import SessionSource
+        from alpha.host.protocols import SessionClosedError
+        from alpha.host.session_registry import SQLiteSessionRegistry
+        from alpha.contracts.session import SessionSource
 
         store = HostStore(tmp_path / "test.db")
         store.initialize_schema()
@@ -624,8 +624,8 @@ class TestRegisterRunSessionBarrier:
     def test_register_run_passes_when_session_active(self, tmp_path: Path) -> None:
         """``ACTIVE`` 状态正常注册。"""
 
-        from dayu.host.session_registry import SQLiteSessionRegistry
-        from dayu.contracts.session import SessionSource
+        from alpha.host.session_registry import SQLiteSessionRegistry
+        from alpha.contracts.session import SessionSource
 
         store = HostStore(tmp_path / "test.db")
         store.initialize_schema()
@@ -642,7 +642,7 @@ class TestRegisterRunSessionBarrier:
     def test_register_run_no_barrier_when_session_id_none(self, tmp_path: Path) -> None:
         """``session_id`` 为 ``None`` 时跳过屏障校验（无 session 归属的 run 不受屏障约束）。"""
 
-        from dayu.host.session_registry import SQLiteSessionRegistry
+        from alpha.host.session_registry import SQLiteSessionRegistry
 
         store = HostStore(tmp_path / "test.db")
         store.initialize_schema()

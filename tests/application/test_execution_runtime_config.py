@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.execution.runtime_config import (
+from alpha.execution.runtime_config import (
     AgentRuntimeConfig,
     CliRunnerRuntimeConfig,
     FallbackMode,

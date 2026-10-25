@@ -1,0 +1,8 @@
+{
+  "utils": "alpha.engine.toolset_registrars.register_utils_toolset",
+  "doc": "alpha.engine.toolset_registrars.register_doc_toolset",
+  "web": "alpha.engine.toolset_registrars.register_web_toolset",
+  "fins": "alpha.fins.toolset_registrars.register_fins_read_toolset",
+  "ingestion": "alpha.fins.toolset_registrars.register_fins_ingestion_toolset",
+  "research": "alpha.research.toolset_registrars.register_research_toolset"
+}

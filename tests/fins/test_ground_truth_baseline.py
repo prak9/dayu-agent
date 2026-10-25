@@ -8,10 +8,10 @@ from typing import Any
 
 import pytest
 
-from dayu.fins._converters import require_non_empty_text
-from dayu.fins.domain.document_models import ProcessedCreateRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.ground_truth_baseline import (
+from alpha.fins._converters import require_non_empty_text
+from alpha.fins.domain.document_models import ProcessedCreateRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.ground_truth_baseline import (
     GROUND_TRUTH_REQUIRED_FILES,
     _assert_required_truth_files,
     _load_or_init_manifest,

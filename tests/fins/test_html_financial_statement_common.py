@@ -10,7 +10,27 @@ from typing import Mapping, Optional
 import pandas as pd
 import pytest
 
-from dayu.fins.processors import html_financial_statement_common as html_statement_module
+from alpha.fins.processors import html_financial_statement_common as html_statement_module
+
+
+def test_split_parentheses_and_convenience_currency_do_not_change_cash_flow() -> None:
+    """保留相邻单元格括号负号且只返回主币种两期。参数：无。返回：无。异常：断言失败。"""
+    table = _StubTable(tag="cash", caption="Three months ended June 30, (in millions)")
+    frame = pd.DataFrame([
+        ["", "2025", "", "2026", "", "2026", ""],
+        ["", "RMB", "", "RMB", "", "US$", ""],
+        ["Operating cash flow", "20,672", "", "22,945", "", "3,382", ""],
+        ["Capital expenditure", "(38,629", ")", "(67,660", ")", "(9,972", ")"],
+        ["Free cash flow", "(18,815", ")", "(44,670", ")", "(6,584", ")"],
+    ])
+    result = html_statement_module.build_html_statement_result_from_tables(
+        statement_type="cash_flow", tables=[table],
+        parse_table_dataframe=_build_parse_table_dataframe({table: frame}),
+    )
+    assert result is not None
+    assert len(result["periods"]) == 2
+    assert result["rows"][-1]["values"] == [-18815.0, -44670.0]
+    assert all(len(row["values"]) == len(result["periods"]) for row in result["rows"])
 
 
 @dataclass(frozen=True)

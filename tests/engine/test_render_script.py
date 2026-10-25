@@ -8,7 +8,7 @@ from pathlib import Path
 
 def _load_render_module():
     """按文件路径加载 render.py 模块。"""
-    module_path = Path(__file__).resolve().parents[2] / "dayu" / "render" / "render.py"
+    module_path = Path(__file__).resolve().parents[2] / "alpha" / "render" / "render.py"
     spec = importlib.util.spec_from_file_location("render_script", module_path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"无法加载模块: {module_path}")
@@ -102,7 +102,7 @@ def test_main_usage_message_when_missing_argument(capsys, monkeypatch):
     captured = capsys.readouterr()
 
     assert exit_code == 1
-    assert "Usage: dayu-render <input_markdown> [output_path]" in captured.err
+    assert "Usage: alpha-render <input_markdown> [output_path]" in captured.err
 
 
 def test_main_help_message(capsys, monkeypatch):
@@ -114,7 +114,7 @@ def test_main_help_message(capsys, monkeypatch):
     captured = capsys.readouterr()
 
     assert exit_code == 0
-    assert "Usage: dayu-render <input_markdown> [output_path]" in captured.out
+    assert "Usage: alpha-render <input_markdown> [output_path]" in captured.out
     assert "将 Markdown 渲染为 HTML / PDF / Word。" in captured.out
 
 

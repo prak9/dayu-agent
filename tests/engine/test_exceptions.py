@@ -12,7 +12,7 @@
 
 import pytest
 
-from dayu.engine.exceptions import (
+from alpha.engine.exceptions import (
     EngineError,
     ConfigError,
     ToolError,

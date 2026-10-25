@@ -8,11 +8,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.contracts.protocols import ToolExecutionContext
-from dayu.engine.async_openai_runner import AsyncOpenAIRunner
-from dayu.engine import EventType
-from dayu.engine.tool_contracts import DupCallSpec
+from alpha.contracts.agent_types import AgentMessage
+from alpha.contracts.protocols import ToolExecutionContext
+from alpha.engine.async_openai_runner import AsyncOpenAIRunner
+from alpha.engine import EventType
+from alpha.engine.tool_contracts import DupCallSpec
 
 # 检查 aiohttp 是否可用
 try:

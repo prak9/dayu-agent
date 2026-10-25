@@ -8,7 +8,7 @@ from typing import Optional, TypeAlias
 
 import pytest
 
-from dayu.fins.processors.sec_report_form_common import (
+from alpha.fins.processors.sec_report_form_common import (
     _extract_source_text_preserving_lines,
     _find_table_of_contents_cutoff,
     _find_toc_cluster_end,
@@ -21,18 +21,18 @@ from dayu.fins.processors.sec_report_form_common import (
     _select_ordered_item_markers,
     _select_ordered_item_markers_after_toc,
 )
-from dayu.fins.processors.sec_form_section_common import (
+from alpha.fins.processors.sec_form_section_common import (
     _trim_trailing_page_locator,
 )
-from dayu.fins.processors.bs_twenty_f_processor import (
+from alpha.fins.processors.bs_twenty_f_processor import (
     _has_minimum_twenty_f_item_quality,
     _has_risky_twenty_f_section_profile,
 )
-from dayu.fins.processors.ten_k_processor import TenKFormProcessor
-from dayu.fins.processors.ten_q_processor import TenQFormProcessor
-from dayu.fins.processors.twenty_f_processor import TwentyFFormProcessor
-from dayu.fins.processors.twenty_f_form_common import _trim_twenty_f_source_text
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors.ten_k_processor import TenKFormProcessor
+from alpha.fins.processors.ten_q_processor import TenQFormProcessor
+from alpha.fins.processors.twenty_f_processor import TwentyFFormProcessor
+from alpha.fins.processors.twenty_f_form_common import _trim_twenty_f_source_text
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 ReportProcessorClass: TypeAlias = (
@@ -276,7 +276,7 @@ def test_report_form_processors_keep_sec_processor_behavior(
     source_path = tmp_path / f"{form_type}_detail.html"
     source_path.write_text("<html><body>placeholder</body></html>", encoding="utf-8")
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, normalized_form: _FakeDocument(
             f"{form_type} annual report narrative with key disclosures"
         ),
@@ -306,9 +306,9 @@ def test_report_form_processors_define_parser_versions() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    assert TenKFormProcessor.PARSER_VERSION == "ten_k_section_processor_v2.0.0"
-    assert TenQFormProcessor.PARSER_VERSION == "ten_q_section_processor_v2.0.0"
-    assert TwentyFFormProcessor.PARSER_VERSION == "twenty_f_section_processor_v2.1.5"
+    assert TenKFormProcessor.PARSER_VERSION == "ten_k_section_processor_v2.0.2"
+    assert TenQFormProcessor.PARSER_VERSION == "ten_q_section_processor_v2.0.2"
+    assert TwentyFFormProcessor.PARSER_VERSION == "twenty_f_section_processor_v2.1.7"
     assert TwentyFFormProcessor._ENABLE_FAST_SECTION_BUILD is True
     assert TwentyFFormProcessor._FAST_SECTION_BUILD_SINGLE_FULL_TEXT is True
 
@@ -378,9 +378,9 @@ def test_processor_toc_line_detection_supports_inline_toc() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.ten_k_form_common import _looks_like_toc_page_line as ten_k_toc
-    from dayu.fins.processors.ten_q_form_common import _looks_like_toc_page_line as ten_q_toc
-    from dayu.fins.processors.twenty_f_form_common import _looks_like_toc_page_line as twenty_f_toc
+    from alpha.fins.processors.ten_k_form_common import _looks_like_toc_page_line as ten_k_toc
+    from alpha.fins.processors.ten_q_form_common import _looks_like_toc_page_line as ten_q_toc
+    from alpha.fins.processors.twenty_f_form_common import _looks_like_toc_page_line as twenty_f_toc
 
     inline_toc = (
         "Item 1A Risk Factors 50 "
@@ -860,7 +860,7 @@ def test_select_after_toc_without_explicit_toc_keeps_default_when_skip_drops_too
     ]
 
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_report_form_common._skip_toc_like_markers",
+        "alpha.fins.processors.sec_report_form_common._skip_toc_like_markers",
         lambda *args, **kwargs: degraded,
     )
 
@@ -1241,7 +1241,7 @@ def test_ten_k_processor_splits_part_item_sections(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1294,7 +1294,7 @@ def test_ten_q_processor_splits_part_i_and_part_ii_sections(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1346,7 +1346,7 @@ def test_ten_k_processor_supports_item_heading_without_punctuation(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1420,7 +1420,7 @@ def test_ten_k_processor_trailing_toc_triggers_heading_fallback(
         + "\nSIGNATURE\n"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1495,7 +1495,7 @@ def test_ten_k_processor_trailing_toc_keeps_original_when_heading_fails(
         + "\nSIGNATURE\n"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1553,7 +1553,7 @@ def test_ten_k_processor_expands_heading_stub_sections_with_body_content(
         + "\nSIGNATURE\n"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1622,7 +1622,7 @@ def test_ten_k_processor_expands_by_reference_sections_from_same_document(
         + "SIGNATURE\n"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1688,7 +1688,7 @@ def test_ten_k_processor_supports_heading_only_fallback(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1744,7 +1744,7 @@ def test_ten_k_processor_fills_missing_item_1a_from_heading_fallback(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1793,7 +1793,7 @@ def test_ten_q_processor_supports_numbered_headings_without_item_prefix(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1847,7 +1847,7 @@ def test_ten_q_processor_repairs_part_i_item_1_from_heading_when_toc_polluted(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1917,7 +1917,7 @@ def test_ten_q_processor_repairs_item_1_when_toc_entries_are_inline(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -1981,7 +1981,7 @@ def test_twenty_f_processor_ignores_cover_checkbox_item_token(
         "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -2037,7 +2037,7 @@ def test_twenty_f_processor_supports_numbered_headings_without_item_prefix(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -2094,7 +2094,7 @@ def test_twenty_f_processor_repairs_item_18_when_toc_entry_is_selected(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -2149,7 +2149,7 @@ def test_twenty_f_processor_splits_items_with_part_and_description(
         "SIGNATURE The registrant hereby certifies."
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(text_value),
     )
 
@@ -2228,7 +2228,7 @@ def test_twenty_f_processor_prefers_source_text_when_it_recovers_markers(
         + "SIGNATURE"
     )
     monkeypatch.setattr(
-        "dayu.fins.processors.sec_processor._parse_document",
+        "alpha.fins.processors.sec_processor._parse_document",
         lambda html_content, form_type: _FakeDocument(flattened_text),
     )
 
@@ -2293,7 +2293,7 @@ def test_correct_part_from_sec_rules_fills_missing() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
+    from alpha.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
 
     # Item 1 → Part I（缺失时补全）
     assert _correct_part_from_sec_rules("1", None) == "Part I"
@@ -2328,7 +2328,7 @@ def test_correct_part_from_sec_rules_fixes_wrong_part() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
+    from alpha.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
 
     # Items 2/3/4 误标为 Part II → 修正为 Part I
     assert _correct_part_from_sec_rules("2", "Part II") == "Part I"
@@ -2353,7 +2353,7 @@ def test_correct_part_from_sec_rules_preserves_correct() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
+    from alpha.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
 
     assert _correct_part_from_sec_rules("1", "Part I") == "Part I"
     assert _correct_part_from_sec_rules("2", "Part I") == "Part I"
@@ -2376,7 +2376,7 @@ def test_correct_part_unknown_item_preserves_original() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
+    from alpha.fins.processors.ten_k_form_common import _correct_part_from_sec_rules
 
     assert _correct_part_from_sec_rules("99", "Part X") == "Part X"
     assert _correct_part_from_sec_rules("99", None) is None
@@ -2404,7 +2404,7 @@ def test_ten_q_anchor_validation_rejects_running_header() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.ten_q_form_common import (
+    from alpha.fins.processors.ten_q_form_common import (
         _anchor_produces_meaningful_items,
         _find_all_part_heading_positions,
         _select_best_part_i_anchor,
@@ -2464,7 +2464,7 @@ def test_ten_q_anchor_validation_accepts_normal_document() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.ten_q_form_common import (
+    from alpha.fins.processors.ten_q_form_common import (
         _find_all_part_heading_positions,
         _select_best_part_i_anchor,
     )
@@ -2502,7 +2502,7 @@ def test_anchor_produces_meaningful_items_rejects_short_spans() -> None:
     Raises:
         AssertionError: 断言失败时抛出。
     """
-    from dayu.fins.processors.ten_q_form_common import (
+    from alpha.fins.processors.ten_q_form_common import (
         _anchor_produces_meaningful_items,
     )
 
@@ -2969,7 +2969,7 @@ def test_looks_like_default_headers_unicode_superscript_no_crash() -> None:
         AssertionError: 断言失败或函数抛出 ValueError 时抛出。
     """
 
-    from dayu.fins.processors.sec_table_extraction import _looks_like_default_headers
+    from alpha.fins.processors.sec_table_extraction import _looks_like_default_headers
 
     # 上标字符 isdigit() 返回 True，但 int() 无法解析
     assert _looks_like_default_headers(["¹", "²", "³"]) is False
@@ -2991,7 +2991,7 @@ def test_looks_like_default_headers_accepts_sequential_ascii_integers() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.sec_table_extraction import _looks_like_default_headers
+    from alpha.fins.processors.sec_table_extraction import _looks_like_default_headers
 
     assert _looks_like_default_headers(["1", "2", "3"]) is True
     assert _looks_like_default_headers(["0", "1", "2", "3"]) is True
@@ -3016,7 +3016,7 @@ def test_looks_like_default_headers_rejects_text_headers() -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.fins.processors.sec_table_extraction import _looks_like_default_headers
+    from alpha.fins.processors.sec_table_extraction import _looks_like_default_headers
 
     # 有语义的文本表头：不是低信息，也不是 decimal → False
     assert _looks_like_default_headers(["Revenue", "Cost", "Profit"]) is False

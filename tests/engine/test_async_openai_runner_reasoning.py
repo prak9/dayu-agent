@@ -14,12 +14,12 @@ from typing import Any, AsyncIterator, Dict, List
 
 import pytest
 
-from dayu.engine.async_openai_runner import (
+from alpha.engine.async_openai_runner import (
     AsyncOpenAIRunner,
     AsyncOpenAIRunnerRunningConfig,
 )
-from dayu.engine.events import EventType, StreamEvent
-from dayu.engine.sse_parser import SSEStreamParser
+from alpha.engine.events import EventType, StreamEvent
+from alpha.engine.sse_parser import SSEStreamParser
 
 
 class _MockRunner(AsyncOpenAIRunner):

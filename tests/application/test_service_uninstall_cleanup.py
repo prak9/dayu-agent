@@ -6,19 +6,19 @@ from pathlib import Path
 
 import pytest
 
-from dayu.host.host_store import HostStore
-from dayu.host.pending_turn_store import (
+from alpha.host.host_store import HostStore
+from alpha.host.pending_turn_store import (
     InMemoryPendingConversationTurnStore,
     PendingConversationTurnState,
     SQLitePendingConversationTurnStore,
 )
-from dayu.host.reply_outbox_store import (
+from alpha.host.reply_outbox_store import (
     InMemoryReplyOutboxStore,
     SQLiteReplyOutboxStore,
 )
-from dayu.contracts.reply_outbox import ReplyOutboxSubmitRequest
-from dayu.wechat.runtime import _purge_tracked_session_data
-from dayu.wechat.state_store import (
+from alpha.contracts.reply_outbox import ReplyOutboxSubmitRequest
+from alpha.wechat.runtime import _purge_tracked_session_data
+from alpha.wechat.state_store import (
     load_tracked_session_ids,
     record_tracked_session_id,
 )
@@ -256,7 +256,7 @@ def test_purge_tracked_session_data_cleans_host_db(tmp_path: Path) -> None:
     state_dir = tmp_path / "state"
 
     # 构造 Host DB 并插入数据
-    from dayu.workspace_paths import build_host_store_default_path
+    from alpha.workspace_paths import build_host_store_default_path
     db_path = build_host_store_default_path(workspace_root)
     host_store = HostStore(db_path)
     host_store.initialize_schema()
@@ -327,14 +327,14 @@ def test_interactive_new_session_purges_old_session(tmp_path: Path) -> None:
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.cli.interactive_state import (
+    from alpha.cli.interactive_state import (
         FileInteractiveStateStore,
         InteractiveSessionState,
         build_interactive_key,
         build_interactive_session_id,
     )
-    from dayu.cli.dependency_setup import _resolve_interactive_session_id
-    from dayu.workspace_paths import build_host_store_default_path
+    from alpha.cli.dependency_setup import _resolve_interactive_session_id
+    from alpha.workspace_paths import build_host_store_default_path
 
     workspace_root = tmp_path / "workspace"
     workspace_root.mkdir()
@@ -347,7 +347,7 @@ def test_interactive_new_session_purges_old_session(tmp_path: Path) -> None:
     outbox_store = SQLiteReplyOutboxStore(host_store)
 
     # 先手动写一个 interactive 状态
-    from dayu.workspace_paths import build_interactive_state_dir
+    from alpha.workspace_paths import build_interactive_state_dir
     state_dir = build_interactive_state_dir(workspace_root)
     int_store = FileInteractiveStateStore(state_dir)
     old_key = build_interactive_key()

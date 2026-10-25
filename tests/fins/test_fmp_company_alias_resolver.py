@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.fins.resolver import fmp_company_alias_resolver as module
+from alpha.fins.resolver import fmp_company_alias_resolver as module
 
 
 def test_infer_company_aliases_from_fmp_combines_symbol_and_name_results(

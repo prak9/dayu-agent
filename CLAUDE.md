@@ -23,12 +23,12 @@
 
 ## 架构硬约束
 
-- Dayu 的架构定位是：宿主强约束下的 `LLM in the loop`，不是 `LLM on the loop`。
+- Alpha 的架构定位是：宿主强约束下的 `LLM in the loop`，不是 `LLM on the loop`。
 - Host 对 Agent / AsyncAgent / AsyncOpenAIRunner 的生命周期、取消、治理是强约束真源。
 - 严格遵守分层架构：`UI -> Service -> Host -> Agent`。
 - 禁止反向依赖。
 - 设计下层组件接口时，必须假设上层组件不存在，只考虑上层调用需求，不向上泄漏实现细节。
-- 财报文档存取必须且只能通过 `dayu.fins.storage` 下的仓储协议与仓储实现完成。
+- 财报文档存取必须且只能通过 `alpha.fins.storage` 下的仓储协议与仓储实现完成。
 
 ## 编码硬约束
 
@@ -54,7 +54,7 @@
 
 - 涉及 schema 变更时：
   - 一律按全新 schema 起库处理；禁止旧库兼容读取、兼容测试，除非当前任务明确要求兼容升级；
-  - 同时必须将旧库迁移动作作为 `workspace_migrations` 的一个插件进入`dayu-cli init` 流程。
+  - 同时必须将旧库迁移动作作为 `workspace_migrations` 的一个插件进入`alpha init` 流程。
 
 ## 测试与验证
 
@@ -63,7 +63,7 @@
 - 若修改范围触及已有 pyright 报错，必须一并修复，至少不能让错误继续扩散。
 - 测试必须跟着实现边界迁移，不得为了保住旧测试而在生产代码里堆兼容逻辑。
 - 单文件测试覆盖率目标为 >= 80%。
-- `dayu/render/` 和 `utils/` 下的脚本默认无需测试、无覆盖率要求。
+- `alpha/render/` 和 `utils/` 下的脚本默认无需测试、无覆盖率要求。
 
 ## 文档与 README 同步
 
@@ -75,21 +75,21 @@
   3. 文档职责是否越界，总览文档不抢包文档职责，包文档不重复用户手册。
 - 各 README 固定职责：
   - 根目录 `README.md`：用户手册，只写安装、配置、跑通、常用工作流、CLI 命令、trace/render 入口、文档导航。
-  - `dayu/README.md`：开发手册总览，只写整体架构、设计意图、稳定边界、扩展入口、代码阅读顺序。
-  - `dayu/engine/README.md`：Engine 开发手册，只写架构、公共契约、Runner/Agent 事件流、状态机、ToolTrace schema、扩展点。
-  - `dayu/host/README.md`：Host 开发手册，只写 Host 九项能力的设计与机制、Session/Run/pending turn/reply outbox 状态机、并发治理与启动恢复契约、稳定接口与扩展点。
-  - `dayu/fins/README.md`：Fins 开发手册，只写 capability 定位、两条执行路径、对外接口、内部分层与机制。
-  - `dayu/config/README.md`：配置说明手册，只写默认配置、`workspace/config` 覆盖关系、常改项、最小示例、prompts 目录职责。
+  - `alpha/README.md`：开发手册总览，只写整体架构、设计意图、稳定边界、扩展入口、代码阅读顺序。
+  - `alpha/engine/README.md`：Engine 开发手册，只写架构、公共契约、Runner/Agent 事件流、状态机、ToolTrace schema、扩展点。
+  - `alpha/host/README.md`：Host 开发手册，只写 Host 九项能力的设计与机制、Session/Run/pending turn/reply outbox 状态机、并发治理与启动恢复契约、稳定接口与扩展点。
+  - `alpha/fins/README.md`：Fins 开发手册，只写 capability 定位、两条执行路径、对外接口、内部分层与机制。
+  - `alpha/config/README.md`：配置说明手册，只写默认配置、`workspace/config` 覆盖关系、常改项、最小示例、prompts 目录职责。
   - `tests/README.md`：测试手册，只写测试分层、运行方式、约定与维护规则。
 - README 触发更新规则：
   - 命中以下触发条件时，先检查变更是否属于该 README 的职责范围与目标读者；只有属于时才实际修改，不做机械同步。
-  - `dayu/engine/` 修改 -> 更新 `dayu/engine/README.md`
-  - `dayu/host/` 修改 -> 更新 `dayu/host/README.md`
-  - `dayu/fins/` 修改 -> 更新 `dayu/fins/README.md`
-  - `dayu/config/` 修改 -> 更新 `dayu/config/README.md`
+  - `alpha/engine/` 修改 -> 更新 `alpha/engine/README.md`
+  - `alpha/host/` 修改 -> 更新 `alpha/host/README.md`
+  - `alpha/fins/` 修改 -> 更新 `alpha/fins/README.md`
+  - `alpha/config/` 修改 -> 更新 `alpha/config/README.md`
   - `tests/` 修改 -> 更新 `tests/README.md`
-  - `dayu/cli/`、`dayu/render/`、`utils/analyze_tool_trace.py`、项目级使用方式或配置入口变化 -> 更新根目录 `README.md`
-  - 涉及分层关系、装配方式、`UI / Service / Host / Agent` 边界变化 -> 更新 `dayu/README.md`
+  - `alpha/cli/`、`alpha/render/`、`utils/analyze_tool_trace.py`、项目级使用方式或配置入口变化 -> 更新根目录 `README.md`
+  - 涉及分层关系、装配方式、`UI / Service / Host / Agent` 边界变化 -> 更新 `alpha/README.md`
 - 文档写作约束：
   - 优先写“当前怎么用 / 当前怎么工作”，不要写“未来可能会怎样”。
   - 示例必须使用当前真实命令、真实导入路径、真实参数名。

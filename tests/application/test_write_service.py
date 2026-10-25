@@ -9,24 +9,24 @@ from typing import Any, Callable, Literal, cast, overload
 
 import pytest
 
-from dayu.contracts.infrastructure import ModelCatalogProtocol
-from dayu.contracts.model_config import ModelConfig
-from dayu.contracts.prompt_assets import SceneManifestAsset, TaskPromptContractAsset
-from dayu.contracts.session import SessionSource
-from dayu.execution.options import ExecutionOptions
-from dayu.execution.options import ResolvedExecutionOptions, build_base_execution_options
-from dayu.host.host import Host
-from dayu.contracts.host_execution import ConcurrencyAcquirePolicy
-from dayu.host.host_execution import HostedRunContext, HostedRunSpec
-from dayu.host.protocols import HostedExecutionGatewayProtocol, HostGovernanceProtocol
-from dayu.host.protocols import RunRegistryProtocol
-from dayu.services.conversation_policy_reader import ConversationPolicyReader
-from dayu.services.scene_definition_reader import SceneDefinitionReader
-from dayu.services.contracts import SceneModelConfig, WriteRequest, WriteRunConfig
-from dayu.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
-from dayu.services.write_service import WRITE_CANCELLED_EXIT_CODE, WriteService
-from dayu.services.protocols import WriteServiceProtocol
-from dayu.startup.workspace import WorkspaceResources
+from alpha.contracts.infrastructure import ModelCatalogProtocol
+from alpha.contracts.model_config import ModelConfig
+from alpha.contracts.prompt_assets import SceneManifestAsset, TaskPromptContractAsset
+from alpha.contracts.session import SessionSource
+from alpha.execution.options import ExecutionOptions
+from alpha.execution.options import ResolvedExecutionOptions, build_base_execution_options
+from alpha.host.host import Host
+from alpha.contracts.host_execution import ConcurrencyAcquirePolicy
+from alpha.host.host_execution import HostedRunContext, HostedRunSpec
+from alpha.host.protocols import HostedExecutionGatewayProtocol, HostGovernanceProtocol
+from alpha.host.protocols import RunRegistryProtocol
+from alpha.services.conversation_policy_reader import ConversationPolicyReader
+from alpha.services.scene_definition_reader import SceneDefinitionReader
+from alpha.services.contracts import SceneModelConfig, WriteRequest, WriteRunConfig
+from alpha.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
+from alpha.services.write_service import WRITE_CANCELLED_EXIT_CODE, WriteService
+from alpha.services.protocols import WriteServiceProtocol
+from alpha.startup.workspace import WorkspaceResources
 
 
 class _FakeCompanyMetaProvider:
@@ -302,7 +302,7 @@ def test_write_service_runs_pipeline_via_host_executor(monkeypatch: pytest.Monke
     from tests.application.conftest import StubHostExecutor, StubSessionRegistry
 
     host_executor = StubHostExecutor()
-    workspace = _build_workspace(Path("/tmp/dayu-write-service"))
+    workspace = _build_workspace(Path("/tmp/alpha-write-service"))
     host = Host(
         executor=host_executor,
         session_registry=StubSessionRegistry(),
@@ -320,7 +320,7 @@ def test_write_service_runs_pipeline_via_host_executor(monkeypatch: pytest.Monke
     )
 
     monkeypatch.setattr(
-        "dayu.services.write_service.run_write_pipeline",
+        "alpha.services.write_service.run_write_pipeline",
         lambda **kwargs: 0,
     )
 
@@ -343,7 +343,7 @@ def test_write_service_resolves_overview_scene_with_primary_model(monkeypatch: p
 
     from tests.application.conftest import StubHostExecutor, StubSessionRegistry
 
-    workspace = _build_workspace(Path("/tmp/dayu-write-service-overview"))
+    workspace = _build_workspace(Path("/tmp/alpha-write-service-overview"))
     host = Host(
         executor=StubHostExecutor(),
         session_registry=StubSessionRegistry(),
@@ -380,7 +380,7 @@ def test_write_service_resolves_overview_scene_with_primary_model(monkeypatch: p
         captured_scene_models.update(write_config.scene_models)
         return 0
 
-    monkeypatch.setattr("dayu.services.write_service.run_write_pipeline", _capture_run_write_pipeline)
+    monkeypatch.setattr("alpha.services.write_service.run_write_pipeline", _capture_run_write_pipeline)
 
     result = service.run(_build_request())
 
@@ -394,7 +394,7 @@ def test_write_service_resolves_overview_scene_with_primary_model(monkeypatch: p
 def test_write_service_returns_cancelled_exit_code_when_host_sync_path_is_cancelled() -> None:
     """WriteService 应在真实宿主同步取消收口路径上返回显式取消退出码。"""
 
-    workspace = _build_workspace(Path("/tmp/dayu-write-service-cancelled"))
+    workspace = _build_workspace(Path("/tmp/alpha-write-service-cancelled"))
     host_gateway = _CancellingHostedGateway()
     service = WriteService(
         host=cast(HostedExecutionGatewayProtocol, host_gateway),
@@ -425,7 +425,7 @@ def test_write_service_passes_hosted_run_context_cancellation_token_to_pipeline(
 
     from tests.application.conftest import StubHostExecutor, StubSessionRegistry
 
-    workspace = _build_workspace(Path("/tmp/dayu-write-service-token"))
+    workspace = _build_workspace(Path("/tmp/alpha-write-service-token"))
     host = Host(
         executor=StubHostExecutor(),
         session_registry=StubSessionRegistry(),
@@ -446,11 +446,11 @@ def test_write_service_passes_hosted_run_context_cancellation_token_to_pipeline(
         captured["cancellation_token"] = kwargs.get("cancellation_token")
         return 0
 
-    monkeypatch.setattr("dayu.services.write_service.run_write_pipeline", _capture)
+    monkeypatch.setattr("alpha.services.write_service.run_write_pipeline", _capture)
 
     assert service.run(_build_request()) == 0
 
-    from dayu.contracts.cancellation import CancellationToken
+    from alpha.contracts.cancellation import CancellationToken
 
     assert isinstance(captured.get("cancellation_token"), CancellationToken)
 
@@ -462,8 +462,8 @@ def test_write_service_run_pipeline_cancellation_token_triggers_pipeline_cancell
     回归覆盖：write 真正接入了协作式取消的章节边界 checkpoint。
     """
 
-    from dayu.contracts.cancellation import CancelledError, CancellationToken
-    from dayu.services.internal.write_pipeline.pipeline import WritePipelineRunner
+    from alpha.contracts.cancellation import CancelledError, CancellationToken
+    from alpha.services.internal.write_pipeline.pipeline import WritePipelineRunner
 
     token = CancellationToken()
     token.cancel()

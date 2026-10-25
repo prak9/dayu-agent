@@ -6,10 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.fins import DownloadCommandPayload, FinsCommand, FinsCommandName, ProcessCommandPayload
-from dayu.services.concurrency_lanes import (
+from alpha.contracts.fins import DownloadCommandPayload, FinsCommand, FinsCommandName, ProcessCommandPayload
+from alpha.services.concurrency_lanes import (
     LANE_CN_DOWNLOAD,
     LANE_HK_DOWNLOAD,
+    LANE_PUBLICATION,
     LANE_SEC_DOWNLOAD,
     LANE_WRITE_CHAPTER,
     SERVICE_DEFAULT_LANE_CONFIG,
@@ -17,7 +18,7 @@ from dayu.services.concurrency_lanes import (
     resolve_fins_command_concurrency_lane,
     resolve_hosted_run_concurrency_lane,
 )
-from dayu.services.internal.write_pipeline.enums import WriteSceneName
+from alpha.services.internal.write_pipeline.enums import WriteSceneName
 
 
 @pytest.mark.unit
@@ -29,6 +30,7 @@ def test_service_default_lane_config_contains_business_lanes_only() -> None:
         LANE_SEC_DOWNLOAD,
         LANE_CN_DOWNLOAD,
         LANE_HK_DOWNLOAD,
+        LANE_PUBLICATION,
     }
     assert all(value > 0 for value in SERVICE_DEFAULT_LANE_CONFIG.values())
 
@@ -120,14 +122,14 @@ def test_resolve_fins_command_concurrency_lane_returns_none_for_non_download() -
 
 @pytest.mark.unit
 def test_concurrency_lanes_module_has_no_llm_api_literal() -> None:
-    """守卫：dayu/services/concurrency_lanes.py 代码正文不出现 llm_api 字面量。
+    """守卫：alpha/services/concurrency_lanes.py 代码正文不出现 llm_api 字面量。
 
     仅在模块 docstring 中以反引号形式说明"本模块不出现此字面量"是允许的。
     """
 
     module_path = (
         Path(__file__).resolve().parents[2]
-        / "dayu"
+        / "alpha"
         / "services"
         / "concurrency_lanes.py"
     )

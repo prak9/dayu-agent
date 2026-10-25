@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.prompt_assets import SceneConversationAsset, SceneManifestAsset, SceneToolSelectionAsset
-from dayu.prompting.scene_definition import load_scene_definition
-from dayu.services.internal.write_pipeline.prompt_contracts import parse_task_prompt_contract
-from dayu.startup.config_file_resolver import ConfigFileResolver
-from dayu.startup.prompt_assets import FilePromptAssetStore
+from alpha.contracts.prompt_assets import SceneConversationAsset, SceneManifestAsset, SceneToolSelectionAsset
+from alpha.prompting.scene_definition import load_scene_definition
+from alpha.services.internal.write_pipeline.prompt_contracts import parse_task_prompt_contract
+from alpha.startup.config_file_resolver import ConfigFileResolver
+from alpha.startup.prompt_assets import FilePromptAssetStore
 
 
 def _require_tool_selection(manifest: SceneManifestAsset) -> SceneToolSelectionAsset:

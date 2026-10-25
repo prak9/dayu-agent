@@ -4,6 +4,7 @@
 
 requests==2.32.2
 httpx==0.28.1
+mcp==2.3.0
 beautifulsoup4==4.12.3
 PyYAML==6.0.2
 aiohttp==3.9.0

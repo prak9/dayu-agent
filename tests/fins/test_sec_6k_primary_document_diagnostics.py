@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.domain.document_models import SourceDocumentUpsertRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.sec_6k_primary_document_diagnostics import (
+from alpha.fins.domain.document_models import SourceDocumentUpsertRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.sec_6k_primary_document_diagnostics import (
     run_sec_6k_primary_document_diagnostics,
 )
 from tests.fins.storage_testkit import FsStorageTestContext, build_fs_storage_test_context

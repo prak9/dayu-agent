@@ -22,7 +22,7 @@ class TestWriteInstallScript:
         script_text = (tmp_path / "install.sh").read_text(encoding="utf-8")
 
         assert module._PIP_ONLY_BINARY_ALL in script_text
-        assert "dayu-agent[browser,web]==0.1.2" in script_text
+        assert "alpha-agent[browser,web]==0.1.2" in script_text
 
     def test_writes_windows_install_script_with_binary_only_guard(self, tmp_path: Path) -> None:
         """Windows 安装脚本应显式要求仅安装 wheel。"""
@@ -32,25 +32,25 @@ class TestWriteInstallScript:
         script_text = (tmp_path / "install.cmd").read_text(encoding="utf-8")
 
         assert module._PIP_ONLY_BINARY_ALL in script_text
-        assert "dayu-agent[browser,web]==0.1.2" in script_text
+        assert "alpha-agent[browser,web]==0.1.2" in script_text
 
 
 class TestWriteBundleReadme:
     """`_write_bundle_readme()` 测试。"""
 
-    def test_readme_does_not_mention_unfinished_dayu_web_help(self, tmp_path: Path) -> None:
+    def test_readme_does_not_mention_unfinished_alpha_web_help(self, tmp_path: Path) -> None:
         """离线包 README 不应提示尚未完成的 Web help 验证。"""
 
         module._write_bundle_readme(
             tmp_path,
-            package_name="dayu-agent",
+            package_name="alpha-agent",
             version="0.1.2",
             platform_id="macos-arm64",
         )
 
         readme_text = (tmp_path / "README.txt").read_text(encoding="utf-8")
 
-        assert "dayu-web --help" not in readme_text
+        assert "alpha-web --help" not in readme_text
 
 
 class TestDownloadWheelhouse:
@@ -63,7 +63,7 @@ class TestDownloadWheelhouse:
     ) -> None:
         """wheelhouse 下载阶段应同时纳入 browser 与 web extras。"""
 
-        wheel_path = tmp_path / "dayu_agent-0.1.2-py3-none-any.whl"
+        wheel_path = tmp_path / "alpha_agent-0.1.2-py3-none-any.whl"
         wheel_path.write_text("wheel", encoding="utf-8")
         constraints_path = tmp_path / "constraints.txt"
         constraints_path.write_text("requests==2.32.5\n", encoding="utf-8")

@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.contracts.fins import (
+from alpha.contracts.fins import (
     DownloadCommandPayload,
     DownloadFilingResultStatus,
     DownloadProgressPayload,
@@ -21,26 +21,26 @@ from dayu.contracts.fins import (
     FinsProgressEventName,
     FinsResult,
 )
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.pipelines import PipelineProtocol
-from dayu.fins.pipelines.cn_download_models import (
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.pipelines import PipelineProtocol
+from alpha.fins.pipelines.cn_download_models import (
     CnCompanyProfile,
     CnReportCandidate,
     CnReportQuery,
     DownloadedReportAsset,
 )
-from dayu.fins.pipelines.cn_pipeline import CnPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
-from dayu.fins.service_runtime import DefaultFinsRuntime
-from dayu.fins.storage import (
+from alpha.fins.pipelines.cn_pipeline import CnPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.service_runtime import DefaultFinsRuntime
+from alpha.fins.storage import (
     CompanyMetaRepositoryProtocol,
     DocumentBlobRepositoryProtocol,
     FilingMaintenanceRepositoryProtocol,
     ProcessedDocumentRepositoryProtocol,
     SourceDocumentRepositoryProtocol,
 )
-from dayu.fins.ticker_normalization import NormalizedTicker
-import dayu.fins.service_runtime as service_runtime_module
+from alpha.fins.ticker_normalization import NormalizedTicker
+import alpha.fins.service_runtime as service_runtime_module
 
 _PDF_BYTES = b"%PDF-1.7\n" + b"1" * 2048
 _DOCLING_BYTES = b'{"document": "runtime-ok"}'

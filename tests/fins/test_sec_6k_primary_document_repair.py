@@ -8,12 +8,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from dayu.fins.domain.document_models import (
+from alpha.fins.domain.document_models import (
     CompanyMeta,
     SourceDocumentUpsertRequest,
 )
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines import sec_6k_primary_document_repair as repair_module
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines import sec_6k_primary_document_repair as repair_module
 from tests.fins.storage_testkit import FsStorageTestContext, build_fs_storage_test_context
 
 

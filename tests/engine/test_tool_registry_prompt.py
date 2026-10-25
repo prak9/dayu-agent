@@ -3,10 +3,10 @@
 
 from typing import Any, cast
 
-from dayu.startup.config_file_resolver import ConfigFileResolver
-from dayu.startup.prompt_assets import FilePromptAssetStore
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.prompting import (
+from alpha.startup.config_file_resolver import ConfigFileResolver
+from alpha.startup.prompt_assets import FilePromptAssetStore
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.prompting import (
     PromptComposeContext,
     PromptComposer,
     build_prompt_assembly_plan,

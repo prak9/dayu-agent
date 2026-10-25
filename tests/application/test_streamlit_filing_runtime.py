@@ -8,14 +8,14 @@ from typing import cast
 
 import pytest
 
-from dayu.web.streamlit.pages.filing import download_panel as panel_module
-from dayu.web.streamlit.pages.filing.download_progress import (
+from alpha.web.streamlit.pages.filing import download_panel as panel_module
+from alpha.web.streamlit.pages.filing.download_progress import (
     DownloadQueueEvent,
     DownloadStatus,
     DownloadTaskState,
     create_download_task,
 )
-from dayu.web.streamlit.pages.filing.download_panel import DownloadRuntimeState
+from alpha.web.streamlit.pages.filing.download_panel import DownloadRuntimeState
 
 
 class _FakeSessionState(dict[str, object]):

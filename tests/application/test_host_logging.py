@@ -7,7 +7,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedModelSpec,
     ExecutionContract,
@@ -15,9 +15,9 @@ from dayu.contracts.agent_execution import (
     ExecutionMessageInputs,
     ScenePreparationSpec,
 )
-from dayu.contracts.session import SessionSource
-from dayu.host.host import Host
-from dayu.log import Log
+from alpha.contracts.session import SessionSource
+from alpha.host.host import Host
+from alpha.log import Log
 from tests.application.conftest import StubHostExecutor, StubRunRegistry, StubSessionRegistry
 
 

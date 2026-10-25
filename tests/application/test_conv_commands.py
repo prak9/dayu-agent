@@ -9,11 +9,11 @@ from typing import cast
 
 import pytest
 
-from dayu.cli.commands import conv as conv_commands_module
-from dayu.cli.conversation_label_locks import ConversationLabelLease
-from dayu.cli.conversation_labels import FileConversationLabelRegistry
-from dayu.services.contracts import SessionAdminView
-from dayu.services.protocols import HostAdminServiceProtocol
+from alpha.cli.commands import conv as conv_commands_module
+from alpha.cli.conversation_label_locks import ConversationLabelLease
+from alpha.cli.conversation_labels import FileConversationLabelRegistry
+from alpha.services.contracts import SessionAdminView
+from alpha.services.protocols import HostAdminServiceProtocol
 
 pytestmark = pytest.mark.unit
 

@@ -11,18 +11,18 @@ from typing import cast
 
 import pytest
 
-from dayu.contracts.agent_execution import AgentCreateArgs
-from dayu.contracts.agent_types import AgentMessage
-from dayu.contracts.infrastructure import PromptAssetStoreProtocol
-from dayu.contracts.model_config import ModelConfig
-from dayu.contracts.protocols import PromptToolExecutorProtocol
-from dayu.contracts.prompt_assets import SceneManifestAsset, TaskPromptContractAsset
-from dayu.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
-from dayu.engine.events import EventType, StreamEvent
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.execution.runtime_config import AgentRuntimeConfig, OpenAIRunnerRuntimeConfig
-from dayu.execution.options import (
+from alpha.contracts.agent_execution import AgentCreateArgs
+from alpha.contracts.agent_types import AgentMessage
+from alpha.contracts.infrastructure import PromptAssetStoreProtocol
+from alpha.contracts.model_config import ModelConfig
+from alpha.contracts.protocols import PromptToolExecutorProtocol
+from alpha.contracts.prompt_assets import SceneManifestAsset, TaskPromptContractAsset
+from alpha.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
+from alpha.engine.events import EventType, StreamEvent
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.execution.runtime_config import AgentRuntimeConfig, OpenAIRunnerRuntimeConfig
+from alpha.execution.options import (
     ConversationMemorySettings,
     ExecutionOptions,
     ResolvedExecutionOptions,
@@ -31,7 +31,7 @@ from dayu.execution.options import (
     merge_execution_options,
     resolve_conversation_memory_settings,
 )
-from dayu.host.conversation_memory import (
+from alpha.host.conversation_memory import (
     ConversationCompactionResult,
     ConversationPinnedStatePatch,
     DefaultConversationMemoryManager,
@@ -40,17 +40,17 @@ from dayu.host.conversation_memory import (
     _estimate_tokens,
     _truncate_text_to_token_budget,
 )
-from dayu.host.conversation_runtime import (
+from alpha.host.conversation_runtime import (
     ConversationCompactionAgentProtocol,
     ConversationCompactionAgentHandle,
     ConversationCompactionRequest,
     ConversationCompactionSceneProtocol,
 )
-from dayu.host.conversation_session_archive import (
+from alpha.host.conversation_session_archive import (
     ConversationHistoryArchive,
     ConversationSessionArchive,
 )
-from dayu.host.conversation_store import (
+from alpha.host.conversation_store import (
     ConversationEpisodeSummary,
     ConversationPinnedState,
     ConversationToolUseSummary,
@@ -94,9 +94,9 @@ def _build_toolset_configs(
         )
         if snapshot is not None
     )
-from dayu.host.scene_preparer import PreparedSceneState
-from dayu.prompting import SceneDefinition, SceneModelDefinition
-from dayu.log import Log
+from alpha.host.scene_preparer import PreparedSceneState
+from alpha.prompting import SceneDefinition, SceneModelDefinition
+from alpha.log import Log
 
 
 class _FakeAsyncAgent:
@@ -910,7 +910,7 @@ def test_conversation_memory_emits_compaction_logs(tmp_path: Path, monkeypatch: 
 def test_resolve_memory_total_budget_clamped_by_floor_and_cap() -> None:
     """验证总池预算公式 ``clamp(window * ratio, floor, cap)`` 在跨档位都生效。"""
 
-    from dayu.host.conversation_memory import _resolve_memory_total_budget
+    from alpha.host.conversation_memory import _resolve_memory_total_budget
 
     settings = ConversationMemorySettings(
         memory_token_budget_ratio=0.10,
@@ -1236,7 +1236,7 @@ def test_default_conversation_memory_settings_match_runtime_default() -> None:
     / ``options.py`` 运行时默认一致，避免快照恢复 / dataclass 直构 / run.json
     三条路径得到不同 memory policy。"""
 
-    from dayu.execution.options import _DEFAULT_RUN_CONFIG  # type: ignore[attr-defined]
+    from alpha.execution.options import _DEFAULT_RUN_CONFIG  # type: ignore[attr-defined]
 
     runtime_default = _DEFAULT_RUN_CONFIG.conversation_memory.default
     dataclass_default = ConversationMemorySettings()
@@ -1357,7 +1357,7 @@ def test_compaction_only_replaces_runtime_transcript_subview(tmp_path: Path) -> 
     assert seeded_archive is not None
 
     # 在 archive 中预置一条 history（模拟"已有展示历史"）
-    from dayu.host.conversation_session_archive import ConversationHistoryTurnRecord
+    from alpha.host.conversation_session_archive import ConversationHistoryTurnRecord
 
     history_turn = ConversationHistoryTurnRecord(
         turn_id="hist_turn_1",
@@ -1407,7 +1407,7 @@ def _dc_replace_archive_history(
     from dataclasses import replace
     import uuid
 
-    from dayu.host.conversation_session_archive import ConversationHistoryArchive
+    from alpha.host.conversation_session_archive import ConversationHistoryArchive
 
     new_history = ConversationHistoryArchive(
         session_id=archive.session_id, turns=tuple(history_turns)

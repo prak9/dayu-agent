@@ -5,11 +5,11 @@ from __future__ import annotations
 import pytest
 from typing import cast
 
-from dayu.fins.pipelines.docling_upload_service import UploadFileEventPayload
-from dayu.fins.pipelines.docling_upload_service import UploadFileEventType
-from dayu.fins.pipelines.upload_filing_events import UploadFilingEventType
-from dayu.fins.pipelines.upload_material_events import UploadMaterialEventType
-from dayu.fins.pipelines.upload_progress_helpers import (
+from alpha.fins.pipelines.docling_upload_service import UploadFileEventPayload
+from alpha.fins.pipelines.docling_upload_service import UploadFileEventType
+from alpha.fins.pipelines.upload_filing_events import UploadFilingEventType
+from alpha.fins.pipelines.upload_material_events import UploadMaterialEventType
+from alpha.fins.pipelines.upload_progress_helpers import (
     map_upload_file_event_to_filing_event_type,
     map_upload_file_event_to_material_event_type,
 )

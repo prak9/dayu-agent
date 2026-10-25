@@ -18,9 +18,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.engine.async_agent import AsyncAgent
-from dayu.engine import ToolRegistry, register_doc_tools
-from dayu.engine import (
+from alpha.engine.async_agent import AsyncAgent
+from alpha.engine import ToolRegistry, register_doc_tools
+from alpha.engine import (
     content_complete,
     content_delta,
     done_event,

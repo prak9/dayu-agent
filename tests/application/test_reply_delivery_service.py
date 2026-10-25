@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.contracts.reply_outbox import ReplyOutboxState
-from dayu.host.host import Host
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
-from dayu.services.contracts import ReplyDeliveryFailureRequest, ReplyDeliverySubmitRequest
-from dayu.services.protocols import ReplyDeliveryServiceProtocol
-from dayu.services.reply_delivery_service import ReplyDeliveryService
+from alpha.contracts.reply_outbox import ReplyOutboxState
+from alpha.host.host import Host
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.services.contracts import ReplyDeliveryFailureRequest, ReplyDeliverySubmitRequest
+from alpha.services.protocols import ReplyDeliveryServiceProtocol
+from alpha.services.reply_delivery_service import ReplyDeliveryService
 from tests.application.conftest import StubHostExecutor, StubRunRegistry, StubSessionRegistry
 
 

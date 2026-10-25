@@ -7,11 +7,11 @@ from typing import Any, AsyncIterator, Optional
 
 import pytest
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.contracts.protocols import ToolExecutionContext
-from dayu.engine.async_agent import AgentRunningConfig, AsyncAgent
-from dayu.engine.duplicate_call_guard import _make_tool_signature
-from dayu.engine.events import (
+from alpha.contracts.agent_types import AgentMessage
+from alpha.contracts.protocols import ToolExecutionContext
+from alpha.engine.async_agent import AgentRunningConfig, AsyncAgent
+from alpha.engine.duplicate_call_guard import _make_tool_signature
+from alpha.engine.events import (
     EventType,
     StreamEvent,
     content_complete,
@@ -387,7 +387,7 @@ def test_make_tool_signature_non_serializable_fallback() -> None:
 def test_init_preserves_explicit_running_config(monkeypatch: pytest.MonkeyPatch) -> None:
     """覆盖 AsyncAgent 显式 running_config 构造分支。"""
 
-    monkeypatch.setattr("dayu.engine.async_agent.Log.verbose", lambda *args, **kwargs: None)
+    monkeypatch.setattr("alpha.engine.async_agent.Log.verbose", lambda *args, **kwargs: None)
 
     class _CreatedRunner:
         def is_supports_tool_calling(self) -> bool:

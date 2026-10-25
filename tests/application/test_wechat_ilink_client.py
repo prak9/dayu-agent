@@ -9,8 +9,8 @@ import json
 import httpx
 import pytest
 
-from dayu.wechat import ilink_client as ilink_client_module
-from dayu.wechat.ilink_client import IlinkApiClient, IlinkApiError, build_ilink_auth_headers, build_x_wechat_uin_header
+from alpha.wechat import ilink_client as ilink_client_module
+from alpha.wechat.ilink_client import IlinkApiClient, IlinkApiError, build_ilink_auth_headers, build_x_wechat_uin_header
 
 
 @pytest.mark.unit
@@ -144,7 +144,7 @@ def test_send_text_message_preserves_context_token() -> None:
         "item_list": [{"type": 1, "text_item": {"text": "hello"}}],
     }
     assert isinstance(body["msg"]["client_id"], str)
-    assert body["msg"]["client_id"].startswith("dayu-wechat-")
+    assert body["msg"]["client_id"].startswith("alpha-wechat-")
 
 
 @pytest.mark.unit

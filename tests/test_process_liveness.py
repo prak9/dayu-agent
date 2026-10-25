@@ -1,4 +1,4 @@
-"""测试跨平台进程判活 `dayu.process_liveness.is_pid_alive`。
+"""测试跨平台进程判活 `alpha.process_liveness.is_pid_alive`。
 
 设计原则：
 - 唯一的「真实进程」用例是当前进程判活，因为 `os.getpid()` 必然对应当前运行的 Python 进程，
@@ -23,8 +23,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from dayu import process_liveness as liveness_module
-from dayu.process_liveness import is_pid_alive
+from alpha import process_liveness as liveness_module
+from alpha.process_liveness import is_pid_alive
 
 
 class _CtypesPointerLike(Protocol):
@@ -236,7 +236,7 @@ def _reloaded_as_windows(
     """
 
     # 备份当前模块。
-    original_module = sys.modules["dayu.process_liveness"]
+    original_module = sys.modules["alpha.process_liveness"]
     # 备份当前 sys.platform 真值——在真实 Windows 上 finally 必须把
     # platform 还原为 "win32"（而不是硬编码 "darwin"），否则后续 reload
     # 会让 OwnerIdentity / is_pid_alive 等 Windows 分支符号残留为
@@ -303,7 +303,7 @@ def _reloaded_as_windows(
         for name, orig_value in _saved_attrs.items():
             setattr(ctypes, name, orig_value)
         monkeypatch.setattr(sys, "platform", original_platform)
-        sys.modules["dayu.process_liveness"] = original_module
+        sys.modules["alpha.process_liveness"] = original_module
         importlib.reload(liveness_module)
 
 
@@ -517,7 +517,7 @@ def test_is_pid_alive_dispatches_to_windows_branch_via_reload(
 # ---------------------------------------------------------------------------
 
 
-from dayu.process_liveness import (
+from alpha.process_liveness import (
     OwnerIdentity,
     current_owner_identity,
     is_owner_identity_alive,

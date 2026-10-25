@@ -13,17 +13,17 @@ import pytest
 from edgar.documents.exceptions import DocumentTooLargeError
 from edgar.xbrl import XBRL
 
-from dayu.engine.processors.base import SearchHit, TableSummary
-from dayu.fins.processors.financial_base import FinancialStatementResult, XbrlFactsResult
-from dayu.fins.storage.local_file_source import LocalFileSource
-from dayu.fins.processors import sec_processor
-from dayu.fins.processors import sec_section_build
-from dayu.fins.processors import sec_table_extraction
-from dayu.fins.processors import sec_xbrl_query
-from dayu.fins.processors import sec_dom_helpers
-from dayu.engine.processors import text_utils
-from dayu.fins import xbrl_file_discovery
-from dayu.fins.processors.sec_processor import SecProcessor
+from alpha.engine.processors.base import SearchHit, TableSummary
+from alpha.fins.processors.financial_base import FinancialStatementResult, XbrlFactsResult
+from alpha.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.processors import sec_processor
+from alpha.fins.processors import sec_section_build
+from alpha.fins.processors import sec_table_extraction
+from alpha.fins.processors import sec_xbrl_query
+from alpha.fins.processors import sec_dom_helpers
+from alpha.engine.processors import text_utils
+from alpha.fins import xbrl_file_discovery
+from alpha.fins.processors.sec_processor import SecProcessor
 
 
 def _table_is_financial(table: TableSummary) -> object:

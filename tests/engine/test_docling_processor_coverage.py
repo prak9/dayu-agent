@@ -11,7 +11,7 @@ import json
 
 import pytest
 
-from dayu.engine.processors.docling_processor import DoclingProcessor
+from alpha.engine.processors.docling_processor import DoclingProcessor
 
 
 @pytest.mark.unit
@@ -42,11 +42,11 @@ def test_docling_processor_read_section_not_found(tmp_path: Path) -> None:
     mock_source.media_type = "application/json"
     mock_source.materialize.return_value = json_path
     
-    with patch('dayu.engine.processors.docling_processor._load_docling_document'):
-        with patch('dayu.engine.processors.docling_processor._build_linear_items', return_value=[]):
-            with patch('dayu.engine.processors.docling_processor._build_tables', return_value=([], {})):
-                with patch('dayu.engine.processors.docling_processor._build_sections', return_value=[]):
-                    with patch('dayu.engine.processors.docling_processor._attach_table_sections', return_value=[]):
+    with patch('alpha.engine.processors.docling_processor._load_docling_document'):
+        with patch('alpha.engine.processors.docling_processor._build_linear_items', return_value=[]):
+            with patch('alpha.engine.processors.docling_processor._build_tables', return_value=([], {})):
+                with patch('alpha.engine.processors.docling_processor._build_sections', return_value=[]):
+                    with patch('alpha.engine.processors.docling_processor._attach_table_sections', return_value=[]):
                         processor = DoclingProcessor(mock_source)
                         
                         with pytest.raises(KeyError, match="Section not found"):
@@ -80,11 +80,11 @@ def test_docling_processor_read_table_not_found(tmp_path: Path) -> None:
     mock_source.media_type = "application/json"
     mock_source.materialize.return_value = json_path
     
-    with patch('dayu.engine.processors.docling_processor._load_docling_document'):
-        with patch('dayu.engine.processors.docling_processor._build_linear_items', return_value=[]):
-            with patch('dayu.engine.processors.docling_processor._build_tables', return_value=([], {})):
-                with patch('dayu.engine.processors.docling_processor._build_sections', return_value=[]):
-                    with patch('dayu.engine.processors.docling_processor._attach_table_sections', return_value=[]):
+    with patch('alpha.engine.processors.docling_processor._load_docling_document'):
+        with patch('alpha.engine.processors.docling_processor._build_linear_items', return_value=[]):
+            with patch('alpha.engine.processors.docling_processor._build_tables', return_value=([], {})):
+                with patch('alpha.engine.processors.docling_processor._build_sections', return_value=[]):
+                    with patch('alpha.engine.processors.docling_processor._attach_table_sections', return_value=[]):
                         processor = DoclingProcessor(mock_source)
                         
                         with pytest.raises(KeyError, match="Table not found"):
@@ -143,11 +143,11 @@ def test_docling_processor_search_empty_query(tmp_path: Path) -> None:
     mock_source.media_type = "application/json"
     mock_source.materialize.return_value = json_path
     
-    with patch('dayu.engine.processors.docling_processor._load_docling_document'):
-        with patch('dayu.engine.processors.docling_processor._build_linear_items', return_value=[]):
-            with patch('dayu.engine.processors.docling_processor._build_tables', return_value=([], {})):
-                with patch('dayu.engine.processors.docling_processor._build_sections', return_value=[]):
-                    with patch('dayu.engine.processors.docling_processor._attach_table_sections', return_value=[]):
+    with patch('alpha.engine.processors.docling_processor._load_docling_document'):
+        with patch('alpha.engine.processors.docling_processor._build_linear_items', return_value=[]):
+            with patch('alpha.engine.processors.docling_processor._build_tables', return_value=([], {})):
+                with patch('alpha.engine.processors.docling_processor._build_sections', return_value=[]):
+                    with patch('alpha.engine.processors.docling_processor._attach_table_sections', return_value=[]):
                         processor = DoclingProcessor(mock_source)
                         
                         # 空查询应返回空列表
@@ -286,10 +286,10 @@ def test_docling_processor_search_with_match(tmp_path: Path) -> None:
         MagicMock(item_type="text", text="This document contains revenue information", internal_ref=None)
     ]
     
-    with patch('dayu.engine.processors.docling_processor._load_docling_document'):
-        with patch('dayu.engine.processors.docling_processor._build_linear_items', return_value=mock_linear_items):
-            with patch('dayu.engine.processors.docling_processor._build_tables', return_value=([], {})):
-                with patch('dayu.engine.processors.docling_processor._build_sections') as mock_build_sections:
+    with patch('alpha.engine.processors.docling_processor._load_docling_document'):
+        with patch('alpha.engine.processors.docling_processor._build_linear_items', return_value=mock_linear_items):
+            with patch('alpha.engine.processors.docling_processor._build_tables', return_value=([], {})):
+                with patch('alpha.engine.processors.docling_processor._build_sections') as mock_build_sections:
                     # 创建一个模拟的章节
                     mock_section = MagicMock()
                     mock_section.ref = "s_0001"
@@ -299,8 +299,8 @@ def test_docling_processor_search_with_match(tmp_path: Path) -> None:
                     mock_section.table_refs = []
                     mock_build_sections.return_value = [mock_section]
                     
-                    with patch('dayu.engine.processors.docling_processor._attach_table_sections', return_value=[mock_section]):
-                        with patch('dayu.engine.processors.docling_processor.enrich_hits_by_section', return_value=[]):
+                    with patch('alpha.engine.processors.docling_processor._attach_table_sections', return_value=[mock_section]):
+                        with patch('alpha.engine.processors.docling_processor.enrich_hits_by_section', return_value=[]):
                             processor = DoclingProcessor(mock_source)
                             result = processor.search("revenue")
                             # 结果应该是列表（可能为空或包含项）
@@ -329,11 +329,11 @@ def test_docling_processor_search_within_section(tmp_path: Path) -> None:
     mock_source.uri = "local://test_docling.json"
     mock_source.materialize.return_value = json_path
     
-    with patch('dayu.engine.processors.docling_processor._load_docling_document'):
-        with patch('dayu.engine.processors.docling_processor._build_linear_items', return_value=[]):
-            with patch('dayu.engine.processors.docling_processor._build_tables', return_value=([], {})):
-                with patch('dayu.engine.processors.docling_processor._build_sections', return_value=[]):
-                    with patch('dayu.engine.processors.docling_processor._attach_table_sections', return_value=[]):
+    with patch('alpha.engine.processors.docling_processor._load_docling_document'):
+        with patch('alpha.engine.processors.docling_processor._build_linear_items', return_value=[]):
+            with patch('alpha.engine.processors.docling_processor._build_tables', return_value=([], {})):
+                with patch('alpha.engine.processors.docling_processor._build_sections', return_value=[]):
+                    with patch('alpha.engine.processors.docling_processor._attach_table_sections', return_value=[]):
                         processor = DoclingProcessor(mock_source)
                         
                         # 搜索不存在的章节范围应返回空列表

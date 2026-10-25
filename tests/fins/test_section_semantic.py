@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.fins.tools.section_semantic import (
+from alpha.fins.tools.section_semantic import (
     build_section_path,
     extract_item_number,
     resolve_section_semantic,

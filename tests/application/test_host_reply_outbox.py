@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedExecutionSpec,
     AcceptedModelSpec,
     ExecutionContract,
@@ -14,9 +14,9 @@ from dayu.contracts.agent_execution import (
     ExecutionMessageInputs,
     ScenePreparationSpec,
 )
-from dayu.contracts.reply_outbox import ReplyOutboxState, ReplyOutboxSubmitRequest
-from dayu.host.host import Host
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.contracts.reply_outbox import ReplyOutboxState, ReplyOutboxSubmitRequest
+from alpha.host.host import Host
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 from tests.application.conftest import StubHostExecutor, StubRunRegistry, StubSessionRegistry
 
 

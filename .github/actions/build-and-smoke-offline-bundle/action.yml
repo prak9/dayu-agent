@@ -34,7 +34,7 @@ runs:
       run: |
         WHEEL_PATH="$(python - <<'PY'
         from pathlib import Path
-        wheels = sorted(Path("dist").glob("dayu_agent-*.whl"))
+        wheels = sorted(Path("dist").glob("alpha_agent-*.whl"))
         if len(wheels) != 1:
             raise SystemExit(f"unexpected wheels: {wheels}")
         print(wheels[0])

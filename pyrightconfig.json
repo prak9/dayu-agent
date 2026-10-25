@@ -1,7 +1,7 @@
 {
   "pythonVersion": "3.11",
   "include": [
-    "dayu",
+    "alpha",
     "tests",
     "utils"
   ],

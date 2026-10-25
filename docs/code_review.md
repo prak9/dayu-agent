@@ -1,7 +1,7 @@
 # code review
 
 ## 范围
-对 `dayu/` 下所有代码进行 code review。
+对 `alpha/` 下所有代码进行 code review。
 
 ## 补充约束（避免误报）
 1. 工具注册中的嵌套函数：若用于装饰器注册 + 闭包捕获 service/limits/registry，默认视为合理；仅在闭包状态复杂、难测或重复逻辑明显时提出重构建议。
@@ -215,7 +215,7 @@
   - `host/` import `services/`、`cli/`、`gui/`、`web/`、`wechat/`
   - `services/` import `cli/`、`gui/`、`web/`、`wechat/`
 - 同时检查 `startup/` 是否 import 了 `services/`、`host/`、`engine/`（startup 只做启动期装配，不应依赖请求期组件）
-- 判定标准：任何 `from dayu.xxx import` 或 `import dayu.xxx` 出现违规方向即报告
+- 判定标准：任何 `from alpha.xxx import` 或 `import alpha.xxx` 出现违规方向即报告
 
 **1.2 跨层穿透调用**
 - 检查是否存在 UI 层直接调用 Host/Agent 层（跳过 Service）
@@ -440,18 +440,18 @@
 ### 5.B 跨进程并发一致性专项审查
 
 仅关注**多进程同时操作同一 workspace 下 HostStore SQLite** 的场景。当前已知部署形态：
-dayu-cli write / dayu-cli interactive / dayu-wechat service start / 未来 web daemon 共享同一
+alpha write / alpha interactive / alpha-wechat service start / 未来 web daemon 共享同一
 workspace 的 sqlite 文件，互相之间没有进程间锁。
 
 ==== 必查项（逐条产出结论 + 直接证据）====
 
 - 1. HostStore SQLite 多进程底座
-   - 读 dayu/host/host_store.py，确认是否启用 WAL（journal_mode=WAL）、是否设 busy_timeout、是否
+   - 读 alpha/host/host_store.py，确认是否启用 WAL（journal_mode=WAL）、是否设 busy_timeout、是否
      在所有写路径用 BEGIN IMMEDIATE / write_transaction。
    - 输出：是否能承载多进程并发写。如否，列出具体缺失 PRAGMA / 事务边界。
 
 - 2. 所有 `WHERE state=...` 形态的 CAS
-   - grep `UPDATE.*WHERE.*state` 整个 dayu/host/ 与 dayu/services/。
+   - grep `UPDATE.*WHERE.*state` 整个 alpha/host/ 与 alpha/services/。
    - 对每一处 CAS：判断"先读后写"还是"原子 UPDATE"；判断同状态下是否存在第二个 writer 也用同样
      CAS 抢占。
    - 输出：每一处的 (file:line, 是否原子, 第二 writer 是谁, 是否需要 fence token)。
@@ -463,30 +463,30 @@ workspace 的 sqlite 文件，互相之间没有进程间锁。
    - 输出：是否有 pid 复用导致误判活的窗口；如有，给出复合 key 建议。
 
 - 4. pending_conversation_turn 跨进程 resume race
-   - 读 dayu/host/pending_turn_store.py（或同名实现）的 resume 路径。
+   - 读 alpha/host/pending_turn_store.py（或同名实现）的 resume 路径。
    - 核对 resume 是"先读 state='resumable' 再 UPDATE"还是"单条 CAS UPDATE WHERE state='resumable'"。
    - 输出：是否存在两进程同时 resume 同一 pending turn 各自成功的可能。
 
 - 5. reply_outbox.submit_reply 并发 same delivery_key + 不同 payload
-   - 读 dayu/host/reply_outbox_store.py 的 SQLite submit_reply 路径（INSERT OR IGNORE +
+   - 读 alpha/host/reply_outbox_store.py 的 SQLite submit_reply 路径（INSERT OR IGNORE +
      _ensure_submit_request_matches）。
    - 核对调用方（web/wechat/cli）拿到 ValueError 后是否有合理兜底；是否会被静默吞掉。
    - 输出：异常路径是否有真实业务漏洞。
 
 - 6. cancel_run_and_settle / settle_active_runs 跨进程接管
-   - 读 dayu/host/host.py 与 dayu/process_lifecycle/。
+   - 读 alpha/host/host.py 与 alpha/process_lifecycle/。
    - 核对：A 进程崩溃后 B 进程触发 settle 时，对 A 仍持有的 run 状态如何判定；是否会把 A 没崩、
      只是事件流首帧前的 run 误标为终态。
    - 输出：窗口期是否真被 PR 92 关闭，还是仍有 corner case。
 
 - 7. Workspace migrations 跨进程同时启动
-   - 读 dayu/cli/init/ 或 workspace_migrations 的入口。
-   - 核对：两个 dayu-cli 同时 init 同一 workspace 是否会撞 schema 写入。
+   - 读 alpha/cli/init/ 或 workspace_migrations 的入口。
+   - 核对：两个 alpha 同时 init 同一 workspace 是否会撞 schema 写入。
    - 输出：是否需要 init lock / advisory lock。
 
 ### 6. 多轮会话记忆子系统
 
-本节专门审查 `dayu/host/conversation_*.py` 实现的两层记忆模型（`pinned_state` 独立 + 单总池）、compaction 调度与跨档自适应。设计意图与不变量见 `docs/conversation_memory_optimization.md`、`dayu/host/README.md §10`。
+本节专门审查 `alpha/host/conversation_*.py` 实现的两层记忆模型（`pinned_state` 独立 + 单总池）、compaction 调度与跨档自适应。设计意图与不变量见 `docs/conversation_memory_optimization.md`、`alpha/host/README.md §10`。
 
 #### 6.1 两层结构边界是否清晰
 
@@ -566,10 +566,10 @@ workspace 的 sqlite 文件，互相之间没有进程间锁。
 
 #### 6.8 跨档自适应（default 一份打天下）
 
-- **不分档配置原则**：`dayu/config/run.json` 的 `conversation_memory.default` 通过 `clamp(window * ratio, floor, cap)` 自动伸缩，**不应**为 1M / 256K / 128K / 32K 档分别写覆盖。
+- **不分档配置原则**：`alpha/config/run.json` 的 `conversation_memory.default` 通过 `clamp(window * ratio, floor, cap)` 自动伸缩，**不应**为 1M / 256K / 128K / 32K 档分别写覆盖。
 - 检查项：
-  - `dayu/config/llm_models.json` 各 model entry 是否仍残留 `runtime_hints.conversation_memory` 块（设计已要求全删 19 处）；
-  - `dayu/cli/commands/init.py` 是否仍残留 `_build_conversation_memory_overrides` 函数或调用点（设计已要求删除整个函数）；
+  - `alpha/config/llm_models.json` 各 model entry 是否仍残留 `runtime_hints.conversation_memory` 块（设计已要求全删 19 处）；
+  - `alpha/cli/commands/init.py` 是否仍残留 `_build_conversation_memory_overrides` 函数或调用点（设计已要求删除整个函数）；
   - 各档实际 budget 是否符合预期（1M=60K cap 截断 / 256K=25.6K 区间 / 128K=12.8K 区间 / 32K=4K floor 兜底）；
   - 三处默认值（`run.json` / `ConversationMemorySettings` dataclass / `options.py` 校验）是否一致——若漂移，下次 plan 落地的字段语义会被静默错读。
 - **128K 档 headroom 风险**：检查文档/代码中是否提示——128K 档 compaction 阈值 89.6K 扣除单总池后留给"工具结果 + 财报材料"的有效空间约 38K，单轮材料过大会触发 compaction 抖动；调参方向应先调 `cap` / `compaction_trigger_context_ratio` 而非引入档位特化覆盖。
@@ -586,7 +586,7 @@ workspace 的 sqlite 文件，互相之间没有进程间锁。
 - `compaction_trigger_token_ratio`
 
 检查项：
-- `grep -rn` 上述字段名在 `dayu/`、`tests/`、`docs/`、`workspace/config/` 应**返回空**；
+- `grep -rn` 上述字段名在 `alpha/`、`tests/`、`docs/`、`workspace/config/` 应**返回空**；
 - `agent_execution_serialization.py` 的快照反序列化是否**显式拒绝**包含旧字段的快照（而非静默忽略）；
 - `ConversationMemorySettings` dataclass 是否仍保留任何旧字段作为"过渡兼容"（项目硬约束禁止兼容性代码）；
 - 配置 schema 校验（`options.py` 校验段）是否覆盖 4 个新字段：`memory_token_budget_*`（ratio ∈ [0,1] 有限数 / floor>0 / cap≥floor）、`recent_turns_floor≥0`、`compaction_trigger_context_ratio ∈ (0,1]`。
@@ -631,7 +631,7 @@ workspace 的 sqlite 文件，互相之间没有进程间锁。
 
 - 每条问题需指出：违反的不变量（例如"`pinned_state` 不计入 budget"）、具体代码位置、可复现输入、对运行时的影响（错误压缩 / 上下文漏失 / 双计 / 阈值死代码）。
 - 不要把"调参建议"当作问题报告——除非默认值与设计文档/三处一致性测试明确冲突。
-- 引用设计意图时统一指向 `docs/conversation_memory_optimization.md` 与 `dayu/host/README.md §10`，避免与实现细节互相反推。
+- 引用设计意图时统一指向 `docs/conversation_memory_optimization.md` 与 `alpha/host/README.md §10`，避免与实现细节互相反推。
 
 ### 7. 金融逻辑分层
 - 金融逻辑（SEC Item 编号解析、财务指标判断、filing 结构规则等）是否只出现在 `fins` 中。

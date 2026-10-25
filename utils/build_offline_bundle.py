@@ -1,4 +1,4 @@
-"""构建 Dayu Agent 离线安装包。
+"""构建 Alpha Agent 离线安装包。
 
 本脚本用于把已构建好的项目 wheel、对应平台的 wheelhouse、安装脚本与
 简短说明打包为单个离线交付物，供 CI / 发布流程复用。
@@ -36,7 +36,7 @@ def _offline_package_spec(version: str) -> str:
     """
 
     extras = ",".join(_OFFLINE_PACKAGE_EXTRAS)
-    return f"dayu-agent[{extras}]=={version}"
+    return f"alpha-agent[{extras}]=={version}"
 
 
 def _offline_wheel_requirement(wheel_path: Path) -> str:
@@ -53,7 +53,7 @@ def _offline_wheel_requirement(wheel_path: Path) -> str:
     """
 
     extras = ",".join(_OFFLINE_PACKAGE_EXTRAS)
-    return f"dayu-agent[{extras}] @ {wheel_path.resolve().as_uri()}"
+    return f"alpha-agent[{extras}] @ {wheel_path.resolve().as_uri()}"
 
 
 def _parse_args() -> argparse.Namespace:
@@ -69,7 +69,7 @@ def _parse_args() -> argparse.Namespace:
         SystemExit：命令行参数不合法时抛出。
     """
 
-    parser = argparse.ArgumentParser(description="构建 Dayu Agent 离线安装包。")
+    parser = argparse.ArgumentParser(description="构建 Alpha Agent 离线安装包。")
     parser.add_argument("--wheel", type=Path, required=True, help="已构建好的项目 wheel 路径。")
     parser.add_argument("--constraints", type=Path, required=True, help="用于离线包的锁定 constraints 文件。")
     parser.add_argument("--platform-id", required=True, help="平台标识，例如 macos-arm64 / linux-x64。")
@@ -292,7 +292,7 @@ def _write_bundle_readme(bundle_dir: Path, *, package_name: str, version: str, p
 
     install_command = ".\\install.cmd" if platform_id.startswith("windows-") else "./install.sh"
     wheel_name_pattern = f"{package_name.replace('-', '_')}-{version}-*.whl"
-    text = f"""# Dayu Agent 离线安装包
+    text = f"""# Alpha Agent 离线安装包
 
 版本：`{version}`
 平台：`{platform_id}`
@@ -309,10 +309,10 @@ def _write_bundle_readme(bundle_dir: Path, *, package_name: str, version: str, p
 1. 解压当前归档。
 2. 在解压目录中运行 `{install_command}`。
 3. 安装完成后验证：
-   - `dayu-cli --help`
-   - `dayu-wechat --help`
-   - `dayu-cli init --help`
-   - `dayu-render --help`
+   - `alpha --help`
+   - `alpha-wechat --help`
+   - `alpha init --help`
+   - `alpha-render --help`
 
 说明：
 - 安装脚本只会从当前目录下的 `wheelhouse/` 读取 wheel，不访问公网，也不会现场构建源码包。
@@ -427,7 +427,7 @@ def _download_wheelhouse(
     shutil.copy2(wheel_path, wheelhouse_dir / wheel_path.name)
     flattened_constraints_text = _flatten_constraints_text(constraints_path)
     (bundle_dir / "constraints.txt").write_text(flattened_constraints_text, encoding="utf-8")
-    with tempfile.TemporaryDirectory(prefix="dayu-offline-build-") as temp_dir_name:
+    with tempfile.TemporaryDirectory(prefix="alpha-offline-build-") as temp_dir_name:
         requirements_path = Path(temp_dir_name) / "requirements.txt"
         requirements_path.write_text(
             f"{_offline_wheel_requirement(wheel_path)}\n",
@@ -500,7 +500,7 @@ def main() -> None:
     bundle_stem = _bundle_stem(package_name, version, args.platform_id)
     archive_path = _archive_path(args.output_dir.resolve(), bundle_stem, args.platform_id)
 
-    with tempfile.TemporaryDirectory(prefix="dayu-offline-bundle-") as temp_dir_name:
+    with tempfile.TemporaryDirectory(prefix="alpha-offline-bundle-") as temp_dir_name:
         staging_root = Path(temp_dir_name)
         bundle_dir = staging_root / bundle_stem
         bundle_dir.mkdir(parents=True, exist_ok=True)

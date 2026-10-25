@@ -17,16 +17,16 @@ from pathlib import Path
 
 import pytest
 
-from dayu.cli.workspace_migrations.conversation_archive_init import (
+from alpha.cli.workspace_migrations.conversation_archive_init import (
     migrate_conversation_archive_init,
 )
-from dayu.host.conversation_session_archive import ConversationSessionArchive
-from dayu.host.conversation_store import (
+from alpha.host.conversation_session_archive import ConversationSessionArchive
+from alpha.host.conversation_store import (
     ConversationTranscript,
     ConversationTurnRecord,
     _serialize_transcript,
 )
-from dayu.workspace_paths import CONVERSATION_STORE_RELATIVE_DIR
+from alpha.workspace_paths import CONVERSATION_STORE_RELATIVE_DIR
 
 
 def _make_legacy_transcript(session_id: str) -> ConversationTranscript:
@@ -130,7 +130,7 @@ def test_migration_raises_on_corrupted_file(tmp_path: Path) -> None:
     """单文件 JSON 损坏必须显式上抛 ``json.JSONDecodeError``，不再吞错继续。
 
     新语义要求 ``apply_all_workspace_migrations`` fail-fast：损坏文件
-    意味着工作区状态不一致，必须显式让 ``dayu-cli init`` 退出非 0
+    意味着工作区状态不一致，必须显式让 ``alpha init`` 退出非 0
     暴露给运维，而不是 stderr warning 后假装成功。
     """
 

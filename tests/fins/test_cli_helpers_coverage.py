@@ -11,13 +11,13 @@ from typing import Any, Callable, cast
 
 import pytest
 
-from dayu.fins import cli_support as module
-from dayu.fins.ingestion.process_events import ProcessEvent, ProcessEventType
-from dayu.fins.pipelines.base import PipelineProtocol
-from dayu.fins.pipelines.download_events import DownloadEvent, DownloadEventType
-from dayu.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
-from dayu.fins.pipelines.upload_material_events import UploadMaterialEvent, UploadMaterialEventType
-from dayu.fins.ticker_normalization import NormalizedTicker
+from alpha.fins import cli_support as module
+from alpha.fins.ingestion.process_events import ProcessEvent, ProcessEventType
+from alpha.fins.pipelines.base import PipelineProtocol
+from alpha.fins.pipelines.download_events import DownloadEvent, DownloadEventType
+from alpha.fins.pipelines.upload_filing_events import UploadFilingEvent, UploadFilingEventType
+from alpha.fins.pipelines.upload_material_events import UploadMaterialEvent, UploadMaterialEventType
+from alpha.fins.ticker_normalization import NormalizedTicker
 
 
 class _PipelineStub(PipelineProtocol):
@@ -530,7 +530,7 @@ def test_filename_infer_and_script_helpers(monkeypatch: pytest.MonkeyPatch, tmp_
         overwrite=True,
     )
     assert "--amended" in command and "--overwrite" in command
-    assert command.startswith("python -m dayu.cli upload_filing --base ")
+    assert command.startswith("python -m alpha.cli upload_filing --base ")
 
     parser = module._create_parser()
     parsed = parser.parse_args(shlex.split(command)[3:])
@@ -551,17 +551,17 @@ def test_filename_infer_and_script_helpers(monkeypatch: pytest.MonkeyPatch, tmp_
         company_name=None,
         overwrite=False,
     )
-    assert material_command.startswith("python -m dayu.cli upload_material --base ")
+    assert material_command.startswith("python -m alpha.cli upload_material --base ")
 
     script_path = tmp_path / "script.sh"
     module._write_upload_script(
         output_script=script_path,
         commands=[],
-        regenerate_command="python -m dayu.cli upload_filings_from --ticker AAPL",
+        regenerate_command="python -m alpha.cli upload_filings_from --ticker AAPL",
         script_platform="linux",
     )
     assert "没有识别到可上传的文件" in script_path.read_text(encoding="utf-8")
-    assert "# python -m dayu.cli upload_filings_from --ticker AAPL" in script_path.read_text(encoding="utf-8")
+    assert "# python -m alpha.cli upload_filings_from --ticker AAPL" in script_path.read_text(encoding="utf-8")
 
 
 @pytest.mark.unit
@@ -641,27 +641,27 @@ def test_windows_script_helpers(tmp_path: Path) -> None:
     script_path = tmp_path / "script.cmd"
     module._write_upload_script(
         output_script=script_path,
-        commands=["python -m dayu.cli upload_filing --ticker AAPL"],
-        regenerate_command='python -m dayu.cli upload_filings_from --ticker AAPL --from "C:\\tmp"',
+        commands=["python -m alpha.cli upload_filing --ticker AAPL"],
+        regenerate_command='python -m alpha.cli upload_filings_from --ticker AAPL --from "C:\\tmp"',
         script_platform="windows",
     )
     text = script_path.read_text(encoding="utf-8")
 
     assert text.startswith("@echo off")
     assert "chcp 65001 > nul" in text
-    assert "REM python -m dayu.cli upload_filings_from --ticker AAPL" in text
-    assert "python -m dayu.cli upload_filing --ticker AAPL %*" in text
+    assert "REM python -m alpha.cli upload_filings_from --ticker AAPL" in text
+    assert "python -m alpha.cli upload_filing --ticker AAPL %*" in text
     # Windows 批处理必须使用 CRLF 行尾，避免中文 UTF-8 多字节字符被解析器错位
     assert script_path.read_bytes().count(b"\r\n") >= 5
     # 回归保护：cmd.exe 在 chcp 65001 下，若行末是 UTF-8 多字节字符，会吞掉
-    # 紧随其后命令的若干字节（典型表现是 `python -m dayu.cli` 被截断为 `yu.cli`）。
+    # 紧随其后命令的若干字节（典型表现是 `python -m alpha.cli` 被截断为 `yu.cli`）。
     # 因此 regenerate 注释必须放在最后一条可执行命令之后，禁止出现在头部。
     lines = text.splitlines()
     regenerate_line_index = next(
-        index for index, line in enumerate(lines) if line.startswith("REM python -m dayu.cli upload_filings_from")
+        index for index, line in enumerate(lines) if line.startswith("REM python -m alpha.cli upload_filings_from")
     )
     last_command_index = max(
-        index for index, line in enumerate(lines) if line.startswith("python -m dayu.cli")
+        index for index, line in enumerate(lines) if line.startswith("python -m alpha.cli")
     )
     assert regenerate_line_index > last_command_index
 
@@ -672,7 +672,7 @@ def test_windows_script_regenerate_with_chinese_path_does_not_precede_command(tm
 
     根因：cmd.exe 在 ``chcp 65001`` 代码页下解析 .cmd 时，若某行末尾为 UTF-8
     多字节字符（如中文），会吞掉紧随其后命令开头的若干字节。本测试通过断言
-    "regenerate 注释行的字节偏移大于所有 ``python -m dayu.cli`` 命令行的字节偏移"
+    "regenerate 注释行的字节偏移大于所有 ``python -m alpha.cli`` 命令行的字节偏移"
     来保证脚本结构不会再次踩到该缺陷。
     """
 
@@ -680,17 +680,17 @@ def test_windows_script_regenerate_with_chinese_path_does_not_precede_command(tm
     module._write_upload_script(
         output_script=script_path,
         commands=[
-            'python -m dayu.cli upload_filing --ticker 603699 --files "C:\\tmp\\纽威股份 2024年度报告.pdf"',
+            'python -m alpha.cli upload_filing --ticker 603699 --files "C:\\tmp\\纽威股份 2024年度报告.pdf"',
         ],
         regenerate_command=(
-            "python -m dayu.cli upload_filings_from --ticker 603699 "
+            "python -m alpha.cli upload_filings_from --ticker 603699 "
             "--from C:\\tmp\\_603699纽威股份 --company-name 纽威股份"
         ),
         script_platform="windows",
     )
     raw = script_path.read_bytes()
-    regenerate_marker = b"REM python -m dayu.cli upload_filings_from"
-    command_marker = b"python -m dayu.cli upload_filing "
+    regenerate_marker = b"REM python -m alpha.cli upload_filings_from"
+    command_marker = b"python -m alpha.cli upload_filing "
     regenerate_offset = raw.find(regenerate_marker)
     last_command_offset = raw.rfind(command_marker)
     assert regenerate_offset != -1

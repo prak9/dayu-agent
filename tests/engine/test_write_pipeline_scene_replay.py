@@ -25,10 +25,10 @@ from test_write_pipeline import (  # noqa: E402  pyright: ignore[reportMissingIm
     _make_app_result,
 )
 
-from dayu.contracts.agent_execution import ExecutionContract, ReplayHandle  # noqa: E402
-from dayu.contracts.cancellation import CancelledError  # noqa: E402
-from dayu.contracts.events import AppResult  # noqa: E402
-from dayu.services.internal.write_pipeline.audit_rules import (  # noqa: E402
+from alpha.contracts.agent_execution import ExecutionContract, ReplayHandle  # noqa: E402
+from alpha.contracts.cancellation import CancelledError  # noqa: E402
+from alpha.contracts.events import AppResult  # noqa: E402
+from alpha.services.internal.write_pipeline.audit_rules import (  # noqa: E402
     ConfirmOutputError,
     EmptyOutputError,
     RepairOutputError,
@@ -144,7 +144,7 @@ def _install_fake_executor(
     monkeypatch.setattr(runner._prompt_runner, "_contract_executor", executor)
     monkeypatch.setattr(runner._prompt_runner, "_prompt_agent", None)
     monkeypatch.setattr(
-        "dayu.services.internal.write_pipeline.scene_executor.time.sleep",
+        "alpha.services.internal.write_pipeline.scene_executor.time.sleep",
         lambda _seconds: None,
     )
 

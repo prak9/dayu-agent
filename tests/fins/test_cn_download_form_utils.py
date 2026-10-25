@@ -1,4 +1,4 @@
-"""``dayu/fins/pipelines/cn_form_utils.py`` 单元测试。
+"""``alpha/fins/pipelines/cn_form_utils.py`` 单元测试。
 
 覆盖：
 
@@ -18,7 +18,7 @@ import datetime as dt
 
 import pytest
 
-from dayu.fins.pipelines.cn_form_utils import (
+from alpha.fins.pipelines.cn_form_utils import (
     DEFAULT_FORMS_CN,
     DEFAULT_FORMS_HK,
     DownloadWindow,

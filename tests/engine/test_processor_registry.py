@@ -7,9 +7,9 @@ from typing import Any, BinaryIO, Optional
 
 import pytest
 
-from dayu.engine.processors.base import SearchHit, SectionContent, SectionSummary, TableContent, TableSummary
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.engine.processors.source import Source
+from alpha.engine.processors.base import SearchHit, SectionContent, SectionSummary, TableContent, TableSummary
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.engine.processors.source import Source
 
 
 class DummySource:

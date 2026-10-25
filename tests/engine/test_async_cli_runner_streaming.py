@@ -7,9 +7,9 @@ from unittest.mock import patch
 
 import pytest
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.engine.async_cli_runner import AsyncCliRunner
-from dayu.engine import EventType
+from alpha.contracts.agent_types import AgentMessage
+from alpha.engine.async_cli_runner import AsyncCliRunner
+from alpha.engine import EventType
 
 
 def _messages(*contents: str) -> list[AgentMessage]:

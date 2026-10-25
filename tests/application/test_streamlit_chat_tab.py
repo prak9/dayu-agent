@@ -10,16 +10,16 @@ from typing import cast
 
 import pytest
 
-from dayu.host.protocols import (
+from alpha.host.protocols import (
     ConversationClearPartiallyAppliedError,
     ConversationClearRejectedError,
     ConversationClearStaleError,
     ConversationSessionTurnExcerpt,
 )
-from dayu.services.protocols import ChatServiceProtocol
-from dayu.web.streamlit.pages import chat_tab as chat_tab_module
-from dayu.web.streamlit.pages.chat.utils import build_chat_session_id
-from dayu.web.streamlit.pages.chat_tab import ChatMessage, load_history_for_ticker, perform_clear_session_history
+from alpha.services.protocols import ChatServiceProtocol
+from alpha.web.streamlit.pages import chat_tab as chat_tab_module
+from alpha.web.streamlit.pages.chat.utils import build_chat_session_id
+from alpha.web.streamlit.pages.chat_tab import ChatMessage, load_history_for_ticker, perform_clear_session_history
 
 
 @pytest.mark.unit

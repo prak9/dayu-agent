@@ -10,9 +10,9 @@ from typing import Any, Dict, List, cast
 
 import pytest
 
-from dayu.contracts.protocols import ToolExecutionContext
-from dayu.engine.tool_contracts import TRUNCATION_STRATEGIES, ToolTruncateSpec
-from dayu.engine.truncation_manager import TruncationManager
+from alpha.contracts.protocols import ToolExecutionContext
+from alpha.engine.tool_contracts import TRUNCATION_STRATEGIES, ToolTruncateSpec
+from alpha.engine.truncation_manager import TruncationManager
 
 
 class _DeterministicUUID:
@@ -303,8 +303,8 @@ def test_store_cursor_uses_context_timeout_and_cleans_expired_entries(monkeypatc
     manager = _build_manager()
     manager._cursor_store["expired"] = {"expires_at": 50.0}
 
-    monkeypatch.setattr("dayu.engine.truncation_manager.time.monotonic", lambda: 100.0)
-    monkeypatch.setattr("dayu.engine.truncation_manager.uuid.uuid4", lambda: _DeterministicUUID())
+    monkeypatch.setattr("alpha.engine.truncation_manager.time.monotonic", lambda: 100.0)
+    monkeypatch.setattr("alpha.engine.truncation_manager.uuid.uuid4", lambda: _DeterministicUUID())
 
     cursor = manager._store_cursor(
         tool_name="tool",

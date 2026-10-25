@@ -7,10 +7,10 @@ from typing import Callable
 
 import pytest
 
-import dayu.host.executor as executor_module
-from dayu.contracts.host_execution import ConcurrencyAcquirePolicy, HostedRunSpec
-from dayu.host.concurrency import HOST_AGENT_LANE
-from dayu.host.executor import DefaultHostExecutor, _required_lanes_for_spec
+import alpha.host.executor as executor_module
+from alpha.contracts.host_execution import ConcurrencyAcquirePolicy, HostedRunSpec
+from alpha.host.concurrency import HOST_AGENT_LANE
+from alpha.host.executor import DefaultHostExecutor, _required_lanes_for_spec
 
 
 @dataclass

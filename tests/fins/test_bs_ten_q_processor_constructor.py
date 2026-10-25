@@ -7,7 +7,7 @@ from typing import Any, Optional
 
 import pytest
 
-from dayu.fins.processors import bs_ten_q_processor as module
+from alpha.fins.processors import bs_ten_q_processor as module
 
 
 class _SourceStub:

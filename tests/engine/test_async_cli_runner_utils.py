@@ -6,11 +6,11 @@ from typing import cast
 
 import pytest
 
-from dayu.contracts.agent_types import AgentMessage
-from dayu.contracts.protocols import ToolExecutor
-from dayu.engine.async_cli_runner import AsyncCliRunner
-from dayu.engine.events import EventType
-from dayu.engine.events import StreamEvent
+from alpha.contracts.agent_types import AgentMessage
+from alpha.contracts.protocols import ToolExecutor
+from alpha.engine.async_cli_runner import AsyncCliRunner
+from alpha.engine.events import EventType
+from alpha.engine.events import StreamEvent
 
 
 class _NoopExecutor:

@@ -7,10 +7,10 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.contracts.protocols import ToolExecutionContext
-from dayu.engine import ToolRegistry
-from dayu.engine.tool_contracts import ToolTruncateSpec
-from dayu.prompting import build_prompt_tool_snapshot
+from alpha.contracts.protocols import ToolExecutionContext
+from alpha.engine import ToolRegistry
+from alpha.engine.tool_contracts import ToolTruncateSpec
+from alpha.prompting import build_prompt_tool_snapshot
 
 
 def _simple_schema(name: str) -> dict[str, Any]:

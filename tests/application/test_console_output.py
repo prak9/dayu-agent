@@ -7,8 +7,8 @@ import importlib
 
 import pytest
 
-from dayu.console_output import configure_standard_streams_for_console_output
-from dayu.render import render as render_module
+from alpha.console_output import configure_standard_streams_for_console_output
+from alpha.render import render as render_module
 
 
 class _FakeReconfigurableStream:
@@ -67,8 +67,8 @@ def test_configure_standard_streams_for_console_output_uses_replace(
 
     stdout_stream = _FakeReconfigurableStream()
     stderr_stream = _FakeReconfigurableStream()
-    monkeypatch.setattr("dayu.console_output.sys.stdout", stdout_stream)
-    monkeypatch.setattr("dayu.console_output.sys.stderr", stderr_stream)
+    monkeypatch.setattr("alpha.console_output.sys.stdout", stdout_stream)
+    monkeypatch.setattr("alpha.console_output.sys.stderr", stderr_stream)
 
     configure_standard_streams_for_console_output()
 
@@ -93,11 +93,11 @@ def test_configure_standard_streams_for_console_output_ignores_plain_streams(
     """
 
     monkeypatch.setattr(
-        "dayu.console_output.sys.stdout",
+        "alpha.console_output.sys.stdout",
         _NonReconfigurableStream(),
     )
     monkeypatch.setattr(
-        "dayu.console_output.sys.stderr",
+        "alpha.console_output.sys.stderr",
         _NonReconfigurableStream(),
     )
 
@@ -108,7 +108,7 @@ def test_configure_standard_streams_for_console_output_ignores_plain_streams(
 def test_cli_main_configures_console_output_before_parsing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """验证 `dayu.cli.main` 会先配置标准流再解析参数。
+    """验证 `alpha.cli.main` 会先配置标准流再解析参数。
 
     Args:
         monkeypatch: pytest monkeypatch 工具。
@@ -120,15 +120,15 @@ def test_cli_main_configures_console_output_before_parsing(
         AssertionError: 断言失败时抛出。
     """
 
-    from dayu.cli import main as cli_main_module
+    from alpha.cli import main as cli_main_module
 
     observed: list[str] = []
     monkeypatch.setattr(
-        "dayu.cli.main.configure_standard_streams_for_console_output",
+        "alpha.cli.main.configure_standard_streams_for_console_output",
         lambda: observed.append("configured"),
     )
     monkeypatch.setattr(
-        "dayu.cli.main.parse_arguments",
+        "alpha.cli.main.parse_arguments",
         lambda: argparse.Namespace(command=""),
     )
 
@@ -144,7 +144,7 @@ def test_cli_main_configures_console_output_before_parsing(
 def test_wechat_main_configures_console_output_before_parsing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """验证 `dayu.wechat.main` 会先配置标准流再解析参数。
+    """验证 `alpha.wechat.main` 会先配置标准流再解析参数。
 
     Args:
         monkeypatch: pytest monkeypatch 工具。
@@ -156,7 +156,7 @@ def test_wechat_main_configures_console_output_before_parsing(
         AssertionError: 断言失败时抛出。
     """
 
-    wechat_main_module = importlib.import_module("dayu.wechat.main")
+    wechat_main_module = importlib.import_module("alpha.wechat.main")
 
     observed: list[str] = []
     monkeypatch.setattr(
@@ -180,7 +180,7 @@ def test_wechat_main_configures_console_output_before_parsing(
 def test_render_main_configures_console_output_before_help(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """验证 `dayu-render --help` 会先配置标准流容错。
+    """验证 `alpha-render --help` 会先配置标准流容错。
 
     Args:
         monkeypatch: pytest monkeypatch 工具。
@@ -194,11 +194,11 @@ def test_render_main_configures_console_output_before_help(
 
     observed: list[str] = []
     monkeypatch.setattr(
-        "dayu.render.render.configure_standard_streams_for_console_output",
+        "alpha.render.render.configure_standard_streams_for_console_output",
         lambda: observed.append("configured"),
     )
-    monkeypatch.setattr("dayu.render.render._print_help", lambda: observed.append("help"))
-    monkeypatch.setattr("dayu.render.render.sys.argv", ["dayu-render", "--help"])
+    monkeypatch.setattr("alpha.render.render._print_help", lambda: observed.append("help"))
+    monkeypatch.setattr("alpha.render.render.sys.argv", ["alpha-render", "--help"])
 
     assert render_module.main() == 0
     assert observed == ["configured", "help"]

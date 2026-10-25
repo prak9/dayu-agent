@@ -10,9 +10,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from dayu.engine import AsyncAgent
-from dayu.engine import register_doc_tools
-from dayu.engine import (
+from alpha.engine import AsyncAgent
+from alpha.engine import register_doc_tools
+from alpha.engine import (
     content_complete,
     content_delta,
     done_event,
@@ -21,7 +21,7 @@ from dayu.engine import (
     tool_calls_batch_done,
     tool_calls_batch_ready,
 )
-from dayu.engine import ToolRegistry
+from alpha.engine import ToolRegistry
 
 
 class ToolFlowRunner:
@@ -160,7 +160,7 @@ class TestAsyncAgentWithRealTools:
         register_doc_tools(registry)
 
         runner = ToolFlowRunner(registry, str(test_file))
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=3)
         agent = AsyncAgent(runner=runner, tool_executor=registry, running_config=config)
 
@@ -185,7 +185,7 @@ class TestAsyncAgentWithRealTools:
         register_doc_tools(registry)
 
         runner = MultiToolRunner(registry, str(tmp_path), str(tmp_path / "file1.txt"))
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=3)
         agent = AsyncAgent(runner=runner, tool_executor=registry, running_config=config)
 
@@ -205,7 +205,7 @@ class TestAsyncAgentWithRealTools:
 
         missing_path = str(tmp_path / "missing.txt")
         runner = ToolFlowRunner(registry, missing_path)
-        from dayu.engine.async_agent import AgentRunningConfig
+        from alpha.engine.async_agent import AgentRunningConfig
         config = AgentRunningConfig(max_iterations=2, max_compactions=2)
         agent = AsyncAgent(runner=runner, tool_executor=registry, running_config=config)
 

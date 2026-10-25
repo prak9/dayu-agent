@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from dayu.engine.processors import text_utils
+from alpha.engine.processors import text_utils
 
 
 @pytest.mark.unit

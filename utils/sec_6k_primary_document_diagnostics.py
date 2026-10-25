@@ -29,7 +29,7 @@ def _ensure_repo_root_on_sys_path() -> None:
 
 _ensure_repo_root_on_sys_path()
 
-from dayu.fins.sec_6k_primary_document_diagnostics import (  # noqa: E402
+from alpha.fins.sec_6k_primary_document_diagnostics import (  # noqa: E402
     DEFAULT_OUTPUT_DIRNAME,
     Sec6KPrimaryDocumentDiagnosticsReport,
     run_sec_6k_primary_document_diagnostics,

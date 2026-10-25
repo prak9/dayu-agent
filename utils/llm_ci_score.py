@@ -4,7 +4,7 @@
 该脚本把 Step 1 / Step 2 / Step 3 中重复出现的评分动作标准化为一条固定路径：
 
 - 使用 storage 仓储扫描本轮应纳入 CI 的 active filing 文档全集。
-- 对每个 form 调用 `python -m dayu.fins.score_sec_ci` 并落盘 JSON / Markdown / stdout。
+- 对每个 form 调用 `python -m alpha.fins.score_sec_ci` 并落盘 JSON / Markdown / stdout。
 - 额外输出 form 级 `summary.json` 与全局 `overall_summary.json`。
 - 对照文档全集与 score JSON，补充“未纳入评分”的缺口原因诊断。
 """
@@ -23,16 +23,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from dayu.fins.domain.document_models import DocumentQuery, ProcessedHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.score_sec_ci import (
+from alpha.fins.domain.document_models import DocumentQuery, ProcessedHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.score_sec_ci import (
     FORM_PROFILES,
     ProcessedSnapshotDocument,
     ScoreConfig,
     _normalize_form_type,
     score_document,
 )
-from dayu.fins.storage import (
+from alpha.fins.storage import (
     FsCompanyMetaRepository,
     FsDocumentBlobRepository,
     FsProcessedDocumentRepository,
@@ -672,7 +672,7 @@ def _run_score_command(
     command = [
         sys.executable,
         "-m",
-        "dayu.fins.score_sec_ci",
+        "alpha.fins.score_sec_ci",
         "--form",
         form_type,
         "--base",

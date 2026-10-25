@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.domain.document_models import SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines.docling_upload_service import DoclingUploadService, _convert_bytes_with_docling
+from alpha.fins.domain.document_models import SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines.docling_upload_service import DoclingUploadService, _convert_bytes_with_docling
 from tests.fins.storage_testkit import FsStorageTestContext, build_fs_storage_test_context
 
 pytestmark = pytest.mark.integration
@@ -31,7 +31,7 @@ def _fixture_pdf_path() -> Path:
         Path(__file__).resolve().parents[1]
         / "fixtures"
         / "docling"
-        / "dayu_docling_integration_fixture.pdf"
+        / "alpha_docling_integration_fixture.pdf"
     )
     if not fixture_path.exists():
         raise FileNotFoundError(f"Docling PDF fixture 不存在: {fixture_path}")
@@ -53,7 +53,7 @@ def test_convert_bytes_with_docling_reads_real_pdf_table() -> None:
 
     fixture_path = _fixture_pdf_path()
     result = _convert_bytes_with_docling(fixture_path.read_bytes(), fixture_path.name)
-    assert result["name"] == "dayu_docling_integration_fixture"
+    assert result["name"] == "alpha_docling_integration_fixture"
 
     tables = result.get("tables")
     assert isinstance(tables, list)
@@ -110,23 +110,23 @@ def test_docling_upload_service_execute_upload_stores_real_outputs(tmp_path: Pat
 
     assert result.status == "uploaded"
     event_names = {event.name for event in result.file_events}
-    assert "dayu_docling_integration_fixture.pdf" in event_names
-    assert "dayu_docling_integration_fixture_docling.json" in event_names
+    assert "alpha_docling_integration_fixture.pdf" in event_names
+    assert "alpha_docling_integration_fixture_docling.json" in event_names
 
     stored_meta = context.source_repository.get_source_meta(
         "AAPL",
         "docling_fixture_material",
         SourceKind.MATERIAL,
     )
-    assert stored_meta["primary_document"] == "dayu_docling_integration_fixture_docling.json"
+    assert stored_meta["primary_document"] == "alpha_docling_integration_fixture_docling.json"
     assert stored_meta["material_name"] == "Docling Fixture"
 
     file_entries = stored_meta["files"]
     assert isinstance(file_entries, list)
     stored_names = {entry["name"] for entry in file_entries}
     assert stored_names == {
-        "dayu_docling_integration_fixture.pdf",
-        "dayu_docling_integration_fixture_docling.json",
+        "alpha_docling_integration_fixture.pdf",
+        "alpha_docling_integration_fixture_docling.json",
     }
     assert stored_meta["source_fingerprint"]
 
@@ -137,11 +137,11 @@ def test_docling_upload_service_execute_upload_stores_real_outputs(tmp_path: Pat
     )
     original_pdf_bytes = context.blob_repository.read_file_bytes(
         handle,
-        "dayu_docling_integration_fixture.pdf",
+        "alpha_docling_integration_fixture.pdf",
     )
     generated_docling_bytes = context.blob_repository.read_file_bytes(
         handle,
-        "dayu_docling_integration_fixture_docling.json",
+        "alpha_docling_integration_fixture_docling.json",
     )
     assert original_pdf_bytes.startswith(b"%PDF")
     assert b"tables" in generated_docling_bytes

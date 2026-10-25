@@ -9,7 +9,7 @@ import pytest
 import requests
 from requests.adapters import HTTPAdapter
 
-from dayu.engine.tools import web_http_session as module
+from alpha.engine.tools import web_http_session as module
 
 
 @pytest.mark.unit

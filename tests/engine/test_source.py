@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.storage.local_file_source import LocalFileSource
+from alpha.fins.storage.local_file_source import LocalFileSource
 
 
 @pytest.mark.unit

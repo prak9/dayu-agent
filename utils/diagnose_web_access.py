@@ -32,11 +32,11 @@ from urllib.parse import urlparse
 
 import requests
 
-from dayu.log import Log, LogLevel
-from dayu.engine.tool_errors import ToolBusinessError
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.engine.tools.web_challenge_detection import detect_bot_challenge
-from dayu.engine.tools.web_tools import (
+from alpha.log import Log, LogLevel
+from alpha.engine.tool_errors import ToolBusinessError
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.engine.tools.web_challenge_detection import detect_bot_challenge
+from alpha.engine.tools.web_tools import (
     _DEFAULT_BROWSER_USER_AGENT,
     _build_fetch_headers,
     _build_referer,
@@ -45,7 +45,7 @@ from dayu.engine.tools.web_tools import (
     _normalize_url_for_http,
     _resolve_playwright_storage_state_path,
 )
-from dayu.workspace_paths import CONVERSATION_STORE_RELATIVE_DIR
+from alpha.workspace_paths import CONVERSATION_STORE_RELATIVE_DIR
 
 
 _DEFAULT_BATCH_OUTPUT_ROOT = Path("workspace/output/web_diagnostics")

@@ -6,8 +6,8 @@ from datetime import datetime
 
 import pytest
 
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext
-from dayu.contracts.session import SessionRecord, SessionSource, SessionState
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext
+from alpha.contracts.session import SessionRecord, SessionSource, SessionState
 
 
 class TestSessionSource:

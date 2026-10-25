@@ -10,18 +10,37 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.fins.domain.document_models import FilingCreateRequest
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines.sec_pipeline import SecPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.domain.document_models import FilingCreateRequest
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines.sec_pipeline import SecPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
 from tests.fins.storage_testkit import build_storage_core
-from dayu.fins.storage.local_file_store import LocalFileStore
+from alpha.fins.storage.local_file_store import LocalFileStore
+from alpha.fins.storage.fs_document_blob_repository import FsDocumentBlobRepository
+from alpha.fins.domain.document_models import ProcessedHandle
+from alpha.fins.pipelines.processed_snapshot_helpers import match_snapshot_files
 
 
 def _portfolio_root(repository: object) -> Path:
     """读取测试仓储 core 的 portfolio_root。"""
 
     return cast(Any, repository).portfolio_root
+
+
+def test_registered_xbrl_marker_does_not_invalidate_snapshot_cache(tmp_path: Path) -> None:
+    """仓储登记的XBRL标记可复用，未知产物仍拒绝缓存。参数：目录。返回：无。异常：断言失败。"""
+    repository = build_storage_core(tmp_path)
+    _prepare_filing(repository, "AAPL", "fil_marker", "source.htm", b"<html><p>Report</p></html>")
+    pipeline = SecPipeline(workspace_root=tmp_path, processor_registry=build_fins_processor_registry())
+    assert pipeline.process_filing("AAPL", "fil_marker")["status"] == "processed"
+    blobs = FsDocumentBlobRepository(tmp_path)
+    handle = ProcessedHandle(ticker="AAPL", document_id="fil_marker")
+    blobs.store_file(handle, "financials.json", BytesIO(b'{"snapshot_registered":true}'))
+    assert match_snapshot_files(repository=blobs, ticker="AAPL", document_id="fil_marker", ci=False)
+    blobs.store_file(handle, "financials.json", BytesIO(b'{"stale":true}'))
+    assert not match_snapshot_files(repository=blobs, ticker="AAPL", document_id="fil_marker", ci=False)
+    blobs.store_file(handle, "financials.json", BytesIO(b'broken'))
+    assert not match_snapshot_files(repository=blobs, ticker="AAPL", document_id="fil_marker", ci=False)
 
 
 def _create_filing(repository: object, request: FilingCreateRequest) -> None:

@@ -9,16 +9,16 @@ from typing import Any, AsyncIterator
 
 import pytest
 
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.contracts.reply_outbox import ReplyOutboxState
-from dayu.host.host import Host
-from dayu.host.protocols import ConversationSessionTurnExcerpt
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
-from dayu.services.contracts import ChatPendingTurnView, ChatResumeRequest, ChatTurnRequest, ChatTurnSubmission
-from dayu.services.reply_delivery_service import ReplyDeliveryService
-from dayu.wechat.daemon import WeChatDaemon
-from dayu.wechat.ilink_client import QRCodeLoginStatus, QRCodeLoginTicket
-from dayu.wechat.state_store import FileWeChatStateStore, WeChatDaemonState, build_wechat_session_id
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.contracts.reply_outbox import ReplyOutboxState
+from alpha.host.host import Host
+from alpha.host.protocols import ConversationSessionTurnExcerpt
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.services.contracts import ChatPendingTurnView, ChatResumeRequest, ChatTurnRequest, ChatTurnSubmission
+from alpha.services.reply_delivery_service import ReplyDeliveryService
+from alpha.wechat.daemon import WeChatDaemon
+from alpha.wechat.ilink_client import QRCodeLoginStatus, QRCodeLoginTicket
+from alpha.wechat.state_store import FileWeChatStateStore, WeChatDaemonState, build_wechat_session_id
 from tests.application.conftest import StubHostExecutor, StubRunRegistry, StubSessionRegistry
 
 
@@ -240,7 +240,7 @@ def test_wechat_process_once_logs_delivery_key_conflict_without_breaking_main_fl
 ) -> None:
     """delivery_key 冲突应通过结构化日志告警，主处理流程不被打断，既有 record 不动。"""
 
-    from dayu.services.contracts import ReplyDeliverySubmitRequest
+    from alpha.services.contracts import ReplyDeliverySubmitRequest
 
     store = FileWeChatStateStore(tmp_path / ".wechat")
     store.save(WeChatDaemonState(bot_token="token-1", base_url="https://ilink.example"))
@@ -293,7 +293,7 @@ def test_wechat_process_once_logs_delivery_key_conflict_without_breaking_main_fl
     )
 
     errors: list[str] = []
-    from dayu.log import Log as _Log
+    from alpha.log import Log as _Log
 
     monkeypatch.setattr(
         _Log,

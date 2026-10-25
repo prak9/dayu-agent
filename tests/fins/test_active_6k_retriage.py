@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.active_6k_retriage import retriage_active_6k_filings
-from dayu.fins.domain.document_models import CompanyMeta, SourceDocumentUpsertRequest, now_iso8601
-from dayu.fins.domain.enums import SourceKind
+from alpha.fins.active_6k_retriage import retriage_active_6k_filings
+from alpha.fins.domain.document_models import CompanyMeta, SourceDocumentUpsertRequest, now_iso8601
+from alpha.fins.domain.enums import SourceKind
 from tests.fins.storage_testkit import FsStorageTestContext, build_fs_storage_test_context
 
 

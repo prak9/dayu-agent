@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.pipelines.upload_material_events import UploadMaterialEventType
-from dayu.fins.pipelines.sec_pipeline import SecPipeline
-from dayu.fins.processors.registry import build_fins_processor_registry
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.pipelines.upload_material_events import UploadMaterialEventType
+from alpha.fins.pipelines.sec_pipeline import SecPipeline
+from alpha.fins.processors.registry import build_fins_processor_registry
 
 
 @pytest.mark.asyncio

@@ -17,16 +17,16 @@ from pathlib import Path
 
 import pytest
 
-from dayu.host.conversation_session_archive import (
+from alpha.host.conversation_session_archive import (
     ConversationHistoryTurnRecord,
     ConversationSessionArchive,
 )
-from dayu.host.conversation_store import (
+from alpha.host.conversation_store import (
     ConversationTurnRecord,
     FileConversationSessionArchiveStore,
 )
-from dayu.host.host import Host
-from dayu.host.reply_outbox_store import InMemoryReplyOutboxStore
+from alpha.host.host import Host
+from alpha.host.reply_outbox_store import InMemoryReplyOutboxStore
 from tests.application.conftest import (
     StubHostExecutor,
     StubRunRegistry,
@@ -287,10 +287,10 @@ def test_list_excerpts_supports_migrated_legacy_session(tmp_path: Path) -> None:
 
     import json
 
-    from dayu.cli.workspace_migrations.conversation_archive_init import (
+    from alpha.cli.workspace_migrations.conversation_archive_init import (
         migrate_conversation_archive_init,
     )
-    from dayu.workspace_paths import CONVERSATION_STORE_RELATIVE_DIR
+    from alpha.workspace_paths import CONVERSATION_STORE_RELATIVE_DIR
 
     workspace_root = tmp_path / "workspace"
     target_dir = workspace_root / CONVERSATION_STORE_RELATIVE_DIR

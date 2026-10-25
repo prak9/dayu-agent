@@ -9,10 +9,10 @@ from typing import Any, BinaryIO, Optional, cast
 
 import pytest
 
-from dayu.fins.domain.document_models import CompanyMeta, CompanyMetaInventoryEntry, FileObjectMeta, ProcessedHandle, SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.storage import CompanyMetaRepositoryProtocol, DocumentBlobRepositoryProtocol
-from dayu.fins.pipelines import tool_snapshot_export as module
+from alpha.fins.domain.document_models import CompanyMeta, CompanyMetaInventoryEntry, FileObjectMeta, ProcessedHandle, SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.storage import CompanyMetaRepositoryProtocol, DocumentBlobRepositoryProtocol
+from alpha.fins.pipelines import tool_snapshot_export as module
 
 
 class _RepositoryStub:
@@ -214,7 +214,7 @@ def test_validate_handle_and_text_normalizers() -> None:
     assert module._extract_page_range({"page_range": [1, "2"]}) is None
     assert module._extract_page_range({"page_range": [1, 2]}) == [1, 2]
 
-    from dayu.fins._converters import normalize_optional_text, require_non_empty_text
+    from alpha.fins._converters import normalize_optional_text, require_non_empty_text
     assert normalize_optional_text("  ") is None
     assert normalize_optional_text(" x ") == "x"
     with pytest.raises(ValueError, match="不能为空"):

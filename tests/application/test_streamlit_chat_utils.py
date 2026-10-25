@@ -6,8 +6,8 @@ import re
 
 import pytest
 
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.web.streamlit.pages.chat.utils import (
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.web.streamlit.pages.chat.utils import (
     build_chat_session_id,
     build_request_trace_id,
     extract_stream_text,

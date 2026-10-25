@@ -2,7 +2,7 @@
 测试事件模型
 """
 import pytest
-from dayu.engine import (
+from alpha.engine import (
     EventType,
     StreamEvent,
     content_delta,

@@ -22,8 +22,8 @@ def test_engine_python_modules_do_not_import_fins() -> None:
         AssertionError: 发现反向依赖时抛出。
     """
 
-    engine_root = Path("dayu/engine")
-    pattern = re.compile(r"^\s*(from|import)\s+dayu\.fins\b", re.MULTILINE)
+    engine_root = Path("alpha/engine")
+    pattern = re.compile(r"^\s*(from|import)\s+alpha\.fins\b", re.MULTILINE)
     offenders: list[str] = []
     for path in engine_root.rglob("*.py"):
         content = path.read_text(encoding="utf-8")
@@ -46,7 +46,7 @@ def test_engine_processors_do_not_embed_financial_keywords() -> None:
         AssertionError: 发现违规常量时抛出。
     """
 
-    processors_root = Path("dayu/engine/processors")
+    processors_root = Path("alpha/engine/processors")
     target_files = [
         processors_root / "bs_processor.py",
         processors_root / "docling_processor.py",
@@ -74,11 +74,11 @@ def test_engine_core_modules_do_not_import_neutral_tool_contracts_via_tools_name
         AssertionError: 发现核心模块重新依赖旧路径时抛出。
     """
 
-    engine_root = Path("dayu/engine")
+    engine_root = Path("alpha/engine")
     pattern = re.compile(
         r"(^\s*from\s+\.(?:tools)\.(?:schema_types|limits)\s+import\b)|"
-        r"(^\s*from\s+dayu\.engine\.tools\.(?:schema_types|limits)\s+import\b)|"
-        r"(^\s*import\s+dayu\.engine\.tools\.(?:schema_types|limits)\b)",
+        r"(^\s*from\s+alpha\.engine\.tools\.(?:schema_types|limits)\s+import\b)|"
+        r"(^\s*import\s+alpha\.engine\.tools\.(?:schema_types|limits)\b)",
         re.MULTILINE,
     )
     offenders: list[str] = []
@@ -98,8 +98,8 @@ def test_tool_registry_satisfies_tool_executor_protocol() -> None:
     遍历 Protocol 声明的公开方法，验证 ToolRegistry 均已实现。
     """
     import inspect
-    from dayu.engine.protocols import ToolExecutor
-    from dayu.engine.tool_registry import ToolRegistry
+    from alpha.engine.protocols import ToolExecutor
+    from alpha.engine.tool_registry import ToolRegistry
 
     protocol_methods = {
         name

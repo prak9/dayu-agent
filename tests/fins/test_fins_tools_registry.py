@@ -6,12 +6,12 @@ from typing import Any, Callable, Optional, cast
 
 import pytest
 
-from dayu.engine.processors.source import Source
-from dayu.engine.tool_registry import ToolRegistry
-from dayu.fins.domain.document_models import CompanyMeta, SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.ingestion.service import FinsIngestionService
-from dayu.fins.tools import (
+from alpha.engine.processors.source import Source
+from alpha.engine.tool_registry import ToolRegistry
+from alpha.fins.domain.document_models import CompanyMeta, SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.ingestion.service import FinsIngestionService
+from alpha.fins.tools import (
     FinsToolLimits,
     register_fins_ingestion_tools,
 )
@@ -378,9 +378,9 @@ def test_register_fins_ingestion_tools_registers_all_job_tool_names() -> None:
         "get_financial_filing_download_job_status",
         "cancel_financial_filing_download_job",
     }.issubset(names)
-    assert "start_financial_document_preprocess_job" not in names
-    assert "get_financial_document_preprocess_job_status" not in names
-    assert "cancel_financial_document_preprocess_job" not in names
+    assert "start_financial_document_preprocess_job" in names
+    assert "get_financial_document_preprocess_job_status" in names
+    assert "cancel_financial_document_preprocess_job" in names
 
 
 @pytest.mark.unit

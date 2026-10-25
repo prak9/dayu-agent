@@ -11,7 +11,7 @@ from typing import Any, AsyncIterator, cast
 
 import pytest
 
-from dayu.contracts.fins import (
+from alpha.contracts.fins import (
     DownloadProgressPayload,
     FinsCommandName,
     FinsEvent,
@@ -19,22 +19,22 @@ from dayu.contracts.fins import (
     FinsProgressEventName,
     ProcessResultData,
 )
-from dayu.contracts.events import AppEvent, AppEventType
-from dayu.services.contracts import ChatPendingTurnView, ChatTurnSubmission, FinsSubmission, PromptSubmission, RunAdminView
-from dayu.services.protocols import (
+from alpha.contracts.events import AppEvent, AppEventType
+from alpha.services.contracts import ChatPendingTurnView, ChatTurnSubmission, FinsSubmission, PromptSubmission, RunAdminView
+from alpha.services.protocols import (
     ChatServiceProtocol,
     FinsServiceProtocol,
     HostAdminServiceProtocol,
     PromptServiceProtocol,
     ReplyDeliveryServiceProtocol,
 )
-from dayu.web.fastapi_app import create_fastapi_app
-from dayu.web.routes.chat import create_chat_router
-from dayu.web.routes.fins import create_fins_router
-from dayu.web.routes.prompt import create_prompt_router
-from dayu.web.routes.runs import _build_run_response_payload, _parse_run_state
-from dayu.web.routes.sessions import _parse_session_state, create_session_router
-from dayu.web.routes.write import create_write_router
+from alpha.web.fastapi_app import create_fastapi_app
+from alpha.web.routes.chat import create_chat_router
+from alpha.web.routes.fins import create_fins_router
+from alpha.web.routes.prompt import create_prompt_router
+from alpha.web.routes.runs import _build_run_response_payload, _parse_run_state
+from alpha.web.routes.sessions import _parse_session_state, create_session_router
+from alpha.web.routes.write import create_write_router
 
 
 @dataclass(frozen=True)
@@ -280,7 +280,7 @@ def _build_session_admin_view(
 ):
     """构造 session 管理视图测试数据。"""
 
-    from dayu.services.contracts import SessionAdminView
+    from alpha.services.contracts import SessionAdminView
 
     return SessionAdminView(
         session_id=session_id,
@@ -512,19 +512,19 @@ def test_create_fastapi_app_injects_narrow_services_into_route_factories(
     cast(Any, fake_fastapi).FastAPI = _FakeApp
     monkeypatch.setitem(sys.modules, "fastapi", fake_fastapi)
 
-    monkeypatch.setattr("dayu.web.fastapi_app.create_session_router", _capture_single("sessions"))
-    monkeypatch.setattr("dayu.web.fastapi_app.create_run_router", _capture_single("runs"))
-    monkeypatch.setattr("dayu.web.fastapi_app.create_events_router", _capture_single("events"))
+    monkeypatch.setattr("alpha.web.fastapi_app.create_session_router", _capture_single("sessions"))
+    monkeypatch.setattr("alpha.web.fastapi_app.create_run_router", _capture_single("runs"))
+    monkeypatch.setattr("alpha.web.fastapi_app.create_events_router", _capture_single("events"))
     def _capture_chat(chat_service: object, reply_delivery_service: object) -> object:
         captured_calls.append(("chat", chat_service))
         captured_calls.append(("reply_outbox_for_chat", reply_delivery_service))
         return "chat_router"
 
-    monkeypatch.setattr("dayu.web.fastapi_app.create_chat_router", _capture_chat)
-    monkeypatch.setattr("dayu.web.fastapi_app.create_prompt_router", _capture_single("prompt"))
-    monkeypatch.setattr("dayu.web.fastapi_app.create_reply_outbox_router", _capture_single("reply_outbox"))
-    monkeypatch.setattr("dayu.web.fastapi_app.create_fins_router", _capture_single("fins"))
-    monkeypatch.setattr("dayu.web.fastapi_app.create_write_router", _capture_zero("write"))
+    monkeypatch.setattr("alpha.web.fastapi_app.create_chat_router", _capture_chat)
+    monkeypatch.setattr("alpha.web.fastapi_app.create_prompt_router", _capture_single("prompt"))
+    monkeypatch.setattr("alpha.web.fastapi_app.create_reply_outbox_router", _capture_single("reply_outbox"))
+    monkeypatch.setattr("alpha.web.fastapi_app.create_fins_router", _capture_single("fins"))
+    monkeypatch.setattr("alpha.web.fastapi_app.create_write_router", _capture_zero("write"))
 
     chat_service = _NamedDependency(name="chat")
     prompt_service = _NamedDependency(name="prompt")
@@ -542,7 +542,7 @@ def test_create_fastapi_app_injects_narrow_services_into_route_factories(
 
     typed_app = cast(_FakeApp, app)
 
-    assert typed_app.title == "Dayu Web"
+    assert typed_app.title == "Alpha Web"
     assert captured_calls == [
         ("sessions", host_admin_service),
         ("runs", host_admin_service),
@@ -573,7 +573,7 @@ def test_chat_route_maps_value_error_to_400_without_creating_task(monkeypatch: p
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.chat.asyncio.create_task",
+        "alpha.web.routes.chat.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -611,7 +611,7 @@ def test_chat_route_creates_task_only_after_successful_submit(monkeypatch: pytes
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.chat.asyncio.create_task",
+        "alpha.web.routes.chat.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -646,7 +646,7 @@ def test_chat_route_normalizes_empty_session_id_to_none(monkeypatch: pytest.Monk
 
     _install_fake_route_modules(monkeypatch)
     monkeypatch.setattr(
-        "dayu.web.routes.chat.asyncio.create_task",
+        "alpha.web.routes.chat.asyncio.create_task",
         lambda coroutine: _record_background_task([], coroutine),
     )
 
@@ -685,7 +685,7 @@ def test_chat_route_maps_invalid_submission_to_500_without_creating_task(monkeyp
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.chat.asyncio.create_task",
+        "alpha.web.routes.chat.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -723,7 +723,7 @@ def test_chat_resume_route_creates_task_only_after_successful_resume(monkeypatch
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.chat.asyncio.create_task",
+        "alpha.web.routes.chat.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -782,7 +782,7 @@ def test_chat_resume_route_uses_pending_turn_scene_name_for_background_consumer(
     _install_fake_route_modules(monkeypatch)
     captured_scene_names: list[str | None] = []
     monkeypatch.setattr(
-        "dayu.web.routes.chat._start_chat_stream_consumer",
+        "alpha.web.routes.chat._start_chat_stream_consumer",
         lambda *, stream, reply_delivery_service, session_id, scene_name: (
             captured_scene_names.append(scene_name)
         ),
@@ -841,7 +841,7 @@ def test_chat_resume_route_maps_missing_pending_turn_to_404(monkeypatch: pytest.
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.chat.asyncio.create_task",
+        "alpha.web.routes.chat.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -887,7 +887,7 @@ def test_prompt_route_maps_value_error_to_400_without_creating_task(monkeypatch:
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.prompt.asyncio.create_task",
+        "alpha.web.routes.prompt.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -914,7 +914,7 @@ def test_prompt_route_creates_task_only_after_successful_submit(monkeypatch: pyt
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.prompt.asyncio.create_task",
+        "alpha.web.routes.prompt.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -954,7 +954,7 @@ def test_fins_download_route_maps_value_error_to_400_without_creating_task(monke
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.fins.asyncio.create_task",
+        "alpha.web.routes.fins.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -981,7 +981,7 @@ def test_fins_process_route_maps_value_error_to_400_without_creating_task(monkey
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.fins.asyncio.create_task",
+        "alpha.web.routes.fins.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -1021,7 +1021,7 @@ def test_fins_routes_schedule_background_consumer_after_success(
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.fins.asyncio.create_task",
+        "alpha.web.routes.fins.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -1047,7 +1047,7 @@ def test_fins_route_maps_invalid_submission_to_500_without_creating_task(monkeyp
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.fins.asyncio.create_task",
+        "alpha.web.routes.fins.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -1074,7 +1074,7 @@ def test_fins_route_rejects_non_stream_execution_before_background_task(monkeypa
     _install_fake_route_modules(monkeypatch)
     create_task_calls: list[object] = []
     monkeypatch.setattr(
-        "dayu.web.routes.fins.asyncio.create_task",
+        "alpha.web.routes.fins.asyncio.create_task",
         lambda coroutine: _record_background_task(create_task_calls, coroutine),
     )
 
@@ -1101,8 +1101,8 @@ def test_fins_route_rejects_non_stream_execution_before_background_task(monkeypa
 def test_fins_consume_stream_rejects_non_streaming_result() -> None:
     """后台消费者收到同步结果时应显式失败。"""
 
-    from dayu.contracts.fins import DownloadResultData, FinsCommandName, FinsResult
-    from dayu.web.routes.fins import _consume_stream
+    from alpha.contracts.fins import DownloadResultData, FinsCommandName, FinsResult
+    from alpha.web.routes.fins import _consume_stream
 
     result = FinsResult(
         command=FinsCommandName.DOWNLOAD,
@@ -1117,7 +1117,7 @@ def test_fins_consume_stream_rejects_non_streaming_result() -> None:
 def test_fins_consume_stream_drains_async_iterator() -> None:
     """后台消费者应完整消费流式事件。"""
 
-    from dayu.web.routes.fins import _consume_stream
+    from alpha.web.routes.fins import _consume_stream
 
     observed: list[int] = []
 
@@ -1178,7 +1178,7 @@ def test_events_router_streams_run_events_as_sse(monkeypatch: pytest.MonkeyPatch
             assert run_id == "run_1"
             return _run_events()
 
-    from dayu.web.routes.events import create_events_router
+    from alpha.web.routes.events import create_events_router
 
     router = cast(_CapturingRouter, create_events_router(cast(HostAdminServiceProtocol, _HostAdminService())))
     handler = cast(Any, router.handlers["/runs/{run_id}/events"])
@@ -1211,7 +1211,7 @@ def test_events_router_streams_fins_events_as_sse(monkeypatch: pytest.MonkeyPatc
             assert run_id == "run_1"
             return _run_events()
 
-    from dayu.web.routes.events import create_events_router
+    from alpha.web.routes.events import create_events_router
 
     router = cast(_CapturingRouter, create_events_router(cast(HostAdminServiceProtocol, _HostAdminService())))
     handler = cast(Any, router.handlers["/runs/{run_id}/events"])
@@ -1276,7 +1276,7 @@ def test_events_router_preserves_fins_command_discriminator(monkeypatch: pytest.
             assert run_id == "run_1"
             return _run_events()
 
-    from dayu.web.routes.events import create_events_router
+    from alpha.web.routes.events import create_events_router
 
     router = cast(_CapturingRouter, create_events_router(cast(HostAdminServiceProtocol, _HostAdminService())))
     handler = cast(Any, router.handlers["/runs/{run_id}/events"])
@@ -1321,7 +1321,7 @@ def test_events_router_uses_string_fallback_for_nonstandard_event_type(monkeypat
             assert session_id == "session_1"
             return _session_events()
 
-    from dayu.web.routes.events import create_events_router
+    from alpha.web.routes.events import create_events_router
 
     router = cast(_CapturingRouter, create_events_router(cast(HostAdminServiceProtocol, _HostAdminService())))
     handler = cast(Any, router.handlers["/sessions/{session_id}/events"])
@@ -1345,7 +1345,7 @@ def test_events_router_maps_runtime_error_to_501(monkeypatch: pytest.MonkeyPatch
             del run_id
             raise RuntimeError("SSE not enabled")
 
-    from dayu.web.routes.events import create_events_router
+    from alpha.web.routes.events import create_events_router
 
     router = cast(_CapturingRouter, create_events_router(cast(HostAdminServiceProtocol, _HostAdminService())))
     handler = cast(Any, router.handlers["/runs/{run_id}/events"])
@@ -1386,7 +1386,7 @@ def test_run_router_list_get_and_cancel_success(monkeypatch: pytest.MonkeyPatch)
                 raise KeyError(run_id)
             return _build_run_admin_view(run_id=run_id, state="cancelled", cancel_reason="user_request")
 
-    from dayu.web.routes.runs import create_run_router
+    from alpha.web.routes.runs import create_run_router
 
     router = cast(_CapturingRouter, create_run_router(cast(HostAdminServiceProtocol, _HostAdminService())))
     list_handler = cast(Any, router.handlers["GET "])
@@ -1425,7 +1425,7 @@ def test_run_router_maps_invalid_state_and_missing_records(monkeypatch: pytest.M
         def cancel_run(self, run_id: str) -> RunAdminView:
             raise KeyError(run_id)
 
-    from dayu.web.routes.runs import create_run_router
+    from alpha.web.routes.runs import create_run_router
 
     router = cast(_CapturingRouter, create_run_router(cast(HostAdminServiceProtocol, _HostAdminService())))
     list_handler = cast(Any, router.handlers["GET "])

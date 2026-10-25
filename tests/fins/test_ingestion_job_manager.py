@@ -9,14 +9,15 @@ import uuid
 from typing import Any, AsyncIterator, Optional
 
 import pytest
+from pytest_mock import MockerFixture
 
-from dayu.fins.ingestion.job_manager import (
+from alpha.fins.ingestion.job_manager import (
     IngestionJobManager,
     get_or_create_ingestion_job_manager,
 )
-from dayu.fins.ingestion.process_events import ProcessEvent, ProcessEventType
-from dayu.fins.ingestion.service import FinsIngestionService
-from dayu.fins.pipelines.download_events import DownloadEvent, DownloadEventType
+from alpha.fins.ingestion.process_events import ProcessEvent, ProcessEventType
+from alpha.fins.ingestion.service import FinsIngestionService
+from alpha.fins.pipelines.download_events import DownloadEvent, DownloadEventType
 
 
 class _BlockingDownloadBackend:
@@ -487,11 +488,15 @@ def test_process_job_reuses_active_job_for_equivalent_document_ids() -> None:
 
 
 @pytest.mark.unit
-def test_download_job_status_exposes_recent_issues() -> None:
-    """验证 download job 会保留最近 skip/fail 的原因摘要。"""
+def test_download_job_status_exposes_recent_issues(mocker: MockerFixture) -> None:
+    """多表单保持可解析且保留失败摘要。参数：模拟器。返回：无。异常：断言失败。"""
 
+    from alpha.fins.pipelines.sec_form_utils import split_form_input
+
+    backend = _DownloadIssueBackend()
+    spy = mocker.spy(backend, "download_stream")
     manager = IngestionJobManager(
-        service_factory=lambda ticker: FinsIngestionService(backend=_DownloadIssueBackend()),
+        service_factory=lambda ticker: FinsIngestionService(backend=backend),
         manager_key=f"download-issues-{uuid.uuid4().hex}",
     )
     _, snapshot = manager.start_download_job(
@@ -521,6 +526,8 @@ def test_download_job_status_exposes_recent_issues() -> None:
         },
     ]
     assert final_snapshot["result_summary"]["filings_failed"] == 1
+    assert spy.call_args is not None
+    assert split_form_input(spy.call_args.kwargs["form_type"]) == ["10-K", "10-Q"]
 
 
 

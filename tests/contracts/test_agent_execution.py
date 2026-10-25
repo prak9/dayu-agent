@@ -7,7 +7,7 @@ from typing import Literal, cast
 
 import pytest
 
-from dayu.contracts.agent_execution import (
+from alpha.contracts.agent_execution import (
     AcceptedInfrastructureSpec,
     AcceptedExecutionSpec,
     AcceptedModelSpec,
@@ -22,15 +22,15 @@ from dayu.contracts.agent_execution import (
     ExecutionWebPermissions,
     ScenePreparationSpec,
 )
-from dayu.contracts.agent_execution_serialization import (
+from alpha.contracts.agent_execution_serialization import (
     deserialize_execution_contract_snapshot,
     serialize_execution_contract_snapshot,
 )
-from dayu.contracts.execution_metadata import ExecutionDeliveryContext
-from dayu.contracts.host_execution import ConcurrencyAcquirePolicy
-from dayu.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
-from dayu.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
-from dayu.execution.options import (
+from alpha.contracts.execution_metadata import ExecutionDeliveryContext
+from alpha.contracts.host_execution import ConcurrencyAcquirePolicy
+from alpha.contracts.tool_configs import DocToolLimits, FinsToolLimits, WebToolsConfig
+from alpha.contracts.toolset_config import ToolsetConfigSnapshot, build_toolset_config_snapshot
+from alpha.execution.options import (
     ExecutionOptionsSnapshot,
     ConversationMemorySettings,
     ExecutionOptions,
@@ -573,13 +573,13 @@ def test_snapshot_optional_float_rejects_bool_uniformly() -> None:
         契约，防止任何一处退化回静默降级。
     """
 
-    from dayu.contracts.agent_execution_serialization import (
+    from alpha.contracts.agent_execution_serialization import (
         _snapshot_optional_float as _contract_snapshot_optional_float,
     )
-    from dayu.contracts.execution_options import (
+    from alpha.contracts.execution_options import (
         _snapshot_optional_float as _options_contract_snapshot_optional_float,
     )
-    from dayu.execution.options import (
+    from alpha.execution.options import (
         _snapshot_optional_float as _execution_snapshot_optional_float,
     )
 

@@ -10,7 +10,7 @@ from typing import Any, cast
 
 import pytest
 
-from dayu.wechat import service_manager
+from alpha.wechat import service_manager
 
 # WeChat service 仅支持 macOS (launchd) 与 Linux (systemd)；Windows 上 service_manager
 # 依赖 os.getuid() 等 POSIX 专属 API，不参与运行或测试。
@@ -34,7 +34,7 @@ def test_build_service_label_is_stable(tmp_path: Path) -> None:
     second = service_manager.build_service_label(state_dir)
 
     assert first == second
-    assert first.startswith("com.dayu.wechat.")
+    assert first.startswith("com.alpha.wechat.")
 
 
 @pytest.mark.unit
@@ -53,12 +53,12 @@ def test_build_launchd_service_spec_builds_expected_paths(tmp_path: Path) -> Non
     )
 
     assert spec.backend == "launchd"
-    assert spec.label.startswith("com.dayu.wechat.")
+    assert spec.label.startswith("com.alpha.wechat.")
     assert spec.definition_path.name == f"{spec.label}.plist"
     assert spec.program_arguments == (
         "/usr/bin/python3",
         "-m",
-        "dayu.wechat",
+        "alpha.wechat",
         "run",
         "--base",
         "/tmp/workspace",
@@ -84,7 +84,7 @@ def test_build_systemd_service_spec_builds_expected_unit_path(tmp_path: Path) ->
     )
 
     assert spec.backend == "systemd"
-    assert spec.label.startswith("com.dayu.wechat.")
+    assert spec.label.startswith("com.alpha.wechat.")
     assert spec.definition_path.name == f"{spec.label}.service"
     assert spec.environment_variables == (("MIMO_API_KEY", "secret-1"),)
     assert spec.stdout_path is None
@@ -99,17 +99,17 @@ def test_list_installed_launchd_service_definitions_reads_program_arguments(
     """验证 launchd definition 枚举会从 plist 读取 ProgramArguments。"""
 
     launch_agents_dir = tmp_path / "LaunchAgents"
-    plist_path = launch_agents_dir / "com.dayu.wechat.alpha.plist"
+    plist_path = launch_agents_dir / "com.alpha.wechat.alpha.plist"
     launch_agents_dir.mkdir(parents=True)
     with plist_path.open("wb") as handle:
         plistlib.dump(
             {
-                "Label": "com.dayu.wechat.alpha",
+                "Label": "com.alpha.wechat.alpha",
                 "WorkingDirectory": str(tmp_path / "repo"),
                 "ProgramArguments": [
                     "/usr/bin/python3",
                     "-m",
-                    "dayu.wechat",
+                    "alpha.wechat",
                     "run",
                     "--base",
                     "/tmp/workspace",
@@ -131,12 +131,12 @@ def test_list_installed_launchd_service_definitions_reads_program_arguments(
     assert definitions == (
         service_manager.InstalledServiceDefinition(
             backend="launchd",
-            label="com.dayu.wechat.alpha",
+            label="com.alpha.wechat.alpha",
             definition_path=plist_path.resolve(),
             program_arguments=(
                 "/usr/bin/python3",
                 "-m",
-                "dayu.wechat",
+                "alpha.wechat",
                 "run",
                 "--base",
                 "/tmp/workspace",
@@ -156,14 +156,14 @@ def test_list_installed_systemd_service_definitions_reads_exec_start(
     """验证 systemd definition 枚举会从 unit 读取 ExecStart。"""
 
     unit_dir = tmp_path / "systemd"
-    unit_path = unit_dir / "com.dayu.wechat.alpha.service"
+    unit_path = unit_dir / "com.alpha.wechat.alpha.service"
     unit_dir.mkdir(parents=True)
     unit_path.write_text(
         "\n".join(
             [
                 "[Service]",
                 f"WorkingDirectory={tmp_path / 'repo'}",
-                'ExecStart=/usr/bin/python3 -m dayu.wechat run --base /tmp/workspace --label alpha',
+                'ExecStart=/usr/bin/python3 -m alpha.wechat run --base /tmp/workspace --label alpha',
                 "",
             ]
         ),
@@ -181,12 +181,12 @@ def test_list_installed_systemd_service_definitions_reads_exec_start(
     assert definitions == (
         service_manager.InstalledServiceDefinition(
             backend="systemd",
-            label="com.dayu.wechat.alpha",
+            label="com.alpha.wechat.alpha",
             definition_path=unit_path.resolve(),
             program_arguments=(
                 "/usr/bin/python3",
                 "-m",
-                "dayu.wechat",
+                "alpha.wechat",
                 "run",
                 "--base",
                 "/tmp/workspace",
@@ -203,7 +203,7 @@ def test_query_launchd_service_status_returns_not_installed(tmp_path: Path) -> N
     """验证 plist 不存在时 launchd 状态为未安装。"""
 
     status = service_manager.query_launchd_service_status(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=tmp_path / "missing.plist",
     )
 
@@ -231,7 +231,7 @@ def test_query_launchd_service_status_extracts_pid(monkeypatch: pytest.MonkeyPat
     monkeypatch.setattr(service_manager, "_run_launchctl", _fake_run_launchctl)
 
     status = service_manager.query_launchd_service_status(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=plist_path,
     )
 
@@ -259,7 +259,7 @@ def test_query_systemd_service_status_extracts_pid(monkeypatch: pytest.MonkeyPat
     monkeypatch.setattr(service_manager, "_run_systemctl_user", _fake_run_systemctl)
 
     status = service_manager.query_systemd_service_status(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         unit_path=unit_path,
     )
 
@@ -274,7 +274,7 @@ def test_is_service_running_returns_true_for_launchd_with_pid(tmp_path: Path) ->
 
     status = service_manager.ServiceStatus(
         backend="launchd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.plist",
         installed=True,
         loaded=True,
@@ -290,7 +290,7 @@ def test_is_service_running_returns_false_for_launchd_without_pid(tmp_path: Path
 
     status = service_manager.ServiceStatus(
         backend="launchd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.plist",
         installed=True,
         loaded=True,
@@ -306,7 +306,7 @@ def test_is_service_running_returns_true_for_loaded_systemd(tmp_path: Path) -> N
 
     status = service_manager.ServiceStatus(
         backend="systemd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.service",
         installed=True,
         loaded=True,
@@ -320,13 +320,13 @@ def test_is_service_running_returns_true_for_loaded_systemd(tmp_path: Path) -> N
 def test_install_launchd_service_writes_plist(tmp_path: Path) -> None:
     """验证安装 launchd service 时会写入 plist 文件。"""
 
-    plist_path = tmp_path / "LaunchAgents" / "com.dayu.wechat.test.plist"
+    plist_path = tmp_path / "LaunchAgents" / "com.alpha.wechat.test.plist"
     spec = service_manager.ServiceSpec(
         backend="launchd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=plist_path,
         working_directory=tmp_path / "repo",
-        program_arguments=("/usr/bin/python3", "-m", "dayu.wechat", "run"),
+        program_arguments=("/usr/bin/python3", "-m", "alpha.wechat", "run"),
         environment_variables=(("MIMO_API_KEY", "secret-1"),),
         stdout_path=tmp_path / "logs" / "stdout.log",
         stderr_path=tmp_path / "logs" / "stderr.log",
@@ -344,13 +344,13 @@ def test_install_launchd_service_writes_plist(tmp_path: Path) -> None:
 def test_install_systemd_service_writes_unit_and_reload(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """验证安装 systemd service 时会写入 unit 文件并执行 daemon-reload。"""
 
-    unit_path = tmp_path / "systemd" / "com.dayu.wechat.test.service"
+    unit_path = tmp_path / "systemd" / "com.alpha.wechat.test.service"
     spec = service_manager.ServiceSpec(
         backend="systemd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=unit_path,
         working_directory=tmp_path / "repo",
-        program_arguments=("/usr/bin/python3", "-m", "dayu.wechat", "run"),
+        program_arguments=("/usr/bin/python3", "-m", "alpha.wechat", "run"),
         environment_variables=(("MIMO_API_KEY", "secret-1"),),
     )
     command_calls: list[tuple[str, ...]] = []
@@ -366,7 +366,7 @@ def test_install_systemd_service_writes_unit_and_reload(monkeypatch: pytest.Monk
 
     assert written_path == unit_path
     assert unit_path.exists()
-    assert "ExecStart=/usr/bin/python3 -m dayu.wechat run" in unit_path.read_text(encoding="utf-8")
+    assert "ExecStart=/usr/bin/python3 -m alpha.wechat run" in unit_path.read_text(encoding="utf-8")
     assert 'Environment="MIMO_API_KEY=secret-1"' in unit_path.read_text(encoding="utf-8")
     assert command_calls == [("daemon-reload",)]
 
@@ -384,7 +384,7 @@ def test_start_launchd_service_noops_when_process_running(monkeypatch: pytest.Mo
         "query_launchd_service_status",
         lambda **_kwargs: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=True,
@@ -399,7 +399,7 @@ def test_start_launchd_service_noops_when_process_running(monkeypatch: pytest.Mo
     )
 
     service_manager.start_launchd_service(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=plist_path,
     )
 
@@ -419,7 +419,7 @@ def test_restart_launchd_service_uses_kickstart_k(monkeypatch: pytest.MonkeyPatc
         "query_launchd_service_status",
         lambda **_kwargs: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=True,
@@ -434,12 +434,12 @@ def test_restart_launchd_service_uses_kickstart_k(monkeypatch: pytest.MonkeyPatc
     )
 
     service_manager.restart_launchd_service(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=plist_path,
     )
 
     assert command_calls == [
-        (("kickstart", "-k", service_manager._build_launchctl_service_target("com.dayu.wechat.test")), True),
+        (("kickstart", "-k", service_manager._build_launchctl_service_target("com.alpha.wechat.test")), True),
     ]
 
 
@@ -459,13 +459,13 @@ def test_start_systemd_service_calls_systemctl_start(monkeypatch: pytest.MonkeyP
     )
 
     service_manager.start_systemd_service(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         unit_path=unit_path,
     )
 
     assert command_calls == [
         ("daemon-reload",),
-        ("start", "com.dayu.wechat.test.service"),
+        ("start", "com.alpha.wechat.test.service"),
     ]
 
 
@@ -485,7 +485,7 @@ def test_restart_systemd_service_calls_systemctl_restart_when_loaded(
         "query_systemd_service_status",
         lambda **_kwargs: service_manager.ServiceStatus(
             backend="systemd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=unit_path,
             installed=True,
             loaded=True,
@@ -500,13 +500,13 @@ def test_restart_systemd_service_calls_systemctl_restart_when_loaded(
     )
 
     service_manager.restart_systemd_service(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         unit_path=unit_path,
     )
 
     assert command_calls == [
         ("daemon-reload",),
-        ("restart", "com.dayu.wechat.test.service"),
+        ("restart", "com.alpha.wechat.test.service"),
     ]
 
 
@@ -523,7 +523,7 @@ def test_stop_launchd_service_sends_sigterm_before_bootout(monkeypatch: pytest.M
         "query_launchd_service_status",
         lambda **_kwargs: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=True,
@@ -539,13 +539,13 @@ def test_stop_launchd_service_sends_sigterm_before_bootout(monkeypatch: pytest.M
     monkeypatch.setattr(service_manager, "_run_launchctl", _fake_run_launchctl)
 
     stopped = service_manager.stop_launchd_service(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=plist_path,
     )
 
     assert stopped is True
     assert command_calls == [
-        (("kill", "SIGTERM", service_manager._build_launchctl_service_target("com.dayu.wechat.test")), True),
+        (("kill", "SIGTERM", service_manager._build_launchctl_service_target("com.alpha.wechat.test")), True),
         (("bootout", service_manager._build_launchctl_domain_target(), str(plist_path.resolve())), True),
     ]
 
@@ -566,7 +566,7 @@ def test_stop_launchd_service_logs_warning_when_graceful_timeout(
         "query_launchd_service_status",
         lambda **_kwargs: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=True,
@@ -586,7 +586,7 @@ def test_stop_launchd_service_logs_warning_when_graceful_timeout(
     )
 
     stopped = service_manager.stop_launchd_service(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=plist_path,
     )
 
@@ -609,7 +609,7 @@ def test_stop_systemd_service_calls_systemctl_stop(monkeypatch: pytest.MonkeyPat
         "query_systemd_service_status",
         lambda **_kwargs: service_manager.ServiceStatus(
             backend="systemd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=unit_path,
             installed=True,
             loaded=True,
@@ -624,12 +624,12 @@ def test_stop_systemd_service_calls_systemctl_stop(monkeypatch: pytest.MonkeyPat
     )
 
     stopped = service_manager.stop_systemd_service(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         unit_path=unit_path,
     )
 
     assert stopped is True
-    assert command_calls == [("stop", "com.dayu.wechat.test.service")]
+    assert command_calls == [("stop", "com.alpha.wechat.test.service")]
 
 
 @pytest.mark.unit
@@ -642,10 +642,10 @@ def test_service_manager_generic_wrappers_dispatch_launchd_backend(
     definition_path = tmp_path / "service.plist"
     spec = service_manager.ServiceSpec(
         backend="launchd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=definition_path,
         working_directory=tmp_path,
-        program_arguments=("/usr/bin/python3", "-m", "dayu.wechat", "run"),
+        program_arguments=("/usr/bin/python3", "-m", "alpha.wechat", "run"),
     )
     status = service_manager.ServiceStatus(
         backend="launchd",
@@ -751,10 +751,10 @@ def test_service_manager_generic_wrappers_dispatch_systemd_backend(
     definition_path = tmp_path / "service.service"
     spec = service_manager.ServiceSpec(
         backend="systemd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=definition_path,
         working_directory=tmp_path,
-        program_arguments=("/usr/bin/python3", "-m", "dayu.wechat", "run"),
+        program_arguments=("/usr/bin/python3", "-m", "alpha.wechat", "run"),
     )
     status = service_manager.ServiceStatus(
         backend="systemd",
@@ -856,14 +856,14 @@ def test_service_manager_generic_wrappers_reject_unknown_backend(tmp_path: Path)
 
     spec = service_manager.ServiceSpec(
         backend=cast(Any, "bad"),
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.bad",
         working_directory=tmp_path,
         program_arguments=("/usr/bin/python3",),
     )
 
     with pytest.raises(ValueError, match="未知 service backend"):
-        service_manager.resolve_service_definition_path("com.dayu.wechat.test", backend=cast(Any, "bad"))
+        service_manager.resolve_service_definition_path("com.alpha.wechat.test", backend=cast(Any, "bad"))
     with pytest.raises(ValueError, match="未知 service backend"):
         service_manager.build_service_spec(
             state_dir=tmp_path / ".wechat",
@@ -925,7 +925,7 @@ def test_is_service_running_returns_false_when_not_loaded(tmp_path: Path) -> Non
 
     status = service_manager.ServiceStatus(
         backend="systemd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.service",
         installed=True,
         loaded=False,
@@ -981,7 +981,7 @@ def test_build_service_log_lines_launchd(tmp_path: Path) -> None:
     """验证 build_service_log_lines 在 launchd 后端返回日志路径。"""
 
     lines = service_manager.build_service_log_lines(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         state_dir=tmp_path / ".wechat",
         backend="launchd",
     )
@@ -996,7 +996,7 @@ def test_build_service_log_lines_systemd() -> None:
     """验证 build_service_log_lines 在 systemd 后端返回 journal 命令。"""
 
     lines = service_manager.build_service_log_lines(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         state_dir=Path("/tmp/state"),
         backend="systemd",
     )
@@ -1012,7 +1012,7 @@ def test_build_service_log_lines_unknown_backend(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="未知 service backend"):
         service_manager.build_service_log_lines(
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             state_dir=tmp_path,
             backend=cast(Any, "unknown"),
         )
@@ -1119,7 +1119,7 @@ def test_render_systemd_unit_raises_on_non_systemd_spec(tmp_path: Path) -> None:
 
     spec = service_manager.ServiceSpec(
         backend="launchd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.plist",
         working_directory=tmp_path,
         program_arguments=("/usr/bin/python3",),
@@ -1170,7 +1170,7 @@ def test_install_launchd_service_raises_on_non_launchd_spec(tmp_path: Path) -> N
 
     spec = service_manager.ServiceSpec(
         backend="systemd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.service",
         working_directory=tmp_path,
         program_arguments=("/usr/bin/python3",),
@@ -1186,7 +1186,7 @@ def test_install_launchd_service_raises_on_missing_log_paths(tmp_path: Path) -> 
 
     spec = service_manager.ServiceSpec(
         backend="launchd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "LaunchAgents" / "service.plist",
         working_directory=tmp_path,
         program_arguments=("/usr/bin/python3",),
@@ -1204,7 +1204,7 @@ def test_install_systemd_service_raises_on_non_systemd_spec(tmp_path: Path) -> N
 
     spec = service_manager.ServiceSpec(
         backend="launchd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.plist",
         working_directory=tmp_path,
         program_arguments=("/usr/bin/python3",),
@@ -1236,7 +1236,7 @@ def test_launchd_service_not_installed_status_fields(tmp_path: Path) -> None:
     """验证 launchd 未安装的 status 字段完整性。"""
 
     status = service_manager.query_launchd_service_status(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=tmp_path / "nonexistent.plist",
     )
 
@@ -1263,7 +1263,7 @@ def test_launchd_service_installed_but_not_loaded(monkeypatch: pytest.MonkeyPatc
     )
 
     status = service_manager.query_launchd_service_status(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         plist_path=plist_path,
     )
 
@@ -1277,7 +1277,7 @@ def test_systemd_service_not_installed_status_fields(tmp_path: Path) -> None:
     """验证 systemd 未安装的 status 字段完整性。"""
 
     status = service_manager.query_systemd_service_status(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         unit_path=tmp_path / "nonexistent.service",
     )
 
@@ -1302,7 +1302,7 @@ def test_systemd_service_installed_but_not_loaded(monkeypatch: pytest.MonkeyPatc
     )
 
     status = service_manager.query_systemd_service_status(
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         unit_path=unit_path,
     )
 
@@ -1317,7 +1317,7 @@ def test_is_service_running_systemd_loaded_without_pid(tmp_path: Path) -> None:
 
     status = service_manager.ServiceStatus(
         backend="systemd",
-        label="com.dayu.wechat.test",
+        label="com.alpha.wechat.test",
         definition_path=tmp_path / "service.service",
         installed=True,
         loaded=True,
@@ -1340,7 +1340,7 @@ def test_launchd_start_service_bootstraps_when_not_loaded(monkeypatch: pytest.Mo
         "query_launchd_service_status",
         lambda **_kw: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=False,
@@ -1353,7 +1353,7 @@ def test_launchd_start_service_bootstraps_when_not_loaded(monkeypatch: pytest.Mo
         or subprocess.CompletedProcess(args=["launchctl", *arguments], returncode=0, stdout="", stderr=""),
     )
 
-    service_manager.start_launchd_service(label="com.dayu.wechat.test", plist_path=plist_path)
+    service_manager.start_launchd_service(label="com.alpha.wechat.test", plist_path=plist_path)
 
     assert len(command_calls) == 1
     assert command_calls[0][0][0] == "bootstrap"
@@ -1372,7 +1372,7 @@ def test_launchd_restart_service_bootstraps_when_not_loaded(monkeypatch: pytest.
         "query_launchd_service_status",
         lambda **_kw: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=False,
@@ -1385,7 +1385,7 @@ def test_launchd_restart_service_bootstraps_when_not_loaded(monkeypatch: pytest.
         or subprocess.CompletedProcess(args=["launchctl", *arguments], returncode=0, stdout="", stderr=""),
     )
 
-    service_manager.restart_launchd_service(label="com.dayu.wechat.test", plist_path=plist_path)
+    service_manager.restart_launchd_service(label="com.alpha.wechat.test", plist_path=plist_path)
 
     assert len(command_calls) == 1
     assert command_calls[0][0][0] == "bootstrap"
@@ -1404,7 +1404,7 @@ def test_launchd_start_service_kickstart_when_loaded_without_pid(monkeypatch: py
         "query_launchd_service_status",
         lambda **_kw: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=True,
@@ -1418,10 +1418,10 @@ def test_launchd_start_service_kickstart_when_loaded_without_pid(monkeypatch: py
         or subprocess.CompletedProcess(args=["launchctl", *arguments], returncode=0, stdout="", stderr=""),
     )
 
-    service_manager.start_launchd_service(label="com.dayu.wechat.test", plist_path=plist_path)
+    service_manager.start_launchd_service(label="com.alpha.wechat.test", plist_path=plist_path)
 
     assert command_calls == [
-        (("kickstart", service_manager._build_launchctl_service_target("com.dayu.wechat.test")), True),
+        (("kickstart", service_manager._build_launchctl_service_target("com.alpha.wechat.test")), True),
     ]
 
 
@@ -1437,14 +1437,14 @@ def test_stop_launchd_service_returns_false_when_not_loaded(monkeypatch: pytest.
         "query_launchd_service_status",
         lambda **_kw: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=False,
         ),
     )
 
-    assert service_manager.stop_launchd_service(label="com.dayu.wechat.test", plist_path=plist_path) is False
+    assert service_manager.stop_launchd_service(label="com.alpha.wechat.test", plist_path=plist_path) is False
 
 
 @pytest.mark.unit
@@ -1460,7 +1460,7 @@ def test_stop_launchd_service_skips_sigterm_when_no_pid(monkeypatch: pytest.Monk
         "query_launchd_service_status",
         lambda **_kw: service_manager.ServiceStatus(
             backend="launchd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=plist_path,
             installed=True,
             loaded=True,
@@ -1474,7 +1474,7 @@ def test_stop_launchd_service_skips_sigterm_when_no_pid(monkeypatch: pytest.Monk
         or subprocess.CompletedProcess(args=["launchctl", *arguments], returncode=0, stdout="", stderr=""),
     )
 
-    stopped = service_manager.stop_launchd_service(label="com.dayu.wechat.test", plist_path=plist_path)
+    stopped = service_manager.stop_launchd_service(label="com.alpha.wechat.test", plist_path=plist_path)
 
     assert stopped is True
     assert command_calls == [
@@ -1494,14 +1494,14 @@ def test_stop_systemd_service_returns_false_when_not_loaded(monkeypatch: pytest.
         "query_systemd_service_status",
         lambda **_kw: service_manager.ServiceStatus(
             backend="systemd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=unit_path,
             installed=True,
             loaded=False,
         ),
     )
 
-    assert service_manager.stop_systemd_service(label="com.dayu.wechat.test", unit_path=unit_path) is False
+    assert service_manager.stop_systemd_service(label="com.alpha.wechat.test", unit_path=unit_path) is False
 
 
 @pytest.mark.unit
@@ -1523,18 +1523,18 @@ def test_restart_systemd_service_starts_when_not_loaded(monkeypatch: pytest.Monk
         "query_systemd_service_status",
         lambda **_kw: service_manager.ServiceStatus(
             backend="systemd",
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             definition_path=unit_path,
             installed=True,
             loaded=False,
         ),
     )
 
-    service_manager.restart_systemd_service(label="com.dayu.wechat.test", unit_path=unit_path)
+    service_manager.restart_systemd_service(label="com.alpha.wechat.test", unit_path=unit_path)
 
     assert command_calls == [
         ("daemon-reload",),
-        ("start", "com.dayu.wechat.test.service"),
+        ("start", "com.alpha.wechat.test.service"),
     ]
 
 
@@ -1544,7 +1544,7 @@ def test_launchd_service_start_raises_on_missing_plist(tmp_path: Path) -> None:
 
     with pytest.raises(FileNotFoundError, match="launchd plist 不存在"):
         service_manager.start_launchd_service(
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             plist_path=tmp_path / "missing.plist",
         )
 
@@ -1555,7 +1555,7 @@ def test_launchd_service_restart_raises_on_missing_plist(tmp_path: Path) -> None
 
     with pytest.raises(FileNotFoundError, match="launchd plist 不存在"):
         service_manager.restart_launchd_service(
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             plist_path=tmp_path / "missing.plist",
         )
 
@@ -1566,7 +1566,7 @@ def test_systemd_service_start_raises_on_missing_unit(tmp_path: Path) -> None:
 
     with pytest.raises(FileNotFoundError, match="systemd unit 不存在"):
         service_manager.start_systemd_service(
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             unit_path=tmp_path / "missing.service",
         )
 
@@ -1577,7 +1577,7 @@ def test_systemd_service_restart_raises_on_missing_unit(tmp_path: Path) -> None:
 
     with pytest.raises(FileNotFoundError, match="systemd unit 不存在"):
         service_manager.restart_systemd_service(
-            label="com.dayu.wechat.test",
+            label="com.alpha.wechat.test",
             unit_path=tmp_path / "missing.service",
         )
 

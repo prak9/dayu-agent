@@ -8,7 +8,7 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from dayu.fins.processors import report_form_financial_statement_common as module
+from alpha.fins.processors import report_form_financial_statement_common as module
 
 
 @dataclass(frozen=True)

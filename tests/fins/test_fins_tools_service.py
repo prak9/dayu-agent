@@ -9,14 +9,14 @@ from typing import Any, Optional, cast
 
 import pytest
 
-from dayu.engine.processors.base import DocumentProcessor
-from dayu.engine.exceptions import ToolArgumentError
-from dayu.engine.tool_errors import ToolBusinessError
-from dayu.engine.processors.source import Source
-from dayu.engine.processors.processor_registry import ProcessorRegistry
-from dayu.fins.domain.document_models import CompanyMeta, SourceHandle
-from dayu.fins.domain.enums import SourceKind
-from dayu.fins.tools.result_types import DocumentSectionsResult
+from alpha.engine.processors.base import DocumentProcessor
+from alpha.engine.exceptions import ToolArgumentError
+from alpha.engine.tool_errors import ToolBusinessError
+from alpha.engine.processors.source import Source
+from alpha.engine.processors.processor_registry import ProcessorRegistry
+from alpha.fins.domain.document_models import CompanyMeta, SourceHandle
+from alpha.fins.domain.enums import SourceKind
+from alpha.fins.tools.result_types import DocumentSectionsResult
 from tests.fins.legacy_repository_adapters import LegacyCompatibleFinsToolService as FinsToolService
 
 
@@ -1805,7 +1805,7 @@ def test_search_document_single_query_unchanged() -> None:
 def test_search_document_rejects_both_query_and_queries() -> None:
     """验证同时传 query 和 queries 时报错。"""
 
-    from dayu.engine.exceptions import ToolArgumentError
+    from alpha.engine.exceptions import ToolArgumentError
 
     repository = FakeRepository()
     processor_registry = SearchEnhancedProcessorRegistry()
@@ -1824,7 +1824,7 @@ def test_search_document_rejects_both_query_and_queries() -> None:
 def test_search_document_rejects_neither_query_nor_queries() -> None:
     """验证不传 query 也不传 queries 时报错。"""
 
-    from dayu.engine.exceptions import ToolArgumentError
+    from alpha.engine.exceptions import ToolArgumentError
 
     repository = FakeRepository()
     processor_registry = SearchEnhancedProcessorRegistry()
@@ -1882,7 +1882,7 @@ def test_search_document_queries_accepts_twenty_items() -> None:
 def test_search_document_queries_rejects_more_than_twenty_items() -> None:
     """验证 queries 去重后超过 20 条时返回参数错误。"""
 
-    from dayu.engine.exceptions import ToolArgumentError
+    from alpha.engine.exceptions import ToolArgumentError
 
     repository = FakeRepository()
     processor_registry = SearchEnhancedProcessorRegistry()
@@ -1925,7 +1925,7 @@ def test_search_document_queries_deduplicates_before_limit_check() -> None:
 def test_synonym_expansion_covers_competition_group() -> None:
     """验证 competitor 同义词组覆盖主要竞争相关词。"""
 
-    from dayu.fins.tools.search_engine import _build_synonym_queries
+    from alpha.fins.tools.search_engine import _build_synonym_queries
 
     synonyms = _build_synonym_queries("competitor")
     synonyms_lower = {s.lower() for s in synonyms}
@@ -1937,7 +1937,7 @@ def test_synonym_expansion_covers_competition_group() -> None:
 def test_synonym_expansion_covers_acquisition_group() -> None:
     """验证 acquisition 同义词组覆盖并购相关词。"""
 
-    from dayu.fins.tools.search_engine import _build_synonym_queries
+    from alpha.fins.tools.search_engine import _build_synonym_queries
 
     synonyms = _build_synonym_queries("acquisition")
     synonyms_lower = {s.lower() for s in synonyms}
@@ -1952,7 +1952,7 @@ def test_synonym_expansion_covers_acquisition_group() -> None:
 def test_proximity_score_ranks_closer_keywords_higher() -> None:
     """验证多词匹配中关键词邻近的条目排在远距条目之前。"""
 
-    from dayu.fins.tools.search_engine import (
+    from alpha.fins.tools.search_engine import (
         _compute_keyword_proximity_score,
         _sort_ranked_search_entries,
     )
@@ -1994,7 +1994,7 @@ def test_proximity_score_ranks_closer_keywords_higher() -> None:
 def test_proximity_score_single_word_returns_zero() -> None:
     """验证单词查询邻近度分数为 0。"""
 
-    from dayu.fins.tools.search_engine import _compute_keyword_proximity_score
+    from alpha.fins.tools.search_engine import _compute_keyword_proximity_score
 
     entry = {
         "evidence": {
@@ -2009,8 +2009,8 @@ def test_proximity_score_single_word_returns_zero() -> None:
 def test_sort_ranked_search_entries_keeps_strategy_bucket_ahead_of_bm25f_score() -> None:
     """验证 strategy bucket 优先于 BM25F 分数，避免 exact 被非 exact 覆盖。"""
 
-    from dayu.fins.tools.bm25f_scorer import build_section_bm25f_index
-    from dayu.fins.tools.search_engine import _sort_ranked_search_entries
+    from alpha.fins.tools.bm25f_scorer import build_section_bm25f_index
+    from alpha.fins.tools.search_engine import _sort_ranked_search_entries
 
     bm25f_index = build_section_bm25f_index([
         {
@@ -2066,8 +2066,8 @@ def test_sort_ranked_search_entries_keeps_strategy_bucket_ahead_of_bm25f_score()
 def test_intent_alignment_prefers_expected_semantic_bucket() -> None:
     """验证排序在同优先级下优先选择意图一致章节。"""
 
-    from dayu.fins.tools.search_engine import _sort_ranked_search_entries
-    from dayu.fins.tools.search_models import QueryDiagnosis, SectionSemanticProfile
+    from alpha.fins.tools.search_engine import _sort_ranked_search_entries
+    from alpha.fins.tools.search_models import QueryDiagnosis, SectionSemanticProfile
 
     diagnosis = QueryDiagnosis(
         query="competitor",
@@ -2129,8 +2129,8 @@ def test_intent_alignment_prefers_expected_semantic_bucket() -> None:
 def test_context_noise_penalty_demotes_hr_competition_context() -> None:
     """验证竞争查询下 HR 语境噪音会被惩罚并后置。"""
 
-    from dayu.fins.tools.search_engine import _sort_ranked_search_entries
-    from dayu.fins.tools.search_models import QueryDiagnosis, SectionSemanticProfile
+    from alpha.fins.tools.search_engine import _sort_ranked_search_entries
+    from alpha.fins.tools.search_models import QueryDiagnosis, SectionSemanticProfile
 
     diagnosis = QueryDiagnosis(
         query="competition",
@@ -2204,7 +2204,7 @@ class TestResolveSemanticBucket:
     def test_topic_direct_mapping_covers_all_section_types(self) -> None:
         """一级策略：已知 topic 直接映射，无需关键词评分。"""
 
-        from dayu.fins.tools.search_engine import _resolve_semantic_bucket
+        from alpha.fins.tools.search_engine import _resolve_semantic_bucket
 
         cases = [
             ("business", "business"),
@@ -2231,7 +2231,7 @@ class TestResolveSemanticBucket:
     def test_keyword_fallback_when_topic_unknown(self) -> None:
         """二级策略：topic 未知时基于 title/path 关键词评分。"""
 
-        from dayu.fins.tools.search_engine import _resolve_semantic_bucket
+        from alpha.fins.tools.search_engine import _resolve_semantic_bucket
 
         assert _resolve_semantic_bucket(
             topic="", path="", title="Business Overview", item=""
@@ -2246,7 +2246,7 @@ class TestResolveSemanticBucket:
     def test_fallback_returns_other_when_no_signal(self) -> None:
         """无任何信号时返回 other。"""
 
-        from dayu.fins.tools.search_engine import _resolve_semantic_bucket
+        from alpha.fins.tools.search_engine import _resolve_semantic_bucket
 
         assert _resolve_semantic_bucket(topic="", path="", title="", item="") == "other"
         assert _resolve_semantic_bucket(
@@ -2256,7 +2256,7 @@ class TestResolveSemanticBucket:
     def test_directors_employees_is_people_not_governance(self) -> None:
         """directors_employees 必须归入 people 而非 governance。"""
 
-        from dayu.fins.tools.search_engine import _resolve_semantic_bucket
+        from alpha.fins.tools.search_engine import _resolve_semantic_bucket
 
         assert _resolve_semantic_bucket(
             topic="directors_employees", path="20-F > Item 6", title="Directors and Employees", item="Item 6"
@@ -2265,7 +2265,7 @@ class TestResolveSemanticBucket:
     def test_keyword_scoring_prefers_highest_overlap(self) -> None:
         """多关键词命中时取交集最大的桶。"""
 
-        from dayu.fins.tools.search_engine import _resolve_semantic_bucket
+        from alpha.fins.tools.search_engine import _resolve_semantic_bucket
 
         # title 含 "financial" + "income" + "assets" → financial(3) > 其他
         assert _resolve_semantic_bucket(
@@ -3091,7 +3091,7 @@ def test_get_page_content_validates_page_no() -> None:
     """验证 get_page_content 拒绝非法 page_no。"""
 
     import pytest
-    from dayu.engine.exceptions import ToolArgumentError
+    from alpha.engine.exceptions import ToolArgumentError
 
     repository = FakeRepository()
     processor_registry = FakeProcessorRegistry()
@@ -3481,7 +3481,7 @@ def test_read_section_invalid_ref_falls_back_when_no_cached_match() -> None:
 def test_read_section_inherits_item_and_topic_from_parent_title() -> None:
     """验证 read_section 会从父章节标题继承 item 与 topic。"""
 
-    from dayu.fins.domain.tool_models import SectionType
+    from alpha.fins.domain.tool_models import SectionType
 
     @dataclass
     class ParentSemanticProcessor(BasicProcessor):
@@ -3599,7 +3599,7 @@ def test_query_xbrl_facts_validates_concepts_type() -> None:
     """验证 query_xbrl_facts 拒绝非列表的 concepts。"""
 
     import pytest
-    from dayu.engine.exceptions import ToolArgumentError
+    from alpha.engine.exceptions import ToolArgumentError
 
     repository = FakeRepository()
     processor_registry = FakeProcessorRegistry()
@@ -3677,7 +3677,7 @@ class TestBuildMatchQuality:
     def test_exact_only(self) -> None:
         """仅精确命中时 primary_source 应为 exact。"""
 
-        from dayu.fins.tools.service_helpers import _build_match_quality
+        from alpha.fins.tools.service_helpers import _build_match_quality
 
         matches = [_make_match(True) for _ in range(5)]
         result = _build_match_quality(matches)
@@ -3690,7 +3690,7 @@ class TestBuildMatchQuality:
     def test_expansion_only(self) -> None:
         """仅扩展命中时 primary_source 应为 expansion_only。"""
 
-        from dayu.fins.tools.service_helpers import _build_match_quality
+        from alpha.fins.tools.service_helpers import _build_match_quality
 
         matches = [_make_match(False) for _ in range(10)]
         result = _build_match_quality(matches)
@@ -3703,7 +3703,7 @@ class TestBuildMatchQuality:
     def test_mixed(self) -> None:
         """精确与扩展皆有命中时 primary_source 应为 mixed。"""
 
-        from dayu.fins.tools.service_helpers import _build_match_quality
+        from alpha.fins.tools.service_helpers import _build_match_quality
 
         matches = [_make_match(True) for _ in range(3)] + [_make_match(False) for _ in range(7)]
         result = _build_match_quality(matches)
@@ -3716,7 +3716,7 @@ class TestBuildMatchQuality:
     def test_none(self) -> None:
         """零命中时 primary_source 应为 none。"""
 
-        from dayu.fins.tools.service_helpers import _build_match_quality
+        from alpha.fins.tools.service_helpers import _build_match_quality
 
         result = _build_match_quality([])
         assert result == {
@@ -3728,7 +3728,7 @@ class TestBuildMatchQuality:
     def test_counts_equal_total(self) -> None:
         """exact + expansion 应始终等于 len(matches)，消除语义层级歧义。"""
 
-        from dayu.fins.tools.service_helpers import _build_match_quality
+        from alpha.fins.tools.service_helpers import _build_match_quality
 
         matches = [_make_match(True), _make_match(False), _make_match(False)]
         result = _build_match_quality(matches)
@@ -3745,14 +3745,14 @@ class TestBuildSearchHint:
     def test_none_source_returns_none(self) -> None:
         """零命中时不生成提示。"""
 
-        from dayu.fins.tools.service_helpers import _build_search_hint
+        from alpha.fins.tools.service_helpers import _build_search_hint
 
         assert _build_search_hint([], "none") is None
 
     def test_exact_source_returns_none(self) -> None:
         """纯精确命中时不生成提示。"""
 
-        from dayu.fins.tools.service_helpers import _build_search_hint
+        from alpha.fins.tools.service_helpers import _build_search_hint
 
         matches = [_make_match(True) for _ in range(5)]
         assert _build_search_hint(matches, "exact") is None
@@ -3760,7 +3760,7 @@ class TestBuildSearchHint:
     def test_expansion_only_warns_noise(self) -> None:
         """纯扩展命中时应警告噪声风险并建议替代操作。"""
 
-        from dayu.fins.tools.service_helpers import _build_search_hint
+        from alpha.fins.tools.service_helpers import _build_search_hint
 
         matches = [_make_match(False) for _ in range(20)]
         hint = _build_search_hint(matches, "expansion_only")
@@ -3774,7 +3774,7 @@ class TestBuildSearchHint:
     def test_mixed_shows_exact_count_and_fetch_more_guidance(self) -> None:
         """混合命中时应报告精确数并引导避免 fetch_more。"""
 
-        from dayu.fins.tools.service_helpers import _build_search_hint
+        from alpha.fins.tools.service_helpers import _build_search_hint
 
         matches = [_make_match(True) for _ in range(3)] + [_make_match(False) for _ in range(17)]
         hint = _build_search_hint(matches, "mixed")

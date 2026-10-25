@@ -10,10 +10,10 @@ from typing import Any, BinaryIO, cast
 import pytest
 from bs4.element import Tag
 
-from dayu.engine.processors.bs_processor import _TableBlock
-from dayu.engine.processors.source import Source
-from dayu.fins.processors import bs_report_form_common as module
-from dayu.fins.processors.financial_base import FinancialStatementResult, XbrlFactsResult
+from alpha.engine.processors.bs_processor import _TableBlock
+from alpha.engine.processors.source import Source
+from alpha.fins.processors import bs_report_form_common as module
+from alpha.fins.processors.financial_base import FinancialStatementResult, XbrlFactsResult
 
 
 class _DummySource:

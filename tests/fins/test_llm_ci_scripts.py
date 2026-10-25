@@ -143,7 +143,7 @@ def test_llm_ci_process_detects_failed_documents_from_cli_summary() -> None:
     result = module.ProcessRunResult(
         ticker="NVS",
         document_ids=("fil_0001370368-25-000004",),
-        command=("python", "-m", "dayu.cli"),
+        command=("python", "-m", "alpha.cli"),
         return_code=0,
         duration_seconds=1.0,
         timed_out=False,
