@@ -20,6 +20,10 @@ from alpha.research.storage.revisions import SQLiteResearchRevisions
 from alpha.research.storage.store import ResearchStore
 from alpha.research.storage.working import SQLiteResearchWorkingRecords
 from alpha.research.tools import register_research_tools
+from alpha.research.judgments import ResearchJudgments
+from alpha.research.judgment_tools import register_judgment_tools
+from alpha.research.report_composer import ResearchReportComposer
+from alpha.research.report_tools import register_report_tools
 from alpha.services.external_research_service import ExternalResearchService
 from alpha.services.research_service import ResearchService
 from alpha.workspace_paths import build_research_artifacts_dir, build_research_methods_dir, build_research_store_path
@@ -39,7 +43,10 @@ class ExternalToolRegistryFactory:
         runtime = DefaultFinsRuntime.create(workspace_root=self.workspace)
         registry = ToolRegistry()
         register_research_tools(registry, working, methods, SQLiteResearchRevisions(store, FsResearchArtifactStore(build_research_artifacts_dir(self.workspace))))
-        register_analysis_tools(registry, ResearchCandidates(SQLiteResearchAnalysis(store), working, methods), FinsResearchReader(runtime))
+        register_judgment_tools(registry, ResearchJudgments(working), working)
+        candidates = ResearchCandidates(SQLiteResearchAnalysis(store), working, methods)
+        register_analysis_tools(registry, candidates, FinsResearchReader(runtime))
+        register_report_tools(registry, ResearchReportComposer(candidates, ResearchJudgments(working)))
         register_material_tools(registry, working, SQLiteResearchMaterials(store, FsFinancialMaterialBlobs(self.workspace)),
                                 self.workspace / "tmp", prepare_financial_material_processor(self.workspace))
         register_fins_read_tools(registry, service=runtime.get_tool_service())

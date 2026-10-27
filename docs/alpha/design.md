@@ -1,14 +1,14 @@
 # alpha 投研系统设计
 
-alpha 是由 Host 托管的通用投研 Agent。Telegram 提供按研究话题组织的入口，invest 提供方法，Fins 提供财报能力；研究成果先在本地形成不可变版本，再按用户指令发布到 Notion 的 Invest 页面下。
+alpha 是由 Host 托管的通用投研系统。当前 coding agent 通过 Alpha MCP 直接研究，invest 提供方法，Fins 提供财报能力；聊天呈现简短判断与变化，完整报告按授权发布到 Notion Invest 的研究主题下。Telegram 是可选渠道。
 
-本文定义目标设计，包与入口正迁移至 alpha，具体完成状态以实施计划为准。实施任务、状态和验收证据以 [program.md](program.md) 为准，目标接口尚未实现。
+本文说明研究身份、执行边界和输出设计。包、CLI、MCP 与主题归档已实现；使用方法见 [coding agent 指南](coding-agent-guide.md)。历史渠道改造记录见 [program.md](program.md)，可检验判断与双层输出的实施证据见 [当前计划](research-judgment/program.md)。
 
 ## 1 范围与成功标准
 
-用户能够创建多项研究，在 Telegram 切换研究话题，提交文字、链接和文件，查看进度、停止执行、取得带来源的报告，并将指定版本推送到 Invest。重启后研究、消息绑定和发布记录可恢复；重复消息、按钮和受理重试不会重复启动同一请求或重复发布已确认版本。
+用户通过 coding agent 创建、列出和切换研究主题，恢复检查点、读取财报、保存判断、完成复盘并将指定版本推送到 Invest。可选 Telegram 渠道另提供消息和文件交互；外部 MCP 控制面没有直接上传文件的参数。重启后研究、消息绑定和发布记录可恢复；重复消息、按钮和受理重试不会重复启动同一请求或重复发布已确认版本。
 
-研究覆盖个股、公司比较、行业与事件、估值、财报解读和论点更新。首版使用一个研究 Agent 和一套 invest 方法包；每项研究同时只允许一个会话写执行，不同研究受 Host 总并发额度约束。现有固定章节写作继续作为专门业务路径。
+研究覆盖个股、公司比较、行业与事件、估值、财报解读和论点更新。首版使用一个研究 Agent 和一套 invest 方法包；每项研究同时只允许一个会话写执行，不同研究受 Host 总并发额度约束。报告按研究问题组织；原固定章节写作保留为专门业务路径。
 
 工程包括产品、Python 包、命令、配置和运行状态路径改名。交易执行、定时监控、全市场扫描、Telegram 群协作、Mini App、任意 Python 代码执行、Notion 双向编辑合并另立需求。
 
@@ -20,7 +20,8 @@ alpha 是由 Host 托管的通用投研 Agent。Telegram 提供按研究话题�
 | Python 包 | alpha |
 | 分发元数据名 | alpha-agent；本工程构建本地分发，公共仓库名称可用性在实际发布时核实 |
 | 主命令 | `alpha` |
-| Telegram 入口 | `alpha telegram run` |
+| 主研究入口 | `alpha-mcp`，当前 coding agent 直接使用业务工具 |
+| 可选 Telegram 入口 | `alpha-telegram` |
 | 既有独立入口 | `alpha-web`、`alpha-wechat`、`alpha-render` |
 | 隐藏状态目录 | `workspace/.alpha/` |
 | Host 数据库 | `workspace/.alpha/host/alpha_host.db` |
@@ -42,7 +43,11 @@ alpha 是由 Host 托管的通用投研 Agent。Telegram 提供按研究话题�
 
 ```mermaid
 flowchart TD
-    TG[Telegram UI] --> RS[ResearchService]
+    MCP[coding agent / Alpha MCP] --> ES[ExternalResearchService]
+    ES --> H[Host]
+    MCP --> RS[ResearchService]
+    MCP --> PS[PublicationService]
+    TG[可选 Telegram UI] --> RS
     TG --> PS[PublicationService]
     CLI[CLI 与既有 UI] --> RS
     RS --> H[Host]
@@ -145,7 +150,7 @@ ResearchTurn 是尚待派发的业务输入；Host pending turn 是已经受理�
 
 报告由草稿形成候选快照，通过适用数据校验和引用检查后提交 revision。新报告引用父版本并记录变化说明；已提交证据在停止或异常后保留。只有提交后的版本可发布，发布不重新调用模型改写正文。
 
-## 6 Telegram UI 与协议
+## 6 可选 Telegram UI 与协议
 
 ### 6.1 研究管理
 
@@ -336,3 +341,25 @@ workspace/
 research 默认 `codex-local`；`alpha init --codex` 明确将工作区全部 scene 切到本地运行器并跳过 API Key 向导。原生登录、默认模型和推理配置交给 Codex CLI 管理；app-server 经 stdio 连接，每个 Host Run 使用临时原生线程，Host 历史决定恢复上下文，不使用全局最近会话。
 
 动态工具逐批产生既有 Engine 事件，工具执行仍注入同一 Host Run/iteration/tool_call 和取消令牌，每批回到 alpha Agent 进行迭代与失败治理。原生 shell、外部 MCP、应用和多 Agent 关闭，旁路或权限请求明确失败。真实管道取消会终止并回收独立进程组。协议依据：[Codex app-server](https://learn.chatgpt.com/docs/app-server)。
+
+
+## 可检验判断与双层输出
+
+最小模型沿用 `research_id → turn_id → run_id → revision_id`，在已有不可变工作笔记中追加研究约定、判断和复盘，不增加数据库表或独立工作流。Host 继续负责生命周期与执行治理，研究层负责投资语义。
+
+```text
+研究约定（收益来源、期限、失效条件、资金约束）
+  → 核心判断（原约定、证据、机制、假设、替代解释、预期观察、检验日期）
+  → 复盘（实际经营结果、证据、影响、原因、错误归因、下次检验）
+  → 报告候选 → 验收 → 不可变正式版本 → Notion 主题/版本
+```
+
+`research_save_mandate` 修改约定时要求原因。`research_save_judgment` 固定原约定及截止；支持/反对证据 ID 必须指向本条完整证据，没有支持证据时明确为待验证假设。新判断可引用旧判断但不能改写它，也不能消除旧预测到期后的复盘责任。`research_review_judgment` 另存实际结果与判断变化，确定支持或反驳须有证据；信息不足或延期须给原因和新的检验时间。复盘区分数据、机制、资本需求、时间和估值错误，允许归因未定。
+
+`research_judgments` 按本轮固定截止分页读取原判断、原约定、复盘历史和到期项；旧轮看不到后来的复盘。到期检查按需执行，没有后台调度。更新研究先找能改变估值与排序的关键分歧，把资源用于区分替代解释。人的注意力集中于重要而证据弱的假设和需要承担的不确定性；同一模型的自审不算独立验证。
+
+`research_compose_report` 接受摘要、公司正文及判断引用，生成完整候选。单公司正文覆盖生意、护城河、指标、资本需求、质量依据、估值、现价隐含条件、机会与下行及检验；比较报告须逐公司展开，给条件性优先级、情景回报和改变顺序的条件，允许并列与暂不可比。具体叙述结构留给 invest 与 writing 方法。基准情景回报不等于概率校准的预期收益。
+
+呈现记录绑定完整正文 SHA256，正式版本读取时由 ResearchService 校验。`alpha_finish` 返回真实版本及 delivery，`alpha_delivery` 可再次读取摘要、版本来源和当前目标下的发布状态。聊天只展示判断、关键假设/分歧、变化、缺口、需决策项与交付状态；仅 `published` 状态附已确认 Notion 链接。修订正文后需重新组装摘要，旧摘要不会挪用到新正文。原始低层候选接口保留给研究笔记，结构化摘要是可选的；正式财报覆盖验收继续有效。
+
+中国财报标准读取在 Fins 内完成：Docling 原始网格提取合并三表，保留续页首行、期间、币种、缩放和原表定位。无法识别合并范围或单位的原件仍报告缺口，不从公司名或报告标题猜口径。该能力不代表所有中国财报格式均已支持。

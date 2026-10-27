@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import json
 from contextlib import aclosing
 from dataclasses import dataclass, replace
-from typing import AsyncGenerator
+from typing import AsyncGenerator, cast
 
 from alpha.contracts.events import AppEvent
+from alpha.contracts.agent_types import JsonValue
 from alpha.contracts.agent_execution import ExecutionContract
 from alpha.contracts.host_admission import AgentAdmissionStaleError
 from alpha.contracts.research import (
@@ -25,6 +27,10 @@ from alpha.research.storage.encoding import canonical_json
 from alpha.research.storage.protocols import ResearchCatalog, ResearchMethods, ResearchRevisions, ResearchTurnQueue, ResearchWorkingRecords
 from alpha.services.contract_preparation import prepare_execution_contract
 from alpha.services.scene_execution_acceptance import SceneExecutionAcceptancePreparer
+from alpha.research.judgment_encoding import require_map
+from alpha.research.report_composer import PRESENTATION_NOTE_TITLE, report_digest
+from alpha.research.report_encoding import decode_summary, encode_summary
+from alpha.contracts.research_reports import ResearchReportKind
 
 RESEARCH_SCENE = "research"
 _SERVICE_NAME = "research_turn"
@@ -111,6 +117,31 @@ class ResearchService:
     def revision_details(self, revision_id: str, owner_id: str) -> ResearchRevision:
         """校验用户后读取指定版本来源。参数：版本、用户。返回：不可变版本。异常：越权或缺失。"""
         return self._revisions.get(revision_id, owner_id)
+
+    def report_presentation(self, revision_id: str, owner_id: str) -> dict[str, JsonValue]:
+        """读取与正式正文绑定的结构化摘要。参数：版本、用户。返回：真实版本来源和可选摘要。异常：越权、快照或呈现记录损坏。"""
+        revision = self._revisions.get(revision_id, owner_id)
+        markdown = self._revisions.read_report(revision_id, owner_id)
+        scope = self._working.scope_for_run(revision.source_run_id)
+        summary: JsonValue = None
+        kind: str | None = None
+        for record in self._working.list_named_notes(scope, PRESENTATION_NOTE_TITLE):
+            if record.source_run_id != revision.source_run_id:
+                continue
+            body = require_map(cast(JsonValue, json.loads(record.body_json)), 'note')
+            content = body.get('content')
+            if not isinstance(content, str):
+                raise ResearchConflictError('报告呈现记录格式损坏')
+            value = require_map(cast(JsonValue, json.loads(content)), 'presentation')
+            if value.get('report_digest') == report_digest(markdown):
+                summary = encode_summary(decode_summary(require_map(value.get('summary'), 'summary')))
+                kind_value = value.get('report_kind')
+                if not isinstance(kind_value, str):
+                    raise ResearchConflictError('报告类型损坏')
+                kind = ResearchReportKind(kind_value).value
+        return {'revision_id': revision.revision_id, 'research_id': revision.research_id, 'number': revision.number,
+                'as_of': revision.as_of.isoformat(), 'content_hash': revision.content_hash, 'report_status': 'formal',
+                'report_kind': kind, 'summary': summary}
 
     def stop(self, research_id: str, owner_id: str, request_key: str, *, expected_version: int | None = None) -> ResearchStopFence:
         """持久停止序号边界并请求 Host 协作取消。参数：研究、用户、稳定键。返回：边界。异常：越权或宿主错误。"""

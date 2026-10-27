@@ -1,6 +1,9 @@
 # alpha Agent — 用户手册
 
 `alpha Agent` 是每个投资者的助理分析师。
+
+**推荐日常入口：当前 coding agent + Alpha MCP；完整报告输出到 Notion Invest。**安装接入、研究提问、多个 session、增量更新及归档故障处理见 [coding agent 与 Notion 使用指南](docs/alpha/coding-agent-guide.md)。这条路径无需 Telegram，分析直接由当前 coding agent 完成。
+
 - `alpha Agent` 是一个面向买方财报分析场景的 Agent 系统，但它不是简单的功能组合，`alpha Agent` 让AI读财报的方式从丢给它整份财报“大海捞针”变成“按图索骥”，让数据有置信度，让投资结论、投资报告可审计、可追踪。
 - `alpha Agent` 还具备完整的“宿主强约束下的 LLM in the loop 的能力”，基础架构能力上已经对齐 OpenClaw ，后续会加上现在 OpenClaw 能做的事情。
 
@@ -1312,13 +1315,15 @@ alpha research --owner local open <research_id>
 
 ### 用当前 coding agent 直接研究
 
+这是推荐的日常研究入口；完整操作与可复制提问示例见 [coding agent 与 Notion 使用指南](docs/alpha/coding-agent-guide.md)。
+
 安装后可运行 `alpha-mcp --base /绝对路径/workspace --owner local`。它使用官方 MCP Python SDK 的 stdio 传输，将工具执行交给同一个 Host；分析使用当前 coding agent，无需再次调用本地 Codex 模型。按 [Codex MCP 配置说明](https://learn.chatgpt.com/docs/extend/mcp?surface=cli) 接入，例如：
 
 ```bash
 codex mcp add alpha -- /绝对路径/.venv/bin/alpha-mcp --base /绝对路径/workspace --owner local
 ```
 
-财报解析可能超过客户端默认工具时限，可在 Codex 的 `[mcp_servers.alpha]` 中设置 `tool_timeout_sec = 300`。本仓库提供 `$alpha-research` skill；也可直接按以下工具工作：
+财报解析可能超过客户端默认工具时限，可在 Codex 的 `[mcp_servers.alpha]` 中设置 `tool_timeout_sec = 600`，并限定下载日期和报告类型；该时限不保证所有文档都能处理完成。本仓库提供 `$alpha-research` skill；也可直接按以下工具工作：
 
 | 工具 | 用途 |
 |---|---|
@@ -1328,10 +1333,15 @@ codex mcp add alpha -- /绝对路径/.venv/bin/alpha-mcp --base /绝对路径/wo
 | `alpha_finish` | 按候选 ID/hash 原子提交并结束本轮 |
 | `alpha_abort` / `alpha_resume` | 停止或显式恢复失败、孤立、超时输入 |
 | `alpha_publish` / `alpha_publications` | 发布固定版本，查看状态与链接 |
+| `alpha_delivery` | 读取正式正文绑定的聊天摘要、真实版本及 Notion 交付状态 |
 
 财报工具按 `research_download_filings → research_prepare_source → research_read_financial` 使用；已下载的源文档可直接准备。用 `research_checkpoints` 查看原笔记、计算和候选稿索引，再用 `research_read_checkpoint` 读取完整内容。跨研究隔离；同一 session 同时只允许一个写执行。断开连接会请求 Host 取消本连接的未完成执行并保留检查点；外部 IDE 的思考过程仍由 IDE 管理。
 
 ### Telegram 多研究入口
+
+研究工具支持保存收益约定、核心判断及证据链，按需查看到期判断并追加经营复盘。完整单公司/比较报告由 `research_compose_report` 组装，聊天通过 `alpha_delivery` 查看主要结论、变化和已确认的 Notion 链接。旧预测和原约定不会因后续修改而覆盖；比较允许并列，并列明改变顺序的条件。具体用法见 [使用指南](docs/alpha/coding-agent-guide.md)。
+
+Telegram 是可选渠道，不是 coding agent 研究或 Notion 报告归档的前置条件。
 
 先在 BotFather 启用 Bot 私聊话题模式。默认复用 `$CODEX_HOME/config.toml`（未设置时为 `~/.codex/config.toml`）中 `mcp_servers.telegram.env.TELEGRAM_BOT_TOKEN`，支持已有 `BOT_TOKEN`/`TELEGRAM_TOKEN`；`ALPHA_TELEGRAM_BOT_TOKEN` 可显式覆盖。没有 Telegram MCP 连接时，可在 Codex 用户目录下的 `alpha/credentials.toml` 配置 `[telegram]` 表的 `bot_token` 字符串，文件权限设为 `0600`；这是 alpha 专用本地凭据，不需注册 MCP 服务。在 `workspace/config/telegram.json` 的 `allowed_user_ids` 数组中填写允许的 Telegram user ID，也可用 `--user` 显式覆盖。
 
@@ -1353,7 +1363,7 @@ alpha research --owner local publish <revision_id> --key publish-1 --run
 alpha research --owner local publication <publication_id>
 ```
 
-`publish` 返回前保存明确授权的版本和正文；`--run` 处理队列中最早的一项已授权发布。Telegram 常驻进程配置 token 后会独立消费发布队列，报告卡的“推送到 Invest”绑定原版本；后续研究生成 v2 不会改变旧 v1 按钮的目标。`/publication <publication_id>` 可查询状态，完成后链接发回原研究话题。
+`publish` 返回前保存明确授权的版本和正文；`--run` 处理队列中最早的一项已授权发布。MCP 常驻连接配置 token 后会独立消费发布队列，通过 `alpha_publications` 查询状态和链接，无需 Telegram。使用可选 Telegram 入口时，报告卡的“推送到 Invest”绑定原版本；后续研究生成 v2 不会改变旧 v1 按钮的目标，`/publication <publication_id>` 可查询状态并把链接发回原话题。
 
 目录结构为 `Invest → 研究主题页 → 不可变版本页`。主题按稳定 `research_id` 绑定，显示标题变化不会另建主题。异步任务必须完成且回读通过，才显示已推送。重复已完成请求返回原页面，后台不覆盖人工编辑后的已发布页。主题或版本创建结果未知时先核对原标记，未找到也不会自动重建。权限失败修复后可点“重试推送”，或使用新的 `--key` 明确重试；重放旧失败键只返回原状态。
 

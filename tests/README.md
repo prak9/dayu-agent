@@ -533,3 +533,8 @@ Fins 相关改动时，至少同步更新：
 `tests/research/test_cli.py` 同时覆盖实际命令解析、创建/材料/执行/显式恢复/报告/归档流程；仅替换模型流，Service 与 Host 使用实际装配。
 
 Codex 运行器测试使用原生协议模拟与实际工具作用域，管道测试启动真实受控子进程，验证交错通知、错误脱敏、无输出时取消和 TERM 无响应后的回收。凭据与入口缺少 token 的测试使用隔离 CODEX_HOME，禁止依赖个人真实 token；覆盖独立 credentials.toml、覆盖优先级和损坏配置脱敏。真实 Codex/Invest 只读探针单独留证，不作为无凭据测试的隐式依赖。
+
+
+Alpha 判断与双层输出回归入口：`pytest tests/research/test_judgments.py tests/research/test_report_composer.py tests/research/test_mcp_entry.py tests/fins/test_docling_statements.py`。覆盖跨轮不可变记录、原约定绑定、截止隔离、延期、被替代判断的复盘责任、条件性比较及正文摘要绑定。MCP 旅程通过真实 SDK、仓储和 Host 执行，Notion HTTP 由本地模拟服务接收并核对完整正文与交付状态，不调用模型、Telegram 或真实 Notion。
+
+财报解析使用保留原件版式特征的 CN/HK 网格用例，检验跨页、会计负号、范围、单位和期间。真实工作区原件验证另经 Fins 标准读取，不将投资报告的人工核读当作标准覆盖证明。覆盖率对目录使用 `--cov=alpha` 再查看目标文件，避免 coverage 在收集前按模块名探测触发第三方重复导入。

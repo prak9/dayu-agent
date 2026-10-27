@@ -4,6 +4,8 @@ import json
 import asyncio
 import os
 import sys
+from dataclasses import replace
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import cast
 
@@ -21,6 +23,10 @@ from alpha.mcp.main import build_server, main
 from alpha.integrations.notion.client import NotionClient
 from tests.integrations.notion.fakes import NotionServer
 from alpha.workspace_paths import build_host_store_default_path
+from alpha.research.judgment_encoding import encode_judgment
+from alpha.research.report_encoding import encode_summary
+from tests.research.test_judgments import _claim
+from tests.research.test_report_composer import _SUMMARY
 
 
 def _decode(result: CallToolResult) -> dict[str, JsonValue]:
@@ -111,3 +117,45 @@ def test_console_main_uses_stdio_and_explicit_workspace(tmp_path: Path, mocker: 
     main()
     mocked.assert_called_once_with(tmp_path, None, "owner")
     mocked.return_value.run.assert_called_once_with(transport="stdio")
+
+
+async def _business_call(client: Client, handle: str, name: str, arguments: dict[str, JsonValue], call_id: str) -> dict[str, JsonValue]:
+    """通过公开控制面调用研究工具。参数：客户端、句柄、工具、参数和调用键。返回：业务值。异常：调用或结构错误。"""
+    result = _decode(await client.call_tool('alpha_call', {'handle': handle, 'tool_name': name,
+        'arguments_json': json.dumps(arguments, ensure_ascii=False), 'call_id': call_id}))
+    value = result['value'];assert isinstance(value, dict);return value
+
+
+@pytest.mark.asyncio
+async def test_coding_agent_judgment_report_and_verified_notion_delivery_without_telegram(tmp_path: Path, mocker: MockerFixture) -> None:
+    """公开MCP贯通判断、报告、真实状态摘要和模拟Notion回读。参数：目录、mock。返回：无。异常：断言失败。"""
+    remote = NotionServer();notion = NotionClient('test', transport=httpx.MockTransport(remote))
+    mocker.patch('alpha.mcp.main.load_notion_token', return_value='test')
+    mocker.patch('alpha.mcp.main.NotionClient', return_value=notion)
+    async with Client(build_server(tmp_path, None, 'local'), raise_exceptions=False) as client:
+        record = _decode(await client.call_tool('alpha_create', {'question': '方法研究：可检验判断', 'request_key': 'create'}))
+        opened = _decode(await client.call_tool('alpha_begin', {'research_id': record['research_id'], 'text': '研究并归档', 'request_key': 'begin', 'publish_on_complete': True}))
+        handle = str(opened['handle'])
+        cutoff = datetime.fromisoformat(str(opened['as_of']))
+        await _business_call(client, handle, 'research_save_mandate', {'mandate': {'return_sources': ['business_value_growth'], 'horizon': '五年',
+            'invalidation_conditions': ['权益现金恶化'], 'capital_constraints': '未提供，不指定仓位'}}, 'mandate')
+        judgment = await _business_call(client, handle, 'research_save_judgment', {'judgment': encode_judgment(replace(_claim(), check_at=cutoff+timedelta(days=30)), cutoff)}, 'judgment')
+        draft = await _business_call(client, handle, 'research_compose_report', {'title': '紫金经营判断示例', 'report_kind': 'single_company',
+            'summary': encode_summary(_SUMMARY), 'companies': [{'subject': '601899', 'title': '紫金：周期与经营的分歧',
+            'analysis_markdown': '商业模式、护城河与现金归属。价格参考缺少估值资料，保留未核验。', 'judgment_ids': [judgment['judgment_id']]}]}, 'compose')
+        finished = _decode(await client.call_tool('alpha_finish', {'handle': handle, 'candidate_id': draft['candidate_id'], 'content_hash': draft['content_hash'], 'call_id': 'finish'}))
+        assert finished['number'] == 1
+        delivery: dict[str, JsonValue] = {}
+        for _ in range(100):
+            delivery = _decode(await client.call_tool('alpha_delivery', {'revision_id': finished['revision_id']}))
+            publication = delivery.get('publication')
+            if isinstance(publication, dict) and publication.get('state') == 'published':break
+            assert '[Notion完整报告]' not in str(delivery['chat_markdown'])
+            await asyncio.sleep(.02)
+        else:pytest.fail('发布工作者未完成正文回读')
+        assert '等待价格' in str(delivery['chat_markdown']) and '[Notion完整报告]' in str(delivery['chat_markdown'])
+        assert delivery['report_status'] == 'formal' and remote.created == 2
+        body = '\n'.join(remote.markdown.values())
+        assert '原定检验' in body and '传导机制' in body and 'https://example.com/filing' in body
+        assert str(judgment['judgment_id']) in body
+        assert (await client.call_tool('alpha_delivery', {'revision_id': 'missing'})).is_error

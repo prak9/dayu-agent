@@ -186,6 +186,10 @@ class ResearchWorkingRecords(Protocol):
         """保存笔记。参数：作用域、调用、标题、正文。返回：记录。异常：输入或状态冲突。"""
         ...
 
+    def list_named_notes(self, scope: ResearchWorkScope, title: str) -> list[ResearchWorkingRecord]:
+        """读取同研究指定类别的历史笔记。参数：作用域、标题。返回：截止内不可变记录。异常：越权或损坏。"""
+        ...
+
     def append_calculation(
         self, scope: ResearchWorkScope, tool_call_id: str, *, method: str, inputs: dict[str, JsonValue],
         result: dict[str, JsonValue], accepted: bool,

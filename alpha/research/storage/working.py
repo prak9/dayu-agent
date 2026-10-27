@@ -143,6 +143,19 @@ class SQLiteResearchWorkingRecords:
                 raise KeyError("工作记录不属于当前研究输入")
             return _from_row(row)
 
+    def list_named_notes(self, scope: ResearchWorkScope, title: str) -> list[ResearchWorkingRecord]:
+        """读取同研究指定类别的历史笔记。参数：作用域、类别标题。返回：经完整性校验的升序事件。异常：越权或损坏。"""
+        with self._store.connection() as conn:
+            if scope_for_run(conn, scope.run_id) != scope:
+                raise ResearchConflictError("研究笔记作用域不匹配")
+            rows = conn.execute(
+                "SELECT w.* FROM research_working_records w JOIN research_turns t ON t.turn_id=w.turn_id "
+                "WHERE t.research_id=? AND t.as_of<=? AND w.kind=? "
+                "AND json_extract(w.body_json,'$.title')=? ORDER BY w.created_at,w.record_id",
+                (scope.research_id, scope.as_of.isoformat(), ResearchWorkingKind.NOTE.value, title),
+            ).fetchall()
+            return [_from_row(row) for row in rows]
+
     def latest_report(self, scope: ResearchWorkScope) -> ResearchReportContent | None:
         """读取当前 Run 最后提交的报告。参数：作用域。返回：报告或空。异常：作用域、完整性或格式损坏。"""
         with self._store.connection() as conn:

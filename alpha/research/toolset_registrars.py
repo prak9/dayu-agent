@@ -7,6 +7,10 @@ from alpha.research.storage.working import SQLiteResearchWorkingRecords
 from alpha.research.storage.artifacts import FsResearchArtifactStore
 from alpha.research.storage.revisions import SQLiteResearchRevisions
 from alpha.research.tools import register_research_tools
+from alpha.research.judgments import ResearchJudgments
+from alpha.research.judgment_tools import register_judgment_tools
+from alpha.research.report_composer import ResearchReportComposer
+from alpha.research.report_tools import register_report_tools
 from alpha.research.analysis_tools import register_analysis_tools
 from alpha.research.candidates import ResearchCandidates
 from alpha.research.storage.analysis import SQLiteResearchAnalysis
@@ -27,7 +31,9 @@ def register_research_toolset(context: ToolsetRegistrationContext) -> int:
     methods = FsResearchMethodStore(build_research_methods_dir(root))
     count = register_research_tools(context.registry, working, methods,
                                     SQLiteResearchRevisions(store, FsResearchArtifactStore(build_research_artifacts_dir(root))))
-    count += register_analysis_tools(context.registry, ResearchCandidates(SQLiteResearchAnalysis(store), working, methods),
-                                     FinsResearchReader(DefaultFinsRuntime.create(workspace_root=root)))
+    count += register_judgment_tools(context.registry, ResearchJudgments(working), working)
+    candidates = ResearchCandidates(SQLiteResearchAnalysis(store), working, methods)
+    count += register_analysis_tools(context.registry, candidates, FinsResearchReader(DefaultFinsRuntime.create(workspace_root=root)))
+    count += register_report_tools(context.registry, ResearchReportComposer(candidates, ResearchJudgments(working)))
     return count + register_material_tools(context.registry, working, SQLiteResearchMaterials(store, FsFinancialMaterialBlobs(root)),
                                           root / "tmp", prepare_financial_material_processor(root))

@@ -574,3 +574,12 @@ python utils/retriage_active_6k_filings.py --base workspace --tickers ALC,ASM,NV
 7. [storage/fs_source_document_repository.py](storage/fs_source_document_repository.py)
 
 研究渠道财报附件通过 `storage.research_materials.FsFinancialMaterialBlobs` 进入既有源材料与文件对象仓储，共用批处理上下文，内容身份固定且不覆盖旧原件；research.db 只保存引用和来源元数据。用户需明确提供 ticker 与 form_type，不由文件名猜测会计期间。原件导入不代表已形成结构化 processed 产物，`research_prepare_filing` 调用 `fins.research_material_processing` 按需复用 Docling 公共转换入口，将结构 JSON 保存为同一源文档的主文件；既有 Fins 章节和表格工具随后可读取。转换与仓储职责分离，原始 PDF 保留。
+
+
+## Docling 合并三表读取
+
+`FinsDoclingProcessor.get_financial_statement` 从原始单元格网格提取利润表、资产负债表和现金流量表，不经过会提升首行为表头的通用 `read_table`。续页首条业务数据得以保留；附注列、母公司表和便利折算币种列不混入合并三表。结果保留原表引用、页码、期间起止、币种、缩放及每股口径，缺失金额为空。
+
+币种和单位同时读取报表前文与同页单位题注；缺少明确合并范围、期间、币种或缩放时返回 `unavailable`，续页口径冲突也不能作为完整覆盖。不支持的权益/综合收益独立类型明确返回缺口。当前解析版本为 `fins_docling_processor_v1.1.0`，准备源文档时按版本刷新处理快照；所有原件与产物仍通过 Fins 仓储访问。
+
+验证使用 `tests/fins/test_docling_statements.py` 的简繁中文/英文港股、跨页、会计负号、附注、便利币种、缺失范围和单位冲突用例。标准提取成功仍须按研究要求核对具体行项目和会计口径。

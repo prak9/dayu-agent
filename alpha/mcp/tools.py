@@ -13,9 +13,25 @@ from alpha.contracts.research_financials import decode_financial_requirements
 from alpha.services.external_research_service import ExternalResearchService
 from alpha.services.publication_service import PublicationService
 from alpha.services.research_service import ResearchService
+from alpha.contracts.publication import PublicationState
+from alpha.research.report_encoding import decode_summary
+from alpha.research.report_composer import summary_markdown
 
 _MAX_ARGUMENT_BYTES = 20 * 1024 * 1024
 _MAX_SESSION_PAGE = 50
+
+
+def _delivery_markdown(presentation: dict[str, JsonValue], publication: dict[str, JsonValue] | None) -> str:
+    """呈现判断及可信交付状态。参数：正式版本呈现、实际发布记录。返回：聊天Markdown。异常：摘要损坏。"""
+    summary = presentation.get('summary')
+    text = summary_markdown(decode_summary(summary)) if isinstance(summary, dict) else '此版本未提供与正文绑定的结构化摘要。'
+    text += f"\n\n报告状态：正式版本 v{presentation['number']}；信息截止：{presentation['as_of']}。"
+    if publication is None:
+        return text + '\n\nNotion：未发现当前目标下的发布意图。'
+    url = publication.get('page_url')
+    if publication.get('state') == PublicationState.PUBLISHED.value and isinstance(url, str) and url:
+        return text + f'\n\n[Notion完整报告]({url})'
+    return text + f"\n\nNotion：{publication.get('state')}；尚不能确认完整报告已交付。"
 
 
 def _json(value: JsonValue) -> str:
@@ -73,7 +89,19 @@ class AlphaMcpTools:
     async def finish(self, handle: str, candidate_id: str, content_hash: str, call_id: str) -> str:
         """按候选 ID/hash 结束本轮；校验错误保持研究可修订，Host 成功后形成正式版本。参数：句柄、候选、hash、稳定调用 ID。返回：版本或校验错误 JSON。异常：取消或冲突。"""
         result = await self.external.finish(handle, candidate_id, content_hash, call_id)
-        return _json(cast(JsonValue, asdict(result))) if isinstance(result, ResearchRevision) else _json(result)
+        return _json({**cast(dict[str, JsonValue], asdict(result)), 'delivery': self._delivery(result.revision_id)}) if isinstance(result, ResearchRevision) else _json(result)
+
+    def _delivery(self, revision_id: str) -> dict[str, JsonValue]:
+        """按实际版本和发布投影组装摘要。参数：版本。返回：结构化交付与聊天文本。异常：越权或损坏。"""
+        presentation = self.research.report_presentation(revision_id, self.owner_id)
+        publications = self.publication.list_for_owner(self.owner_id) if self.publication is not None else []
+        matching = next((item for item in publications if item.revision_id == revision_id and self.publication is not None and item.target_id == self.publication.target_id), None)
+        publication = cast(dict[str, JsonValue], asdict(matching)) if matching is not None else None
+        return {**presentation, 'publication': publication, 'chat_markdown': _delivery_markdown(presentation, publication)}
+
+    async def delivery(self, revision_id: str) -> str:
+        """读取完整报告对应的聊天摘要和当前真实交付状态。参数：正式版本。返回：摘要、状态及已确认链接。异常：越权或版本不存在。"""
+        return _json(self._delivery(revision_id))
 
     async def abort(self, handle: str) -> str:
         """停止此连接拥有的研究执行，保留候选稿与读取证据。参数：句柄。返回：停止状态 JSON。异常：宿主错误。"""
@@ -92,7 +120,7 @@ class AlphaMcpTools:
 
 
 def register_mcp_tools(server: MCPServer[None], handlers: AlphaMcpTools) -> None:
-    """使用官方 SDK 注册九个控制面工具。参数：服务器、交互服务。返回：无。异常：SDK schema 错误。"""
+    """使用官方 SDK 注册控制面工具。参数：服务器、交互服务。返回：无。异常：SDK schema 错误。"""
     server.tool(name="alpha_sessions")(handlers.sessions)
     server.tool(name="alpha_create")(handlers.create)
     server.tool(name="alpha_begin")(handlers.begin)
@@ -102,3 +130,4 @@ def register_mcp_tools(server: MCPServer[None], handlers: AlphaMcpTools) -> None
     server.tool(name="alpha_abort")(handlers.abort)
     server.tool(name="alpha_publish")(handlers.publish)
     server.tool(name="alpha_publications")(handlers.publications)
+    server.tool(name="alpha_delivery")(handlers.delivery)

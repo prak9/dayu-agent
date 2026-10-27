@@ -43,3 +43,14 @@
 发布接受时冻结分段；各段和完整正文 hash 均验证。远端唯一分段哨兵用于消耗式续写，每次回读检查完整前缀再单调推进进度；全部分段确认后才发布。异步任务过期只读找回原页面。
 
 报告证据 schema 显式声明必填字段、分类枚举与带时区的 accessed_at；材料读取返回实际访问时间以供直接引用，运行时证据验证继续拒绝缺字段或无时区时间。
+
+
+## 可检验判断与报告呈现
+
+`contracts.research_judgments` 定义收益约定、判断及复盘的窄类型；`judgment_tools.py` 提供 `research_save_mandate`、`research_save_judgment`、`research_review_judgment`、`research_judgments`。事件复用不可变 NOTE（标题 `alpha.investment_judgments`），不变更 schema。仓储按所有权、研究和原输入截止筛选，校验原记录 hash；跨 Run 读取保留原来源与方法。调用 ID 在原 Run 内幂等。
+
+判断绑定保存时的约定 ID，改约定须留原因；支持和反对引用必须指向本条完整证据，冲突或未来证据拒绝。新预测可以引用旧预测，旧预测仍保留到期复盘责任。复盘确定支持/反驳必须有经营证据，信息不足或延迟须指定新的未来检验时间。索引返回原约定、复盘历史、证据状态和到期项，每页最多50条；截止使用本轮固定时间，不是查询时的墙钟时间。能力按需执行，不包含调度器。
+
+`report_tools.py` 的 `research_compose_report` 将摘要、公司论证及所引用判断/复盘/证据组装为正常候选，继续使用现有数据契约与财报验收。比较要求完整逐公司行、排序理由和换序条件，支持并列和未知回报。原始 `research_draft_report` 继续适用于窄笔记，不强制机械报告章节。
+
+呈现记录复用 NOTE（标题 `alpha.report_presentation`），绑定候选 ID 与正文 SHA256，摘要字段禁止模型自填交付状态。正式读取由 `ResearchService.report_presentation` 校验版本所有权和正文摘要，再由 MCP `alpha_delivery` 合并当前目标的实际发布记录；只在 `published` 时展示已确认 Notion 链接。修改正文须重新 compose，否则旧摘要不匹配。外部与内置入口注册相同业务工具，执行生命周期继续由 Host 管理。

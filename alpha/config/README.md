@@ -955,3 +955,6 @@ python -m alpha.cli prompt "总结苹果风险" --ticker AAPL --model-name mimo-
 `ask --publish-on-complete` 或 MCP `alpha_begin.publish_on_complete` 是本轮显式发布策略，默认关闭。目标根目录在输入接受时固定；配置变化会拒绝自动改发。Notion 归档层次为 Invest/研究主题/不可变版本，主题身份与显示标题分离。
 
 `codex-local` 使用 `runner_type=codex`，模型和推理配置默认交给本地 Codex，不配置 API endpoint 或 headers。research 的包默认模型是它；`alpha init --codex` 为整个工作区显式选择本地 Codex 并跳过 API Key 与环境向导。`codex_runtime_config` 迁移只补缺失模型定义，不覆盖用户定义或默认模型。可通过模型项的 executable/working_dir/model/timeout 显式选择本地命令、目录、模型与预算。
+
+
+研究场景提示词 `prompts/scenes/research.md` 要求先恢复判断记录，明确收益来源与期限，保存证据链和按需复盘，再用报告组装工具生成完整正文及简短摘要。实际发布状态从服务读取；提示词不会授予模型外部发布权限，也不启用后台定时研究。固定方法中的 invest/writing 继续负责研究与写作规范。

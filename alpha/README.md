@@ -1187,3 +1187,6 @@ sequenceDiagram
 研究路径默认使用本地 Codex Agent 运行器，原生推理通过 app-server 动态工具协议接入既有 Engine/Host，UI → Service → Host → Agent 分层保持不变。外部渠道凭据的解析在启动装配层，Engine 不接收渠道密钥。`alpha init --codex` 明确选择本地登录并配置现有工作区。
 
 外部 coding agent 入口是 `mcp/ → services.external_research_service → Host Session operation → 工具`，由外部模型完成推理；Host 管理 alpha 内的工具执行、取消、互斥与收尾。两种入口复用固定财报要求、检查点、候选校验和不可变版本。财报内容仍只能经 Fins 仓储，Notion 主题/版本归档是独立授权和独立 Host 操作。
+
+
+研究业务层还提供收益约定、可检验判断和不可变复盘，通过已有工作记录持久化；Host 不解释投资语义。报告组装保存完整正文及绑定摘要，服务读取正式版本后，MCP 合并真实发布状态形成聊天交付。当前主工作流为 coding agent → Alpha MCP → 研究工具 → 正式版本 → Notion，Telegram 为可选渠道。能力边界见 [research/README.md](research/README.md)。
