@@ -15,7 +15,7 @@ description: 用当前 coding agent 通过本地 alpha MCP 开展或继续投研
 
 投资研究先用 `research_save_mandate(mandate)` 保存收益来源、期限、失效条件及资金约束。收益来源可以并存：`business_value_growth`、`mispricing_convergence`、`risk_compensation`、`market_behavior`，分别说明其机制。未提供资金条件时记录未知，不虚构仓位建议。改约定须给 `change_reason`；原判断仍绑定原约定。
 
-用 `research_save_judgment(judgment)` 保存影响每股价值的核心判断：`subject`、`statement`、`mechanism`、`assumptions`、`counterarguments`、`expected_observation`、带时区的 `check_at`、完整 `evidence` 和支持/反对证据 ID。完整股票研究至少保留两类相互连接的判断：一类说明客户或利益相关者价值如何转成公司留存现金并归属于稀释后每股；另一类说明当前价格隐含什么经营条件、独立估值支持什么回报区间以及何时失效。没有支持证据的判断保留为假设，不能把引用数量当作机制成立的证明。新预测用 `previous_judgment_id` 关联旧预测，不覆盖原文。证据字段以工具 schema 为准。
+用 `research_save_judgment(judgment)` 保存影响每股价值的核心判断：`subject`、`statement`、`mechanism`、`assumptions`、`counterarguments`、`expected_observation`、带时区的 `check_at`、完整 `evidence` 和支持/反对证据 ID。完整股票研究至少保留两类相互连接的判断：一类写清经营等式、公司今天怎样赚钱、利润差为什么存在、哪些因素决定持续时间，以及正常化和未来经营路径能赚多少并归属于稀释后每股；另一类说明当前价格隐含什么经营条件、独立估值支持什么回报区间以及何时失效。没有支持证据的判断保留为假设，不能把引用数量当作机制成立的证明。新预测用 `previous_judgment_id` 关联旧预测，不覆盖原文。证据字段以工具 schema 为准。
 
 更新时用 `research_judgments(due_only=true)` 查询本轮截止前到期项，按 `next_offset` 续读。用 `research_review_judgment(review)` 对照实际经营结果及证据，记录判断变化、原因和错误归因；支持或反驳须有观察证据，信息不足/延期须给原因及新的 `next_check_at`。股价涨跌不能单独证明经营判断正确或错误。新预测不能取消旧预测的复盘责任。到期查询按需执行，客户端关闭后没有自动研究任务。
 
@@ -29,7 +29,7 @@ description: 用当前 coding agent 通过本地 alpha MCP 开展或继续投研
 
 ## 双层输出与提交
 
-完整单公司/比较报告用 `research_compose_report` 组装：`summary` 包含结论、关键假设、主要分歧、本轮变化、未解决问题、人类决策；`companies` 包含公司自己的论证正文及 `judgment_ids`。正文先让读者看懂价值由什么客户结果和经济机制产生、为何能被公司留住、怎样到达稀释后每股，再比较独立支持的价值/回报区间与注明日期的现价及其隐含条件；其余生意、财务、资本需求、机会、上下行和检验围绕这条论证组织，而非机械套章节。比较须给每家公司一行 `comparison` 和 `ranking_rationale`；行内有报价日期/币种、价值来源与捕获依据、情景回报、价格参考及 `ranking_condition`。缺失回报用 null，基准年化不能冒充已校准概率的预期收益。
+完整单公司/比较报告用 `research_compose_report` 组装：`summary` 包含结论、关键假设、主要分歧、本轮变化、未解决问题、人类决策；`companies` 包含公司自己的论证正文及 `judgment_ids`。正文先让读者看懂经营等式：靠什么收费和产生成本、当前正常化赚多少、利润为什么存在、未来能否持续以及在需求、价格、竞争、容量和资本约束下能赚多少；再说明怎样到达稀释后每股，并比较独立支持的价值/回报区间与注明日期的现价及其隐含条件。其余生意、财务、机会、上下行和检验围绕这条论证组织，而非机械套章节。比较须给每家公司一行 `comparison` 和 `ranking_rationale`；行内有报价日期/币种、盈利来源与持续性、正常化和情景盈利、每股回报、价格参考及 `ranking_condition`。缺失回报用 null，基准年化不能冒充已校准概率的预期收益。
 
 窄研究笔记可用 `research_draft_report`。`research_validate_candidate` 返回字段错误；`research_patch_candidate` 修订产生新 ID/hash。若修订改变报告正文，需重新 compose 绑定摘要；旧摘要不会自动套到修改后的正文。数据契约及证据字段以工具 schema 为准。
 
